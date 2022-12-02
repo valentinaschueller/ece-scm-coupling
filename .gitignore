@@ -1,3 +1,7 @@
+# Exclude run data and plots
+plots/
+PAPA/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
