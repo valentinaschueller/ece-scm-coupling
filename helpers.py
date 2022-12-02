@@ -4,6 +4,7 @@ import warnings
 from pathlib import Path
 
 import iris
+import jinja2
 
 
 def load_cube(filename, var):
@@ -28,6 +29,15 @@ def load_cubes(filename):
     return cube
 
 
+def get_template(template_path):
+    """get Jinja2 template file"""
+    search_path = ["."]
+
+    loader = jinja2.FileSystemLoader(search_path)
+    environment = jinja2.Environment(loader=loader)
+    return environment.get_template(template_path)
+
+
 # Using https://stackoverflow.com/revisions/13197763/9
 class ChangeDirectory:
     """Context manager for changing the current working directory"""
@@ -43,7 +53,10 @@ class ChangeDirectory:
         os.chdir(self.saved_path)
 
 
-def run_model():
+def run_model(print_time: bool = False):
+    """
+    runs the EC-Earth SCM. If print_time=True, the output line summarizing the simulation time is printed.
+    """
     with ChangeDirectory("../aoscm/runtime/scm-classic/PAPA"):
         print("Running model")
         subprocess.run(
@@ -55,5 +68,16 @@ def run_model():
             ],
             capture_output=True,
         )
-        subprocess.run([], executable="./ece-scm_oifs+nemo.sh", capture_output=True)
+        completed_process = subprocess.run(
+            [],
+            executable="./ece-scm_oifs+nemo.sh",
+            capture_output=True,
+            text=print_time,  # if print_time, we want stdout and stderr to be string instead of bytes.
+        )
         print("Model run successful")
+        if not print_time:
+            return
+        output = completed_process.stdout.splitlines()
+        for line in output:
+            if "Finished leg" in line:
+                print(line)
