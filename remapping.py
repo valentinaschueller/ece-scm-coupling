@@ -7,8 +7,7 @@ def remap_oce_to_atm(
     oce_file_path: str, oce_var_name: str, atm_file_path: Path, atm_var_name: str
 ):
     oce_cube = iris.load_cube(oce_file_path, oce_var_name)
-    tmp_cube = oce_cube[:, :, [1]]
-    atm_cube = tmp_cube[:, [1], :]
+    atm_cube = oce_cube[:, :, [4]]
     atm_cube.var_name = atm_var_name
     iris.save(atm_cube, atm_file_path)
 
