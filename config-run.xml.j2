@@ -4,8 +4,8 @@
 
     <Translation name="RUN_ATM+OCE">
         <Description>Run script file (coupled run: atm+oce)</Description>
-        <Template>ece-scm_oifs+nemo.sh.tmpl</Template>
-        <Target>ece-scm_oifs+nemo.sh</Target>
+        <Template>{{setup_dict.get("script_name", "ece-scm_oifs+nemo")}}.sh.tmpl</Template>
+        <Target>{{setup_dict.get("script_name", "ece-scm_oifs+nemo")}}.sh</Target>
         <Properties>executable</Properties>
     </Translation>
 
