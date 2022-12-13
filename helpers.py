@@ -53,7 +53,7 @@ class ChangeDirectory:
         os.chdir(self.saved_path)
 
 
-def run_model(print_time: bool = False):
+def run_model(print_time: bool = False, executable: str = "./ece-scm_oifs+nemo.sh"):
     """
     runs the EC-Earth SCM. If print_time=True, the output line summarizing the simulation time is printed.
     """
@@ -70,7 +70,7 @@ def run_model(print_time: bool = False):
         )
         completed_process = subprocess.run(
             [],
-            executable="./ece-scm_oifs+nemo.sh",
+            executable=executable,
             capture_output=True,
             text=print_time,  # if print_time, we want stdout and stderr to be string instead of bytes.
         )
