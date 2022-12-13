@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import helpers as hlp
 from helpers import ChangeDirectory, get_template
 
+
 def generate_experiments(
     exp_prefix: str, dt_cpl: int, dt_ifs: int, dt_nemo: int, cpl_scheme: int
 ):
