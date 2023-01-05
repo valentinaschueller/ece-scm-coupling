@@ -19,7 +19,7 @@ class SchwarzCoupling:
         self.correction_experiment = {}
         self._generate_experiments()
         self.config_template = hlp.get_template("config-run.xml.j2")
-        self.dst_folder = "../aoscm/runtime/scm-classic/PAPA"
+        self.config_destination = Path("../aoscm/runtime/scm-classic/PAPA")
         self.max_iters = 5
         self.iter = 1
         self.run_directory = Path(f"PAPA/{self.exp_id}")
@@ -48,24 +48,16 @@ class SchwarzCoupling:
 
     def _initial_guess(self):
         print("Iteration 1")
-        with hlp.ChangeDirectory(self.dst_folder):
-            with open("./config-run.xml", "w") as config_out:
-                config_out.write(
-                    self.config_template.render(
-                        setup_dict=self.initial_experiment,
-                    )
-                )
+        hlp.render_config_xml(
+            self.config_destination, self.config_template, self.initial_experiment
+        )
         hlp.run_model()
 
     def _schwarz_correction(self):
-        print("Iteration 2")
-        with hlp.ChangeDirectory(self.dst_folder):
-            with open("./config-run.xml", "w") as config_out:
-                config_out.write(
-                    self.config_template.render(
-                        setup_dict=self.correction_experiment,
-                    )
-                )
+        print(f"Iteration {self.iter}")
+        hlp.render_config_xml(
+            self.config_destination, self.config_template, self.correction_experiment
+        )
         hlp.run_model(executable=f"./{self.correction_experiment['script_name']}.sh")
 
     def _rename_run_directory(self):

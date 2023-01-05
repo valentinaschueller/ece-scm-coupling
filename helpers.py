@@ -29,7 +29,7 @@ def load_cubes(filename):
     return cube
 
 
-def get_template(template_path):
+def get_template(template_path) -> jinja2.Template:
     """get Jinja2 template file"""
     search_path = ["."]
 
@@ -81,3 +81,17 @@ def run_model(print_time: bool = False, executable: str = "./ece-scm_oifs+nemo.s
         for line in output:
             if "Finished leg" in line:
                 print(line)
+
+
+def render_config_xml(
+    destination: Path, config_template: jinja2.Template, experiment: dict
+):
+    if not destination.is_dir():
+        raise TypeError(f"Destination is not a directory! {destination=}")
+    with ChangeDirectory(destination):
+        with open("./config-run.xml", "w") as config_out:
+            config_out.write(
+                config_template.render(
+                    setup_dict=experiment,
+                )
+            )
