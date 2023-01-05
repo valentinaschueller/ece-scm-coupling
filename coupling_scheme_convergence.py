@@ -1,11 +1,10 @@
-import subprocess
+from pathlib import Path
 
 import iris.quickplot as qplt
 import jinja2
 import matplotlib.pyplot as plt
 
 import helpers as hlp
-from helpers import ChangeDirectory
 
 dt_cpl_A = [
     800,
@@ -59,22 +58,6 @@ def generate_exp_ids(exp_prefix: str, exp_type: str, dt_cpl=list):
             exp_setups_i.append(dct)
         exp_setups.append(exp_setups_i)
     return exp_setups
-
-
-def run_model():
-    with ChangeDirectory("../aoscm/runtime/scm-classic/PAPA"):
-        print("Running model")
-        subprocess.run(
-            [
-                "/Users/valentina/dev/aoscm/sources/util/ec-conf/ec-conf",
-                "-p",
-                "valentinair",
-                "config-run.xml",
-            ],
-            capture_output=True,
-        )
-        subprocess.run([], executable="./ece-scm_oifs+nemo.sh", capture_output=True)
-        print("Model run successful")
 
 
 def load_variables(setup: str, exp_ids: list):
@@ -193,20 +176,14 @@ def create_and_save_plots(exp_ids):
 exp_setups = generate_exp_ids(exp_prefix, exp_type, dt_cpl)
 print(exp_setups)
 
-config_template = get_template("config-run.xml.j2")
-dst_folder = "../aoscm/runtime/scm-classic/PAPA"
+config_template = hlp.get_template("config-run.xml.j2")
+destination = Path("../aoscm/runtime/scm-classic/PAPA")
 
 for i in range(len(dt_cpl)):
     for j in cpl_schemes:
-        with ChangeDirectory(dst_folder):
-            with open("./config-run.xml", "w") as config_out:
-                config_out.write(
-                    config_template.render(
-                        setup_dict=exp_setups[i][j],
-                    )
-                )
+        hlp.render_config_xml(destination, config_template, exp_setups[i][j])
         print(f"Config: {exp_setups[i][j]['exp_id']}")
-        run_model()
+        hlp.run_model()
     exp_ids = [exp_setups[i][j]["exp_id"] for j in cpl_schemes]
     print(f"Creating plots for exp_ids: {exp_ids}")
     create_and_save_plots(exp_ids)
