@@ -1,9 +1,9 @@
+from pathlib import Path
+
 import iris.quickplot as qplt
-import jinja2
 import matplotlib.pyplot as plt
 
 import helpers as hlp
-from helpers import ChangeDirectory, get_template
 
 
 def generate_experiments(
@@ -174,17 +174,11 @@ exp_prefix = "OWA"
 experiments = generate_experiments(exp_prefix, dt_cpl, dt_ifs, dt_nemo, cpl_scheme)
 print(experiments)
 
-config_template = get_template("config-run.xml.j2")
-dst_folder = "../aoscm/runtime/scm-classic/PAPA"
+config_template = hlp.get_template("config-run.xml.j2")
+destination = Path("../aoscm/runtime/scm-classic/PAPA")
 
 for experiment in experiments:
-    with ChangeDirectory(dst_folder):
-        with open(f"./config-run.xml", "w") as config_out:
-            config_out.write(
-                config_template.render(
-                    setup_dict=experiment,
-                )
-            )
+    hlp.render_config_xml(destination, config_template, experiment)
     print(f"Config: {experiment['exp_id']}")
     hlp.run_model()
 exp_ids = [experiment["exp_id"] for experiment in experiments]
