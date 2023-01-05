@@ -84,7 +84,8 @@ class SchwarzCoupling:
                     str(path), atm_var_name, oce_file_path_tmp, oce_var_name
                 )
                 oce_var = iris.load_cube(str(oce_file_path_tmp), oce_var_name)
-                oce_var = oce_var[1:]
+                if self.cpl_scheme != 1:
+                    oce_var = oce_var[1:]
                 oce_var.coord("time").points = oce_var.coord("time").points - (
                     dt_cpl - dt_ifs
                 )
@@ -101,7 +102,8 @@ class SchwarzCoupling:
                     str(path), oce_var_name, atm_file_path_tmp, atm_var_name
                 )
                 atm_var = iris.load_cube(str(atm_file_path_tmp), atm_var_name)
-                atm_var = atm_var[1:]
+                if self.cpl_scheme != 2:
+                    atm_var = atm_var[1:]
                 atm_var.coord("time").points = atm_var.coord("time").points - (
                     dt_cpl - dt_nemo
                 )
