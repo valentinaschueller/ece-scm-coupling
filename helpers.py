@@ -4,10 +4,11 @@ import warnings
 from pathlib import Path
 
 import iris
+import iris.cube
 import jinja2
 
 
-def load_cube(filename, var):
+def load_cube(filename: str, var: str) -> iris.cube.Cube:
     with warnings.catch_warnings():
         # Suppress warning for invalid units
         warnings.filterwarnings(
@@ -18,7 +19,7 @@ def load_cube(filename, var):
     return cube
 
 
-def load_cubes(filename):
+def load_cubes(filename: str) -> iris.cube.CubeList:
     with warnings.catch_warnings():
         # Suppress warning for invalid units
         warnings.filterwarnings(
@@ -29,13 +30,13 @@ def load_cubes(filename):
     return cube
 
 
-def get_template(template_path) -> jinja2.Template:
+def get_template(template_filename: str) -> jinja2.Template:
     """get Jinja2 template file"""
     search_path = ["."]
 
     loader = jinja2.FileSystemLoader(search_path)
     environment = jinja2.Environment(loader=loader)
-    return environment.get_template(template_path)
+    return environment.get_template(template_filename)
 
 
 # Using https://stackoverflow.com/revisions/13197763/9
@@ -53,7 +54,9 @@ class ChangeDirectory:
         os.chdir(self.saved_path)
 
 
-def run_model(print_time: bool = False, executable: str = "./ece-scm_oifs+nemo.sh"):
+def run_model(
+    print_time: bool = False, executable: str = "./ece-scm_oifs+nemo.sh"
+) -> None:
     """
     runs the EC-Earth SCM. If print_time=True, the output line summarizing the simulation time is printed.
     """
@@ -74,7 +77,7 @@ def run_model(print_time: bool = False, executable: str = "./ece-scm_oifs+nemo.s
             capture_output=True,
             text=print_time,  # if print_time, we want stdout and stderr to be string instead of bytes.
         )
-        print("Model run successful")
+        print("Model run complete")
         if not print_time:
             return
         output = completed_process.stdout.splitlines()
@@ -85,7 +88,7 @@ def run_model(print_time: bool = False, executable: str = "./ece-scm_oifs+nemo.s
 
 def render_config_xml(
     destination: Path, config_template: jinja2.Template, experiment: dict
-):
+) -> None:
     if not destination.is_dir():
         raise TypeError(f"Destination is not a directory! {destination=}")
     with ChangeDirectory(destination):
