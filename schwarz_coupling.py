@@ -88,7 +88,7 @@ class SchwarzCoupling:
                 if self.cpl_scheme != 1:
                     oce_var = oce_var[1:]
                 oce_var.coord("time").points = oce_var.coord("time").points - (
-                    dt_cpl - dt_ifs
+                    self.dt_cpl - self.dt_ifs
                 )
                 iris.save(oce_var, oce_file_path)
                 oce_file_path_tmp.unlink()
@@ -106,7 +106,7 @@ class SchwarzCoupling:
                 if self.cpl_scheme != 2:
                     atm_var = atm_var[1:]
                 atm_var.coord("time").points = atm_var.coord("time").points - (
-                    dt_cpl - dt_nemo
+                    self.dt_cpl - self.dt_nemo
                 )
                 iris.save(atm_var, atm_file_path)
                 atm_file_path_tmp.unlink()
