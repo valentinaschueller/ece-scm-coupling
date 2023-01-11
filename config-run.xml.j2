@@ -211,7 +211,7 @@
         <Parameter name="RUN_END_DATE">
             <Description>End date of the simulation. Use any reasonable syntax.</Description>
             <Type>STRING</Type>
-            <Value>Jul 16 00:00:00 UTC 2014</Value>
+            <Value>Jul 12 00:00:00 UTC 2014</Value>
         </Parameter>
 
     </Model>
@@ -304,6 +304,12 @@
             <Description>Coupling scheme used by OASIS. Parallel (0), sequential atmosphere-first (1), or sequential ocean-first (2) possible.</Description>
             <Type>INTEGER</Type>
             <Value>{{setup_dict["cpl_scheme"]}}</Value>
+        </Parameter>
+
+        <Parameter name="SCHWARZ_AVERAGING">
+            <Description>Read coupling fields at each time step (0) or at each coupling period (1). Model time steps must be equal.</Description>
+            <Type>INTEGER</Type>
+            <Value>{{setup_dict.get("schwarz_averaging", 1)}}</Value>
         </Parameter>
 
     </Model>
