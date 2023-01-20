@@ -1,9 +1,14 @@
 from pathlib import Path
 
-import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 
 import helpers as hlp
+from plotting import (
+    create_atm_ssws_plot,
+    create_atm_temps_plot,
+    create_oce_ssts_plot,
+    create_oce_ssws_plot,
+)
 
 
 def generate_experiments(
@@ -43,102 +48,6 @@ def load_variables(setup: str, exp_ids: list):
         hlp.load_cube(oce_t_file, "Shortwave Radiation") for oce_t_file in oce_t_files
     ]
     return atm_temps, oce_ssts, atm_ssws, oce_ssws
-
-
-def create_atm_temps_plot(ax_atm_temp, atm_temps, colors, alpha, labels, linestyles):
-    assert len(colors) == len(atm_temps)
-    for i in range(len(colors)):
-        atm_temp = atm_temps[i]
-        color = colors[i]
-        label = labels[i]
-        linestyle = linestyles[i]
-        atm_temp.convert_units("degC")
-        time_coord = atm_temp.coord("time")
-        time_coord.convert_units("d")
-        qplt.plot(
-            atm_temp[:, 59],
-            axes=ax_atm_temp,
-            color=color,
-            label=label,
-            alpha=alpha,
-            ls=linestyle,
-        )
-    ax_atm_temp.set_ybound(8, 14)
-    ax_atm_temp.set_ylabel("T10m [°C]")
-    ax_atm_temp.set_yticks(list(range(8, 15)))
-    ax_atm_temp.set_xlabel("")
-    ax_atm_temp.grid()
-    ax_atm_temp.set_title("")
-    ax_atm_temp.legend()
-
-
-def create_oce_ssts_plot(ax_oce_sst, oce_ssts, colors, alpha, labels, linestyles):
-    assert len(colors) == len(oce_ssts)
-    for i in range(len(colors)):
-        oce_sst = oce_ssts[i]
-        color = colors[i]
-        label = labels[i]
-        linestyle = linestyles[i]
-        qplt.plot(
-            oce_sst[:, 1, 1],
-            axes=ax_oce_sst,
-            color=color,
-            label=label,
-            alpha=alpha,
-            ls=linestyle,
-        )
-    ax_oce_sst.set_ybound(8, 14)
-    ax_oce_sst.set_ylabel("SST [°C]")
-    ax_oce_sst.set_yticks(list(range(8, 15)))
-    ax_oce_sst.set_xlabel("")
-    ax_oce_sst.grid()
-    ax_oce_sst.set_title("")
-
-
-def create_atm_ssws_plot(ax_atm_ssw, atm_ssws, colors, alpha, labels, linestyles):
-    assert len(colors) == len(atm_ssws)
-    for i in range(len(colors)):
-        atm_ssw = atm_ssws[i]
-        color = colors[i]
-        label = labels[i]
-        linestyle = linestyles[i]
-        time_coord = atm_ssw.coord("time")
-        time_coord.convert_units("d")
-        qplt.plot(
-            atm_ssw[:],
-            axes=ax_atm_ssw,
-            color=color,
-            label=label,
-            alpha=alpha,
-            ls=linestyle,
-        )
-    ax_atm_ssw.set_title("")
-    ax_atm_ssw.set_xlabel("")
-    ax_atm_ssw.set_ylabel(r"Atm sfc radiation [$W m^{-2}$]")
-    ax_atm_ssw.set_ybound(0, 800)
-    ax_atm_ssw.grid()
-
-
-def create_oce_ssws_plot(ax_oce_ssw, oce_ssws, colors, alpha, labels, linestyles):
-    assert len(colors) == len(oce_ssws)
-    for i in range(len(colors)):
-        oce_ssw = oce_ssws[i]
-        color = colors[i]
-        label = labels[i]
-        linestyle = linestyles[i]
-        qplt.plot(
-            oce_ssw[:, 1, 1],
-            axes=ax_oce_ssw,
-            color=color,
-            label=label,
-            alpha=alpha,
-            ls=linestyle,
-        )
-    ax_oce_ssw.set_title("")
-    ax_oce_ssw.set_xlabel("")
-    ax_oce_ssw.set_ylabel(r"Oce sfc radiation [$W m^{-2}$]")
-    ax_oce_ssw.set_ybound(0, 800)
-    ax_oce_ssw.grid()
 
 
 def create_and_save_plots(exp_ids):
