@@ -40,10 +40,12 @@ class SchwarzCoupling:
         if max_iters < 1:
             raise ValueError("Maximum amount of iterations must be >= 1")
         self._initial_guess()
-        while self.iter <= max_iters:
+        while self.iter < max_iters:
+            self._rename_run_directory()
             self.iter += 1
             self._prepare_iteration()
             self._schwarz_correction()
+        self._rename_run_directory()
 
     def _initial_guess(self):
         print("Iteration 1")
@@ -58,6 +60,7 @@ class SchwarzCoupling:
             self.config_destination, self.config_template, self.correction_experiment
         )
         hlp.run_model(executable=f"./{self.correction_experiment['script_name']}.sh")
+        hlp.clean_model_output(self.run_directory)
 
     def _rename_run_directory(self):
         self.old_run_directory = self.run_directory.rename(
@@ -67,8 +70,6 @@ class SchwarzCoupling:
 
     def _prepare_iteration(self):
         print(f"Preparing iteration {self.iter}")
-
-        self._rename_run_directory()
 
         # Create input files by discarding the first value of EXPOUT files and renaming appropriately
         for path in self.old_run_directory.glob("*.nc"):
