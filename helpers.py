@@ -98,3 +98,31 @@ def render_config_xml(
                     setup_dict=experiment,
                 )
             )
+
+
+def clean_model_output(run_directory: Path) -> None:
+    """
+    remove some AOSCM output files which are irrelevant for further analysis.
+    """
+    for path in run_directory.glob("SO4*"):
+        path.unlink()
+    for path in run_directory.glob("*.exe"):
+        path.unlink()
+    for path in run_directory.glob("*CLIM"):
+        path.unlink()
+    for path in run_directory.glob("RAD*"):
+        path.unlink()
+    for path in run_directory.glob("*.lnk"):
+        path.unlink()
+    (run_directory / "onecol.r").unlink(missing_ok=True)
+    (run_directory / "K1rowdrg.nc").unlink(missing_ok=True)
+    (run_directory / "M2rowdrg.nc").unlink(missing_ok=True)
+    (run_directory / "debug.01.000000").unlink(missing_ok=True)
+    (run_directory / "debug.02.000000").unlink(missing_ok=True)
+    (run_directory / "nout.000000").unlink(missing_ok=True)
+    (run_directory / "fort.20").unlink(missing_ok=True)
+    (run_directory / "scm_in.nc").unlink(missing_ok=True)
+    (run_directory / "time.step").unlink(missing_ok=True)
+    (run_directory / "vtable").unlink(missing_ok=True)
+    (run_directory / "ECOZC").unlink(missing_ok=True)
+    (run_directory / "MCICA").unlink(missing_ok=True)
