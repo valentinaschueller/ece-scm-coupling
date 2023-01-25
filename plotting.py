@@ -96,7 +96,7 @@ def create_atm_ssws_plot(ax_atm_ssw, atm_ssws, colors, alpha, labels, linestyles
     ax_atm_ssw.set_title("")
     ax_atm_ssw.set_xlabel("")
     ax_atm_ssw.set_ylabel(r"Atm sfc radiation [$W m^{-2}$]")
-    ax_atm_ssw.set_ybound(0, 800)
+    ax_atm_ssw.set_ybound(0, 1000)
     ax_atm_ssw.grid()
 
 
