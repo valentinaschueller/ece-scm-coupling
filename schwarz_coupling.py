@@ -46,6 +46,7 @@ class SchwarzCoupling:
             self._prepare_iteration()
             self._schwarz_correction()
         self._rename_run_directory()
+        self.run_directory.rmdir()
 
     def _initial_guess(self):
         print("Iteration 1")
