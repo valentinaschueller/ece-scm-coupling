@@ -1,5 +1,5 @@
 import iris
-import iris.plot as iplt
+import xarray as xr
 
 
 def create_atm_temps_plot(ax_atm_temp, atm_temps, colors, alpha, labels, linestyles):
@@ -22,9 +22,9 @@ def create_atm_temps_plot(ax_atm_temp, atm_temps, colors, alpha, labels, linesty
         new_time_coord.points = new_time_coord.points - 7 * 3600
         atm_temp.remove_coord("time")
         atm_temp.add_dim_coord(new_time_coord, 0)
-        iplt.plot(
-            atm_temp[:, 59],
-            axes=ax_atm_temp,
+        da = xr.DataArray.from_iris(atm_temp[:, 59])
+        ax_atm_temp.plot(
+            da,
             color=color,
             label=label,
             alpha=alpha,
@@ -33,10 +33,8 @@ def create_atm_temps_plot(ax_atm_temp, atm_temps, colors, alpha, labels, linesty
     ax_atm_temp.set_ybound(8, 14)
     ax_atm_temp.set_ylabel("T10m [°C]")
     ax_atm_temp.set_yticks(list(range(8, 15)))
-    ax_atm_temp.set_xlabel("")
-    ax_atm_temp.grid()
     ax_atm_temp.set_title("")
-    ax_atm_temp.legend()
+    ax_atm_temp.legend(ncols=1)
 
 
 def create_oce_ssts_plot(ax_oce_sst, oce_ssts, colors, alpha, labels, linestyles):
@@ -50,9 +48,9 @@ def create_oce_ssts_plot(ax_oce_sst, oce_ssts, colors, alpha, labels, linestyles
         # time shift: -7h from UTC to PDT
         time_coord.points = time_coord.points - 7 * 3600
         time_coord.bounds = time_coord.bounds - 7 * 3600
-        iplt.plot(
-            oce_sst[:, 1, 1],
-            axes=ax_oce_sst,
+        da = xr.DataArray.from_iris(oce_sst[:, 1, 1])
+        ax_oce_sst.plot(
+            da,
             color=color,
             label=label,
             alpha=alpha,
@@ -61,8 +59,6 @@ def create_oce_ssts_plot(ax_oce_sst, oce_ssts, colors, alpha, labels, linestyles
     ax_oce_sst.set_ybound(8, 14)
     ax_oce_sst.set_ylabel("SST [°C]")
     ax_oce_sst.set_yticks(list(range(8, 15)))
-    ax_oce_sst.set_xlabel("")
-    ax_oce_sst.grid()
     ax_oce_sst.set_title("")
 
 
@@ -85,19 +81,17 @@ def create_atm_ssws_plot(ax_atm_ssw, atm_ssws, colors, alpha, labels, linestyles
         new_time_coord.points = new_time_coord.points - 7 * 3600
         atm_ssw.remove_coord("time")
         atm_ssw.add_dim_coord(new_time_coord, 0)
-        iplt.plot(
-            atm_ssw[:],
-            axes=ax_atm_ssw,
+        da = xr.DataArray.from_iris(atm_ssw)
+        ax_atm_ssw.plot(
+            da,
             color=color,
             label=label,
             alpha=alpha,
             ls=linestyle,
         )
     ax_atm_ssw.set_title("")
-    ax_atm_ssw.set_xlabel("")
     ax_atm_ssw.set_ylabel(r"Atm sfc radiation [$W m^{-2}$]")
     ax_atm_ssw.set_ybound(0, 1000)
-    ax_atm_ssw.grid()
 
 
 def create_oce_ssws_plot(ax_oce_ssw, oce_ssws, colors, alpha, labels, linestyles):
@@ -111,9 +105,9 @@ def create_oce_ssws_plot(ax_oce_ssw, oce_ssws, colors, alpha, labels, linestyles
         color = colors[i]
         label = labels[i]
         linestyle = linestyles[i]
-        iplt.plot(
-            oce_ssw[:, 1, 1],
-            axes=ax_oce_ssw,
+        da = xr.DataArray.from_iris(oce_ssw[:, 1, 1])
+        ax_oce_ssw.plot(
+            da,
             color=color,
             label=label,
             alpha=alpha,
@@ -123,4 +117,3 @@ def create_oce_ssws_plot(ax_oce_ssw, oce_ssws, colors, alpha, labels, linestyles
     ax_oce_ssw.set_xlabel("")
     ax_oce_ssw.set_ylabel(r"Oce sfc radiation [$W m^{-2}$]")
     ax_oce_ssw.set_ybound(0, 800)
-    ax_oce_ssw.grid()
