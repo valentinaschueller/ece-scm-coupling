@@ -1,30 +1,45 @@
-import iris
+import numpy as np
 import xarray as xr
 
 
-def create_atm_temps_plot(ax_atm_temp, atm_temps, colors, alpha, labels, linestyles):
-    assert len(colors) == len(atm_temps)
+class OIFSPreprocessor:
+    """Preprocessor for Output Data from the OpenIFS SCM."""
+
+    def __init__(self, origin: np.datetime64, time_shift: np.timedelta64):
+        self.origin = origin
+        self.time_shift = time_shift
+
+    def preprocess(self, ds: xr.Dataset) -> xr.Dataset:
+        fixed_ds = ds.assign_coords(
+            {"time": self.origin + ds.time.data + self.time_shift}
+        )
+        return fixed_ds
+
+
+class NEMOPreprocessor:
+    """Preprocessor for Output Data from the NEMO SCM."""
+
+    def __init__(self, time_shift: np.timedelta64):
+        self.time_shift = time_shift
+
+    def preprocess(self, ds: xr.Dataset) -> xr.Dataset:
+        fixed_ds = ds.assign_coords(
+            {"time_counter": ds.time_counter.data + self.time_shift}
+        )
+        return fixed_ds
+
+
+def create_atm_temps_plot(
+    ax_atm_temp, oifs_progvars: xr.Dataset, colors, alpha, labels, linestyles
+):
+    assert len(colors) == len(oifs_progvars)
     for i in range(len(colors)):
-        atm_temp = atm_temps[i]
+        oifs_progvar = oifs_progvars[i]
         color = colors[i]
         label = labels[i]
         linestyle = linestyles[i]
-        atm_temp.convert_units("degC")
-        time_coord = atm_temp.coord("time")
-        new_time_coord = iris.coords.DimCoord(
-            time_coord.points,
-            standard_name="time",
-            long_name="Time",
-            var_name="time",
-            units="seconds since 2014-07-01 00:00:00",
-        )
-        # time shift: -7h from UTC to PDT
-        new_time_coord.points = new_time_coord.points - 7 * 3600
-        atm_temp.remove_coord("time")
-        atm_temp.add_dim_coord(new_time_coord, 0)
-        da = xr.DataArray.from_iris(atm_temp[:, 59])
         ax_atm_temp.plot(
-            da,
+            oifs_progvar.t[:, 59] - 273.15,
             color=color,
             label=label,
             alpha=alpha,
@@ -37,20 +52,17 @@ def create_atm_temps_plot(ax_atm_temp, atm_temps, colors, alpha, labels, linesty
     ax_atm_temp.legend(ncols=1)
 
 
-def create_oce_ssts_plot(ax_oce_sst, oce_ssts, colors, alpha, labels, linestyles):
-    assert len(colors) == len(oce_ssts)
+def create_oce_ssts_plot(
+    ax_oce_sst, oce_t_grids: xr.Dataset, colors, alpha, labels, linestyles
+):
+    assert len(colors) == len(oce_t_grids)
     for i in range(len(colors)):
-        oce_sst = oce_ssts[i]
+        oce_t_grid = oce_t_grids[i]
         color = colors[i]
         label = labels[i]
         linestyle = linestyles[i]
-        time_coord = oce_sst.coord("time")
-        # time shift: -7h from UTC to PDT
-        time_coord.points = time_coord.points - 7 * 3600
-        time_coord.bounds = time_coord.bounds - 7 * 3600
-        da = xr.DataArray.from_iris(oce_sst[:, 1, 1])
         ax_oce_sst.plot(
-            da,
+            oce_t_grid.sosstsst[:, 1, 1],
             color=color,
             label=label,
             alpha=alpha,
@@ -62,28 +74,17 @@ def create_oce_ssts_plot(ax_oce_sst, oce_ssts, colors, alpha, labels, linestyles
     ax_oce_sst.set_title("")
 
 
-def create_atm_ssws_plot(ax_atm_ssw, atm_ssws, colors, alpha, labels, linestyles):
-    assert len(colors) == len(atm_ssws)
+def create_atm_ssws_plot(
+    ax_atm_ssw, oifs_diagvars: xr.Dataset, colors, alpha, labels, linestyles
+):
+    assert len(colors) == len(oifs_diagvars)
     for i in range(len(colors)):
-        atm_ssw = atm_ssws[i]
+        oifs_diagvar = oifs_diagvars[i]
         color = colors[i]
         label = labels[i]
         linestyle = linestyles[i]
-        time_coord = atm_ssw.coord("time")
-        new_time_coord = iris.coords.DimCoord(
-            time_coord.points,
-            standard_name="time",
-            long_name="Time",
-            var_name="time",
-            units="seconds since 2014-07-01 00:00:00",
-        )
-        # time shift: -7h from UTC to PDT
-        new_time_coord.points = new_time_coord.points - 7 * 3600
-        atm_ssw.remove_coord("time")
-        atm_ssw.add_dim_coord(new_time_coord, 0)
-        da = xr.DataArray.from_iris(atm_ssw)
         ax_atm_ssw.plot(
-            da,
+            oifs_diagvar.sfc_swrad,
             color=color,
             label=label,
             alpha=alpha,

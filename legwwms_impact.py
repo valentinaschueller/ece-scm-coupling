@@ -1,14 +1,11 @@
 from pathlib import Path
 
-import matplotlib.pyplot as plt
+import numpy as np
+import proplot as pplt
+import xarray as xr
 
 import helpers as hlp
-from plotting import (
-    create_atm_ssws_plot,
-    create_atm_temps_plot,
-    create_oce_ssts_plot,
-    create_oce_ssws_plot,
-)
+import plotting as aplt
 
 
 def generate_experiments(
@@ -29,44 +26,50 @@ def generate_experiments(
     return exp_setups
 
 
-def load_variables(setup: str, exp_ids: list):
-    oce_t_files = [f"{setup}/{exp_id}/{exp_id}*_T.nc" for exp_id in exp_ids]
-    atm_prog_files = [f"{setup}/{exp_id}/progvar.nc" for exp_id in exp_ids]
-    atm_diag_files = [f"{setup}/{exp_id}/diagvar.nc" for exp_id in exp_ids]
-    atm_temps = [
-        hlp.load_cube(atm_prog_file, "Temperature") for atm_prog_file in atm_prog_files
+def load_datasets(setup: str, exp_ids: list):
+    run_directories = [Path(f"{setup}/{exp_id}") for exp_id in exp_ids]
+    oifs_preprocessor = aplt.OIFSPreprocessor(
+        np.datetime64("2014-07-01"), np.timedelta64(-7, "h")
+    )
+    nemo_preprocessor = aplt.NEMOPreprocessor(np.timedelta64(-7, "h"))
+    oifs_progvars = [
+        xr.open_mfdataset(
+            run_directory / "progvar.nc", preprocess=oifs_preprocessor.preprocess
+        )
+        for run_directory in run_directories
     ]
-    oce_ssts = [
-        hlp.load_cube(oce_t_file, "Sea Surface temperature")
-        for oce_t_file in oce_t_files
+    oifs_diagvars = [
+        xr.open_mfdataset(
+            run_directory / "diagvar.nc", preprocess=oifs_preprocessor.preprocess
+        )
+        for run_directory in run_directories
     ]
-    atm_ssws = [
-        hlp.load_cube(atm_diag_file, "Surface SW Radiation")
-        for atm_diag_file in atm_diag_files
-    ]
-    oce_ssws = [
-        hlp.load_cube(oce_t_file, "Shortwave Radiation") for oce_t_file in oce_t_files
-    ]
-    return atm_temps, oce_ssts, atm_ssws, oce_ssws
+    nemo_t_grids = []
+    for run_directory in run_directories:
+        nemo_file = list(run_directory.glob("*_grid_T.nc"))[0]
+        nemo_t_grids.append(
+            xr.open_mfdataset(nemo_file, preprocess=nemo_preprocessor.preprocess)
+        )
+
+    return oifs_progvars, oifs_diagvars, nemo_t_grids
 
 
 def create_and_save_plots(exp_ids):
     setup = "PAPA"
-    atm_temps, oce_ssts, atm_ssws, oce_ssws = load_variables(setup, exp_ids)
+    oifs_progvars, oifs_diagvars, nemo_t_grids = load_datasets(setup, exp_ids)
 
     colors = ["k", "C8"]
     labels = ["GWD = TRUE", "GWD = FALSE"]
     linestyles = ["-", ":"]
     alpha = 1
 
-    fig, axs = plt.subplots(4, 1)
+    fig, axs = pplt.subplots(nrows=3, ncols=1, spany=False)
     fig.set_size_inches(15, 10)
     fig.suptitle("Impact of non-orographic wave drag scheme", y=0.95, size=14)
 
-    create_atm_temps_plot(axs[0], atm_temps, colors, alpha, labels, linestyles)
-    create_oce_ssts_plot(axs[1], oce_ssts, colors, alpha, labels, linestyles)
-    create_atm_ssws_plot(axs[2], atm_ssws, colors, alpha, labels, linestyles)
-    create_oce_ssws_plot(axs[3], oce_ssws, colors, alpha, labels, linestyles)
+    aplt.create_atm_temps_plot(axs[0], oifs_progvars, colors, alpha, labels, linestyles)
+    aplt.create_oce_ssts_plot(axs[1], nemo_t_grids, colors, alpha, labels, linestyles)
+    aplt.create_atm_ssws_plot(axs[2], oifs_diagvars, colors, alpha, labels, linestyles)
     fig.savefig(
         f"plots/legwwms_impact/{setup}_{exp_ids[0][:-1]}.pdf",
         bbox_inches="tight",
