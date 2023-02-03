@@ -70,11 +70,11 @@ def run_schwarz_experiments():
     experiment["cpl_scheme"] = cpl_scheme
     experiment["exp_id"] = f"{exp_prefix}{cpl_scheme}"
     schwarz_exp = SchwarzCoupling(experiment_dict=experiment)
-    schwarz_exp.run(max_iters, 40)
+    schwarz_exp.run(max_iters)
 
 
 if __name__ == "__main__":
 
-    # run_naive_experiments()
+    run_naive_experiments()
 
     run_schwarz_experiments()

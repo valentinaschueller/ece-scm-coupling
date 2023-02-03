@@ -23,7 +23,7 @@ cpl_schemes = [0, 1, 2]
 dt_cpl = 3600
 dt_ifs = 300
 dt_nemo = 1800
-max_iters = 30
+max_iters = 40
 exp_prefix = "M1S"
 
 forcing_start_date = pd.Timestamp("2014-07-01")
