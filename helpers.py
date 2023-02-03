@@ -6,6 +6,7 @@ from pathlib import Path
 import iris
 import iris.cube
 import jinja2
+import pandas as pd
 
 
 def load_cube(filename: str, var: str) -> iris.cube.Cube:
@@ -126,3 +127,17 @@ def clean_model_output(run_directory: Path) -> None:
     (run_directory / "vtable").unlink(missing_ok=True)
     (run_directory / "ECOZC").unlink(missing_ok=True)
     (run_directory / "MCICA").unlink(missing_ok=True)
+
+
+def compute_nstrtini(
+    simulation_start_date: pd.Timestamp,
+    forcing_start_date: pd.Timestamp,
+    forcing_dt_hours: int = 6,
+) -> int:
+    delta = (simulation_start_date - forcing_start_date).total_seconds()
+    if delta < 0:
+        raise ValueError("Start date is earlier than first value of forcing file!")
+    nstrtini = (delta / (forcing_dt_hours * 3600)) + 1
+    if abs(int(nstrtini) - nstrtini) > 1e-10:
+        raise ValueError("Start date is not available in forcing file!")
+    return int(nstrtini)
