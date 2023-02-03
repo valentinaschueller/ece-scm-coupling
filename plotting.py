@@ -45,10 +45,13 @@ def create_atm_temps_plot(
             alpha=alpha,
             ls=linestyle,
         )
-    ax_atm_temp.set_ybound(8, 14)
-    ax_atm_temp.set_ylabel("T10m [°C]")
-    ax_atm_temp.set_yticks(list(range(8, 15)))
-    ax_atm_temp.set_title("")
+    ax_atm_temp.format(
+        ylim=(8, 14),
+        ylabel="T10m [°C]",
+        ylocator=list(range(8, 15)),
+        title="",
+        xlabel="Time",
+    )
     ax_atm_temp.legend(ncols=1)
 
 
@@ -68,10 +71,13 @@ def create_oce_ssts_plot(
             alpha=alpha,
             ls=linestyle,
         )
-    ax_oce_sst.set_ybound(8, 14)
-    ax_oce_sst.set_ylabel("SST [°C]")
-    ax_oce_sst.set_yticks(list(range(8, 15)))
-    ax_oce_sst.set_title("")
+    ax_oce_sst.format(
+        ylim=(8, 14),
+        ylabel="SST [°C]",
+        ylocator=list(range(8, 15)),
+        title="",
+        xlabel="Time",
+    )
 
 
 def create_atm_ssws_plot(
@@ -90,31 +96,9 @@ def create_atm_ssws_plot(
             alpha=alpha,
             ls=linestyle,
         )
-    ax_atm_ssw.set_title("")
-    ax_atm_ssw.set_ylabel(r"Atm sfc radiation [$W m^{-2}$]")
-    ax_atm_ssw.set_ybound(0, 1000)
-
-
-def create_oce_ssws_plot(ax_oce_ssw, oce_ssws, colors, alpha, labels, linestyles):
-    assert len(colors) == len(oce_ssws)
-    for i in range(len(colors)):
-        oce_ssw = oce_ssws[i]
-        time_coord = oce_ssw.coord("time")
-        # time shift: -7h from UTC to PDT
-        time_coord.points = time_coord.points - 7 * 3600
-        time_coord.bounds = time_coord.bounds - 7 * 3600
-        color = colors[i]
-        label = labels[i]
-        linestyle = linestyles[i]
-        da = xr.DataArray.from_iris(oce_ssw[:, 1, 1])
-        ax_oce_ssw.plot(
-            da,
-            color=color,
-            label=label,
-            alpha=alpha,
-            ls=linestyle,
-        )
-    ax_oce_ssw.set_title("")
-    ax_oce_ssw.set_xlabel("")
-    ax_oce_ssw.set_ylabel(r"Oce sfc radiation [$W m^{-2}$]")
-    ax_oce_ssw.set_ybound(0, 800)
+    ax_atm_ssw.format(
+        ylim=(0, 1000),
+        ylabel=r"Atm sfc radiation [$W m^{-2}$]",
+        title="",
+        xlabel="Time",
+    )
