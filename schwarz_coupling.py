@@ -7,14 +7,13 @@ import remapping as rmp
 
 
 class SchwarzCoupling:
-    def __init__(
-        self, exp_id: str, dt_cpl: int, dt_ifs: int, dt_nemo: int, cpl_scheme: int
-    ):
-        self.exp_id = exp_id
-        self.dt_cpl = dt_cpl
-        self.dt_ifs = dt_ifs
-        self.dt_nemo = dt_nemo
-        self.cpl_scheme = cpl_scheme
+    def __init__(self, experiment_dict: dict):
+        self.input_dict = experiment_dict
+        self.exp_id = experiment_dict["exp_id"]
+        self.dt_cpl = experiment_dict["dt_cpl"]
+        self.dt_ifs = experiment_dict["dt_ifs"]
+        self.dt_nemo = experiment_dict["dt_nemo"]
+        self.cpl_scheme = experiment_dict["cpl_scheme"]
         self.initial_experiment = {}
         self.correction_experiment = {}
         self._generate_experiments()
@@ -24,28 +23,25 @@ class SchwarzCoupling:
         self.run_directory = Path(f"PAPA/{self.exp_id}")
 
     def _generate_experiments(self):
-        dct = {
-            "exp_id": self.exp_id,
-            "dt_cpl": self.dt_cpl,
-            "dt_nemo": self.dt_nemo,
-            "dt_ifs": self.dt_ifs,
-            "cpl_scheme": self.cpl_scheme,
-        }
-        self.initial_experiment = dct
-        dct = dct.copy()
+        self.initial_experiment = self.input_dict.copy()
+        dct = self.input_dict.copy()
         dct["script_name"] = "ece-scm_oifs+nemo_2"
         self.correction_experiment = dct
 
-    def run(self, max_iters: int):
+    def run(self, max_iters: int, current_iter: int = 1):
         if max_iters < 1:
             raise ValueError("Maximum amount of iterations must be >= 1")
-        self._initial_guess()
-        while self.iter < max_iters:
+        if current_iter < 1:
+            raise ValueError("Current iteration must be >=1")
+        self.iter = current_iter
+        if self.iter == 1:
+            self._initial_guess()
             self._rename_run_directory()
+        while self.iter < max_iters:
             self.iter += 1
             self._prepare_iteration()
             self._schwarz_correction()
-        self._rename_run_directory()
+            self._rename_run_directory()
         self.run_directory.rmdir()
 
     def _initial_guess(self):
@@ -64,7 +60,7 @@ class SchwarzCoupling:
         hlp.clean_model_output(self.run_directory)
 
     def _rename_run_directory(self):
-        self.old_run_directory = self.run_directory.rename(
+        self.run_directory.rename(
             self.run_directory.parent / f"{self.exp_id}_{self.iter}"
         )
         self.run_directory.mkdir()
@@ -72,8 +68,9 @@ class SchwarzCoupling:
     def _prepare_iteration(self):
         print(f"Preparing iteration {self.iter}")
 
+        old_run_directory = self.run_directory.parent / f"{self.exp_id}_{self.iter - 1}"
         # Create input files by discarding the first value of EXPOUT files and renaming appropriately
-        for path in self.old_run_directory.glob("*.nc"):
+        for path in old_run_directory.glob("*.nc"):
             if "_ATMIFS_" in path.stem:
                 atm_var_name = path.stem.split("_ATMIFS_")[0]
                 oce_var_name = rmp.atm_to_oce.get(atm_var_name, None)
