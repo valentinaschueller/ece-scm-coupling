@@ -1,95 +1,111 @@
-import matplotlib.pyplot as plt
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import proplot as pplt
+import xarray as xr
 
 import helpers as hlp
-from helpers import ChangeDirectory, get_template
-from plotting import (
-    create_atm_ssws_plot,
-    create_atm_temps_plot,
-    create_oce_ssts_plot,
-    create_oce_ssws_plot,
-)
-
-
-def generate_experiments(
-    exp_prefix: str, dt_cpl: int, dt_ifs: int, dt_nemo: int, cpl_schemes: list
-):
-    exp_setups = []
-    for cpl_scheme in cpl_schemes:
-        dct = {
-            "exp_id": f"{exp_prefix}{cpl_scheme}",
-            "dt_cpl": dt_cpl,
-            "dt_nemo": dt_nemo,
-            "dt_ifs": dt_ifs,
-            "cpl_scheme": cpl_scheme,
-            "ifs_leocwa": "F",
-        }
-        exp_setups.append(dct)
-    return exp_setups
-
+import plotting as aplt
 
 dt_cpl = 3600
 cpl_schemes = [0, 1, 2]
 exp_prefix = "CPL"
 dt_ifs = 900
 dt_nemo = 900
-experiments = generate_experiments(exp_prefix, dt_cpl, dt_ifs, dt_nemo, cpl_schemes)
+nradfr = 1
+forcing_start_date = pd.Timestamp("2014-07-01")
+start_date = pd.Timestamp("2014-07-01")
+end_date = start_date + pd.Timedelta(4, "days")
+nstrtini = hlp.compute_nstrtini(start_date, forcing_start_date, 6)
 
-config_template = get_template("config-run.xml.j2")
-dst_folder = "../aoscm/runtime/scm-classic/PAPA"
+base_dict = {
+    "dt_cpl": dt_cpl,
+    "dt_nemo": dt_nemo,
+    "dt_ifs": dt_ifs,
+    "ifs_leocwa": "F",
+    "ifs_nradfr": nradfr,
+    "ifs_nstrtini": nstrtini,
+    "run_start_date": str(start_date),
+    "run_end_date": str(end_date),
+}
 
 
-def load_variables(setup: str, exp_ids: list):
-    oce_t_files = [f"{setup}/{exp_id}/{exp_id}*_T.nc" for exp_id in exp_ids]
-    atm_prog_files = [f"{setup}/{exp_id}/progvar.nc" for exp_id in exp_ids]
-    atm_diag_files = [f"{setup}/{exp_id}/diagvar.nc" for exp_id in exp_ids]
-    atm_temps = [
-        hlp.load_cube(atm_prog_file, "Temperature") for atm_prog_file in atm_prog_files
+def generate_experiments(exp_prefix: str, cpl_schemes: list, base_setup: dict):
+    experiment_setups = []
+    for cpl_scheme in cpl_schemes:
+        experiment_setup = base_setup.copy()
+        experiment_setup["exp_id"] = f"{exp_prefix}{cpl_scheme}"
+        experiment_setup["cpl_scheme"] = cpl_scheme
+        experiment_setups.append(experiment_setup)
+    return experiment_setups
+
+
+def load_datasets(setup: str, exp_ids: list):
+    run_directories = [Path(f"{setup}/{exp_id}") for exp_id in exp_ids]
+    oifs_preprocessor = aplt.OIFSPreprocessor(start_date, np.timedelta64(-7, "h"))
+    nemo_preprocessor = aplt.NEMOPreprocessor(np.timedelta64(-7, "h"))
+    oifs_progvars = [
+        xr.open_mfdataset(
+            run_directory / "progvar.nc", preprocess=oifs_preprocessor.preprocess
+        )
+        for run_directory in run_directories
     ]
-    oce_ssts = [
-        hlp.load_cube(oce_t_file, "Sea Surface temperature")
-        for oce_t_file in oce_t_files
+    oifs_diagvars = [
+        xr.open_mfdataset(
+            run_directory / "diagvar.nc", preprocess=oifs_preprocessor.preprocess
+        )
+        for run_directory in run_directories
     ]
-    atm_ssws = [
-        hlp.load_cube(atm_diag_file, "Surface SW Radiation")
-        for atm_diag_file in atm_diag_files
-    ]
-    oce_ssws = [
-        hlp.load_cube(oce_t_file, "Shortwave Radiation") for oce_t_file in oce_t_files
-    ]
-    return atm_temps, oce_ssts, atm_ssws, oce_ssws
+    nemo_t_grids = []
+    for run_directory in run_directories:
+        nemo_file = list(run_directory.glob("*_grid_T.nc"))[0]
+        nemo_t_grids.append(
+            xr.open_mfdataset(nemo_file, preprocess=nemo_preprocessor.preprocess)
+        )
+
+    return oifs_progvars, oifs_diagvars, nemo_t_grids
 
 
 def create_and_save_plots(exp_ids):
+    plot_directory = Path("plots/cpl_control")
+    plot_directory.mkdir(exist_ok=True)
+
     setup = "PAPA"
-    atm_temps, oce_ssts, atm_ssws, oce_ssws = load_variables(setup, exp_ids)
+    oifs_progvars, oifs_diagvars, nemo_t_grids = load_datasets(setup, exp_ids)
 
     colors = ["k", "C8", "C9"]
     labels = ["parallel", "atm-first", "oce-first"]
-    alpha = 0.7
-    linestyles = ["-", "-", "-"]
+    alpha = 1
+    linestyles = ["--", ":", "-."]
 
-    fig, axs = plt.subplots(4, 1)
+    fig, axs = pplt.subplots(nrows=3)
     fig.set_size_inches(15, 10)
     fig.suptitle(f"{exp_ids[0]}, {exp_ids[1]}, {exp_ids[2]}", y=0.95, size=14)
 
-    create_atm_temps_plot(axs[0], atm_temps, colors, alpha, labels, linestyles)
-    create_oce_ssts_plot(axs[1], oce_ssts, colors, alpha, labels, linestyles)
-    create_atm_ssws_plot(axs[2], atm_ssws, colors, alpha, labels, linestyles)
-    create_oce_ssws_plot(axs[3], oce_ssws, colors, alpha, labels, linestyles)
+    aplt.create_atm_temps_plot(axs[0], oifs_progvars, colors, alpha, labels, linestyles)
+    aplt.create_oce_ssts_plot(axs[1], nemo_t_grids, colors, alpha, labels, linestyles)
+    aplt.create_atm_ssws_plot(axs[2], oifs_diagvars, colors, alpha, labels, linestyles)
     fig.savefig(
-        f"plots/cpl_control/cpl_scheme_control.pdf",
+        plot_directory / "cpl_scheme_control.pdf",
         bbox_inches="tight",
     )
 
 
-for experiment in experiments:
-    with ChangeDirectory(dst_folder):
-        with open("./config-run.xml", "w") as config_out:
-            config_out.write(
-                config_template.render(
-                    setup_dict=experiment,
+if __name__ == "__main__":
+    experiments = generate_experiments(exp_prefix, cpl_schemes, base_dict)
+
+    config_template = hlp.get_template("config-run.xml.j2")
+    dst_folder = "../aoscm/runtime/scm-classic/PAPA"
+
+    for experiment in experiments:
+        with hlp.ChangeDirectory(dst_folder):
+            with open("./config-run.xml", "w") as config_out:
+                config_out.write(
+                    config_template.render(
+                        setup_dict=experiment,
+                    )
                 )
-            )
-    print(f"Config: {experiment['exp_id']}")
-    hlp.run_model()
-create_and_save_plots([experiment["exp_id"] for experiment in experiments])
+        print(f"Config: {experiment['exp_id']}")
+        hlp.run_model()
+    create_and_save_plots([experiment["exp_id"] for experiment in experiments])
