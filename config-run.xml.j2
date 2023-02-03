@@ -205,13 +205,13 @@
         <Parameter name="RUN_START_DATE">
             <Description>Start date of the simulation. Use any reasonable syntax.</Description>
             <Type>DATE</Type>
-            <Value>Jul 01 00:00:00 UTC 2014</Value>
+            <Value>{{setup_dict.get("run_start_date", "Jul 01 00:00:00 UTC 2014")}}</Value>
         </Parameter>
 
         <Parameter name="RUN_END_DATE">
             <Description>End date of the simulation. Use any reasonable syntax.</Description>
             <Type>STRING</Type>
-            <Value>Jul 05 00:00:00 UTC 2014</Value>
+            <Value>{{setup_dict.get("run_end_date", "Jul 05 00:00:00 UTC 2014")}}</Value>
         </Parameter>
 
     </Model>
@@ -265,6 +265,18 @@
             <Description>Use ocean warm layer parameterization (T or F)</Description>
             <Type>STRING</Type>
             <Value>{{setup_dict.get("ifs_leocwa", "F")}}</Value>
+        </Parameter>
+
+        <Parameter name="IFS_NSTRTINI">
+            <Description>initial forcing time step, if uneqal 1 need correct "seconds" in scm_in.nc</Description>
+            <Type>INTEGER</Type>
+            <Value>{{setup_dict.get("ifs_nstrtini", 1)}}</Value>
+        </Parameter>
+
+        <Parameter name="IFS_NRADFR">
+            <Description>Frequency of full radiation, negative in hours, positive in time-steps</Description>
+            <Type>INTEGER</Type>
+            <Value>{{setup_dict.get("ifs_nradfr", 1)}}</Value>
         </Parameter>
 
         <Parameter name="IFS_OUTPUT_FORMAT">
