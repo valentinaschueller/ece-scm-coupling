@@ -99,13 +99,7 @@ if __name__ == "__main__":
     dst_folder = "../aoscm/runtime/scm-classic/PAPA"
 
     for experiment in experiments:
-        with hlp.ChangeDirectory(dst_folder):
-            with open("./config-run.xml", "w") as config_out:
-                config_out.write(
-                    config_template.render(
-                        setup_dict=experiment,
-                    )
-                )
+        hlp.render_config_xml(dst_folder, config_template, experiment)
         print(f"Config: {experiment['exp_id']}")
         hlp.run_model()
     create_and_save_plots([experiment["exp_id"] for experiment in experiments])

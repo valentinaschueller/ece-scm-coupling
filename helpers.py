@@ -1,34 +1,9 @@
 import os
 import subprocess
-import warnings
 from pathlib import Path
 
-import iris
-import iris.cube
 import jinja2
 import pandas as pd
-
-
-def load_cube(filename: str, var: str) -> iris.cube.Cube:
-    with warnings.catch_warnings():
-        # Suppress warning for invalid units
-        warnings.filterwarnings(
-            action="ignore",
-            category=UserWarning,
-        )
-        cube = iris.load_cube(filename, var)
-    return cube
-
-
-def load_cubes(filename: str) -> iris.cube.CubeList:
-    with warnings.catch_warnings():
-        # Suppress warning for invalid units
-        warnings.filterwarnings(
-            action="ignore",
-            category=UserWarning,
-        )
-        cube = iris.load(filename)
-    return cube
 
 
 def get_template(template_filename: str) -> jinja2.Template:

@@ -3,7 +3,6 @@ from pathlib import Path
 import pandas as pd
 
 import helpers as hlp
-from helpers import ChangeDirectory, compute_nstrtini, get_template
 from schwarz_coupling import SchwarzCoupling
 
 dt_cpl = 3600
@@ -24,9 +23,9 @@ forcing_start_date = pd.Timestamp("2014-07-01")
 start_date = pd.Timestamp("2014-07-01")
 end_date = start_date + pd.Timedelta(4, "days")
 
-nstrtini = compute_nstrtini(start_date, forcing_start_date)
+nstrtini = hlp.compute_nstrtini(start_date, forcing_start_date)
 
-config_template = get_template("config-run.xml.j2")
+config_template = hlp.get_template("config-run.xml.j2")
 dst_folder = "../aoscm/runtime/scm-classic/PAPA"
 
 experiment = {
@@ -48,13 +47,7 @@ def run_naive_experiments():
             experiment["exp_id"] = f"{exp_prefix}{freq_id}{cpl_scheme}"
 
             print(f"Config: {experiment['exp_id']}")
-            with ChangeDirectory(dst_folder):
-                with open("./config-run.xml", "w") as config_out:
-                    config_out.write(
-                        config_template.render(
-                            setup_dict=experiment,
-                        )
-                    )
+            hlp.render_config_xml(dst_folder, config_template, experiment)
             hlp.run_model()
             run_directory = Path("PAPA") / experiment["exp_id"]
             hlp.clean_model_output(run_directory)
