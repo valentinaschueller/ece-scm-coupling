@@ -20,7 +20,6 @@ experiment = {
     "dt_nemo": dt_nemo,
     "dt_ifs": dt_ifs,
     "ifs_leocwa": "F",
-    "schwarz_averaging": 1,
 }
 
 

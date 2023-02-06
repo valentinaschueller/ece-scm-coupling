@@ -35,7 +35,6 @@ experiment = {
     "dt_ifs": dt_ifs,
     "ifs_leocwa": "F",
     "ifs_nstrtini": nstrtini,
-    "schwarz_averaging": 1,
     "run_start_date": str(start_date),
     "run_end_date": str(end_date),
 }

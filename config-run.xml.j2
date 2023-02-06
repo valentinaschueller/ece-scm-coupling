@@ -318,12 +318,6 @@
             <Value>{{setup_dict["cpl_scheme"]}}</Value>
         </Parameter>
 
-        <Parameter name="SCHWARZ_AVERAGING">
-            <Description>Read coupling fields at each time step (0) or at each coupling period (1). Model time steps must be equal.</Description>
-            <Type>INTEGER</Type>
-            <Value>{{setup_dict.get("schwarz_averaging", 1)}}</Value>
-        </Parameter>
-
     </Model>
 
 </Configuration>

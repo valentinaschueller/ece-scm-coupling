@@ -42,7 +42,6 @@ experiment = {
     "ifs_leocwa": "F",
     "ifs_nradfr": -1,
     "ifs_nstrtini": nstrtini,
-    "schwarz_averaging": 1,
     "run_start_date": str(start_date),
     "run_end_date": str(end_date),
 }
