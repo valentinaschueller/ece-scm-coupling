@@ -69,7 +69,12 @@ class SchwarzCoupling:
         old_run_directory = self.run_directory.parent / f"{self.exp_id}_{self.iter - 1}"
 
         remapper = RemapCouplerOutput(
-            old_run_directory, self.run_directory, self.cpl_scheme, self.dt_cpl, self.dt_ifs, self.dt_nemo
+            old_run_directory,
+            self.run_directory,
+            self.cpl_scheme,
+            self.dt_cpl,
+            self.dt_ifs,
+            self.dt_nemo,
         )
         remapper.remap()
 

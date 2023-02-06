@@ -71,7 +71,9 @@ class RemapCouplerOutput:
         atm_da = atm_da.rename(atm_var_name)
         if self.coupling_scheme != 2:
             atm_da = atm_da[1:]
-        atm_da = atm_da.assign_coords({"time": atm_da.time.data - (self.dt_cpl - self.dt_oce)})
+        atm_da = atm_da.assign_coords(
+            {"time": atm_da.time.data - (self.dt_cpl - self.dt_oce)}
+        )
         atm_file_path = self.write_directory / f"{atm_var_name}.nc"
         atm_da.to_netcdf(atm_file_path)
 
@@ -85,6 +87,8 @@ class RemapCouplerOutput:
         oce_da = oce_da.rename(oce_var_name)
         if self.coupling_scheme != 1:
             oce_da = oce_da[1:]
-        oce_da = oce_da.assign_coords({"time": oce_da.time.data - (self.dt_cpl - self.dt_atm)})
+        oce_da = oce_da.assign_coords(
+            {"time": oce_da.time.data - (self.dt_cpl - self.dt_atm)}
+        )
         oce_file_path = self.write_directory / f"{oce_var_name}.nc"
         oce_da.to_netcdf(oce_file_path)
