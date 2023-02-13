@@ -4,8 +4,10 @@ import numpy as np
 import proplot as pplt
 import xarray as xr
 
-import helpers as hlp
-import plotting as aplt
+import utils.helpers as hlp
+import utils.plotting as uplt
+from utils.files import NEMOPreprocessor, OIFSPreprocessor
+from utils.templates import get_template, render_config_xml
 
 
 def generate_experiments(
@@ -28,10 +30,10 @@ def generate_experiments(
 
 def load_datasets(setup: str, exp_ids: list):
     run_directories = [Path(f"{setup}/{exp_id}") for exp_id in exp_ids]
-    oifs_preprocessor = aplt.OIFSPreprocessor(
+    oifs_preprocessor = OIFSPreprocessor(
         np.datetime64("2014-07-01"), np.timedelta64(-7, "h")
     )
-    nemo_preprocessor = aplt.NEMOPreprocessor(np.timedelta64(-7, "h"))
+    nemo_preprocessor = NEMOPreprocessor(np.timedelta64(-7, "h"))
     oifs_progvars = [
         xr.open_mfdataset(
             run_directory / "progvar.nc", preprocess=oifs_preprocessor.preprocess
@@ -67,9 +69,9 @@ def create_and_save_plots(exp_ids):
     fig.set_size_inches(15, 10)
     fig.suptitle("Impact of ocean warm layer parameterization", y=0.95, size=14)
 
-    aplt.create_atm_temps_plot(axs[0], oifs_progvars, colors, alpha, labels, linestyles)
-    aplt.create_oce_ssts_plot(axs[1], nemo_t_grids, colors, alpha, labels, linestyles)
-    aplt.create_atm_ssws_plot(axs[2], oifs_diagvars, colors, alpha, labels, linestyles)
+    uplt.create_atm_temps_plot(axs[0], oifs_progvars, colors, alpha, labels, linestyles)
+    uplt.create_oce_ssts_plot(axs[1], nemo_t_grids, colors, alpha, labels, linestyles)
+    uplt.create_atm_ssws_plot(axs[2], oifs_diagvars, colors, alpha, labels, linestyles)
     fig.savefig(
         f"plots/leocwa_impact/{setup}_{exp_ids[0][:-1]}.pdf",
         bbox_inches="tight",
@@ -86,11 +88,11 @@ exp_prefix = "OWA"
 experiments = generate_experiments(exp_prefix, dt_cpl, dt_ifs, dt_nemo, cpl_scheme)
 print(experiments)
 
-config_template = hlp.get_template("config-run.xml.j2")
+config_template = get_template("config-run.xml.j2")
 destination = Path("../aoscm/runtime/scm-classic/PAPA")
 
 for experiment in experiments:
-    hlp.render_config_xml(destination, config_template, experiment)
+    render_config_xml(destination, config_template, experiment)
     print(f"Config: {experiment['exp_id']}")
     hlp.run_model()
 exp_ids = [experiment["exp_id"] for experiment in experiments]

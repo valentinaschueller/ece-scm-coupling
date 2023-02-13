@@ -6,8 +6,8 @@ import pandas as pd
 import pytest
 import xarray as xr
 
-import update_oifs_input_file as uoif
-from file_handling import OIFSPreprocessor
+import utils.update_oifs_input_file as uoif
+from utils.files import OIFSPreprocessor
 
 
 def create_dummy_ds() -> xr.Dataset:

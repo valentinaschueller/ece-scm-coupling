@@ -1,7 +1,8 @@
 from pathlib import Path
 
-import helpers as hlp
+import utils.helpers as hlp
 from schwarz_coupling import SchwarzCoupling
+from utils.templates import get_template, render_config_xml
 
 cpl_schemes = [0, 1, 2]
 dt_cpl = 3600
@@ -11,7 +12,7 @@ max_iters = 20
 exp_prefix_naive = "C1N"
 exp_prefix_schwarz = "C1S"
 
-config_template = hlp.get_template("config-run.xml.j2")
+config_template = get_template("config-run.xml.j2")
 dst_folder = "../aoscm/runtime/scm-classic/PAPA"
 
 experiment = {
@@ -27,7 +28,7 @@ def run_naive_experiments():
         experiment["exp_id"] = f"{exp_prefix_naive}{cpl_scheme}"
         experiment["cpl_scheme"] = cpl_scheme
         print(f"Config: {experiment['exp_id']}")
-        hlp.render_config_xml(dst_folder, config_template, experiment)
+        render_config_xml(dst_folder, config_template, experiment)
         hlp.run_model()
         run_directory = Path("PAPA") / experiment["exp_id"]
         hlp.clean_model_output(run_directory)

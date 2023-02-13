@@ -5,8 +5,9 @@ import pandas as pd
 import proplot as pplt
 import xarray as xr
 
-import helpers as hlp
-import plotting as aplt
+import utils.helpers as hlp
+import utils.plotting as uplt
+from utils.templates import get_template, render_config_xml
 
 dt_cpl_A = [
     800,
@@ -74,8 +75,8 @@ def generate_experiments(
 
 def load_datasets(setup: str, exp_ids: list):
     run_directories = [Path(f"{setup}/{exp_id}") for exp_id in exp_ids]
-    oifs_preprocessor = aplt.OIFSPreprocessor(start_date, np.timedelta64(-7, "h"))
-    nemo_preprocessor = aplt.NEMOPreprocessor(np.timedelta64(-7, "h"))
+    oifs_preprocessor = uplt.OIFSPreprocessor(start_date, np.timedelta64(-7, "h"))
+    nemo_preprocessor = uplt.NEMOPreprocessor(np.timedelta64(-7, "h"))
     oifs_progvars = [
         xr.open_mfdataset(
             run_directory / "progvar.nc", preprocess=oifs_preprocessor.preprocess
@@ -114,9 +115,9 @@ def create_and_save_plots(exp_ids):
     fig.set_size_inches(15, 10)
     fig.suptitle(f"{exp_ids[0]}, {exp_ids[1]}, {exp_ids[2]}", y=0.95, size=14)
 
-    aplt.create_atm_temps_plot(axs[0], oifs_progvars, colors, alpha, labels, linestyles)
-    aplt.create_oce_ssts_plot(axs[1], nemo_t_grids, colors, alpha, labels, linestyles)
-    aplt.create_atm_ssws_plot(axs[2], oifs_diagvars, colors, alpha, labels, linestyles)
+    uplt.create_atm_temps_plot(axs[0], oifs_progvars, colors, alpha, labels, linestyles)
+    uplt.create_oce_ssts_plot(axs[1], nemo_t_grids, colors, alpha, labels, linestyles)
+    uplt.create_atm_ssws_plot(axs[2], oifs_diagvars, colors, alpha, labels, linestyles)
     fig.savefig(
         plot_directory / f"cpl_scheme_conv_{setup}_{exp_ids[0][:-1]}.pdf",
         bbox_inches="tight",
@@ -127,12 +128,12 @@ if __name__ == "__main__":
 
     exp_setups = generate_experiments(exp_prefix, exp_type, dt_cpl, base_dict)
 
-    config_template = hlp.get_template("config-run.xml.j2")
+    config_template = get_template("config-run.xml.j2")
     destination = Path("../aoscm/runtime/scm-classic/PAPA")
 
     for i in range(len(dt_cpl)):
         for j in cpl_schemes:
-            hlp.render_config_xml(destination, config_template, exp_setups[i][j])
+            render_config_xml(destination, config_template, exp_setups[i][j])
             print(f"Config: {exp_setups[i][j]['exp_id']}")
             hlp.run_model()
         exp_ids = [exp_setups[i][j]["exp_id"] for j in cpl_schemes]

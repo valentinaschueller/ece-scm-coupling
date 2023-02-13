@@ -1,33 +1,9 @@
-import os
 import subprocess
 from pathlib import Path
 
-import jinja2
 import pandas as pd
 
-
-def get_template(template_filename: str) -> jinja2.Template:
-    """get Jinja2 template file"""
-    search_path = ["."]
-
-    loader = jinja2.FileSystemLoader(search_path)
-    environment = jinja2.Environment(loader=loader)
-    return environment.get_template(template_filename)
-
-
-# Using https://stackoverflow.com/revisions/13197763/9
-class ChangeDirectory:
-    """Context manager for changing the current working directory"""
-
-    def __init__(self, new_path):
-        self.new_path = Path(new_path).expanduser()
-        self.saved_path = Path.cwd()
-
-    def __enter__(self):
-        os.chdir(self.new_path)
-
-    def __exit__(self, etype, value, traceback):
-        os.chdir(self.saved_path)
+from utils.files import ChangeDirectory
 
 
 def run_model(
@@ -60,20 +36,6 @@ def run_model(
         for line in output:
             if "Finished leg" in line:
                 print(line)
-
-
-def render_config_xml(
-    destination: Path, config_template: jinja2.Template, experiment: dict
-) -> None:
-    if not destination.is_dir():
-        raise TypeError(f"Destination is not a directory! {destination=}")
-    with ChangeDirectory(destination):
-        with open("./config-run.xml", "w") as config_out:
-            config_out.write(
-                config_template.render(
-                    setup_dict=experiment,
-                )
-            )
 
 
 def clean_model_output(run_directory: Path) -> None:

@@ -5,8 +5,9 @@ import pandas as pd
 import proplot as pplt
 import xarray as xr
 
-import helpers as hlp
-import plotting as aplt
+import utils.helpers as hlp
+import utils.plotting as uplt
+from utils.templates import get_template, render_config_xml
 
 dt_cpl = 3600
 cpl_schemes = [0, 1, 2]
@@ -43,8 +44,8 @@ def generate_experiments(exp_prefix: str, cpl_schemes: list, base_setup: dict):
 
 def load_datasets(setup: str, exp_ids: list):
     run_directories = [Path(f"{setup}/{exp_id}") for exp_id in exp_ids]
-    oifs_preprocessor = aplt.OIFSPreprocessor(start_date, np.timedelta64(-7, "h"))
-    nemo_preprocessor = aplt.NEMOPreprocessor(np.timedelta64(-7, "h"))
+    oifs_preprocessor = uplt.OIFSPreprocessor(start_date, np.timedelta64(-7, "h"))
+    nemo_preprocessor = uplt.NEMOPreprocessor(np.timedelta64(-7, "h"))
     oifs_progvars = [
         xr.open_mfdataset(
             run_directory / "progvar.nc", preprocess=oifs_preprocessor.preprocess
@@ -83,9 +84,9 @@ def create_and_save_plots(exp_ids):
     fig.set_size_inches(15, 10)
     fig.suptitle(f"{exp_ids[0]}, {exp_ids[1]}, {exp_ids[2]}", y=0.95, size=14)
 
-    aplt.create_atm_temps_plot(axs[0], oifs_progvars, colors, alpha, labels, linestyles)
-    aplt.create_oce_ssts_plot(axs[1], nemo_t_grids, colors, alpha, labels, linestyles)
-    aplt.create_atm_ssws_plot(axs[2], oifs_diagvars, colors, alpha, labels, linestyles)
+    uplt.create_atm_temps_plot(axs[0], oifs_progvars, colors, alpha, labels, linestyles)
+    uplt.create_oce_ssts_plot(axs[1], nemo_t_grids, colors, alpha, labels, linestyles)
+    uplt.create_atm_ssws_plot(axs[2], oifs_diagvars, colors, alpha, labels, linestyles)
     fig.savefig(
         plot_directory / "cpl_scheme_control.pdf",
         bbox_inches="tight",
@@ -95,11 +96,11 @@ def create_and_save_plots(exp_ids):
 if __name__ == "__main__":
     experiments = generate_experiments(exp_prefix, cpl_schemes, base_dict)
 
-    config_template = hlp.get_template("config-run.xml.j2")
+    config_template = get_template("config-run.xml.j2")
     dst_folder = "../aoscm/runtime/scm-classic/PAPA"
 
     for experiment in experiments:
-        hlp.render_config_xml(dst_folder, config_template, experiment)
+        render_config_xml(dst_folder, config_template, experiment)
         print(f"Config: {experiment['exp_id']}")
         hlp.run_model()
     create_and_save_plots([experiment["exp_id"] for experiment in experiments])
