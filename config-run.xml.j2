@@ -249,6 +249,12 @@
             <Value>0</Value>
         </Parameter>
 
+        <Parameter name="IFS_INPUT_FILE">
+            <Description>Name of the file containing initial and forcing data (will be copied as scm_in.nc)</Description>
+            <Type>STRING</Type>
+            <Value>{{setup_dict.get("ifs_input_file", "papa_20140701_30.nc")}}</Value>
+        </Parameter>
+
         <Parameter name="VOLCANOES">
             <Description>Include volcanic aerosols (TRUE or FALSE)</Description>
             <Type>BOOLEAN</Type>
@@ -293,6 +299,12 @@
             <Description>NEMO time step in seconds</Description>
             <Type>INTEGER</Type>
             <Value>{{setup_dict["dt_nemo"]}}</Value>
+        </Parameter>
+
+        <Parameter name="NEM_INPUT_FILE">
+            <Description>Name of the file containing initial data (will be copied as init_C1D.nc)</Description>
+            <Type>STRING</Type>
+            <Value>{{setup_dict.get("nem_input_file", "init_PAPASTATION_2014-07-01.nc")}}</Value>
         </Parameter>
 
         <Parameter name="LIM_TIME_STEP_SEC">
