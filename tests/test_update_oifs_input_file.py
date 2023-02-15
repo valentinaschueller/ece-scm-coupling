@@ -104,7 +104,7 @@ def test_full_update():
     ff = xr.open_mfdataset(ff_path, preprocess=oifs_preprocessor.preprocess)
     final_time_step_index = uoif.find_time_index_in_file(ff, progvar_final_time_step)
 
-    uoif.update_oifs_input_file_from_perturbed_run(modified_ff_path, progvar)
+    uoif.update_oifs_input_file_from_progvar(modified_ff_path, progvar)
 
     modified_ff = xr.open_mfdataset(
         modified_ff_path, preprocess=oifs_preprocessor.preprocess

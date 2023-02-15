@@ -55,9 +55,9 @@ def replace_prognostic_variables(
     return oifs_input
 
 
-def update_oifs_input_file_from_perturbed_run(
+def update_oifs_input_file_from_progvar(
     oifs_input_file: Path,
-    output_progvar: xr.Dataset,
+    output_progvar: Path,
     progvar_time_shift: np.timedelta64 = np.timedelta64(0),
 ):
     output_progvar_tEnd = extract_final_time_step(output_progvar)
