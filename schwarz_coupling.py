@@ -1,8 +1,9 @@
 from pathlib import Path
 
+import user_context as context
 import utils.helpers as hlp
 from remapping import RemapCouplerOutput
-from utils.templates import get_template, render_config_xml
+from utils.templates import render_config_xml
 
 
 class SchwarzCoupling:
@@ -16,8 +17,6 @@ class SchwarzCoupling:
         self.initial_experiment = {}
         self.correction_experiment = {}
         self._generate_experiments()
-        self.config_template = get_template("config-run.xml.j2")
-        self.config_destination = Path("../aoscm/runtime/scm-classic/PAPA")
         self.iter = 1
         self.run_directory = Path(f"PAPA/{self.exp_id}")
 
@@ -46,14 +45,16 @@ class SchwarzCoupling:
     def _initial_guess(self):
         print("Iteration 1")
         render_config_xml(
-            self.config_destination, self.config_template, self.initial_experiment
+            context.runscript_dir, context.config_run_template, self.initial_experiment
         )
         hlp.run_model()
 
     def _schwarz_correction(self):
         print(f"Iteration {self.iter}")
         render_config_xml(
-            self.config_destination, self.config_template, self.correction_experiment
+            context.runscript_dir,
+            context.config_run_template,
+            self.correction_experiment,
         )
         hlp.run_model(executable=f"./{self.correction_experiment['script_name']}.sh")
         # hlp.clean_model_output(self.run_directory)

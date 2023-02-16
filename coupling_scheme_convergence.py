@@ -5,9 +5,10 @@ import pandas as pd
 import proplot as pplt
 import xarray as xr
 
+import user_context as context
 import utils.helpers as hlp
 import utils.plotting as uplt
-from utils.templates import get_template, render_config_xml
+from utils.templates import render_config_xml
 
 dt_cpl_A = [
     800,
@@ -128,12 +129,11 @@ if __name__ == "__main__":
 
     exp_setups = generate_experiments(exp_prefix, exp_type, dt_cpl, base_dict)
 
-    config_template = get_template("config-run.xml.j2")
-    destination = Path("../aoscm/runtime/scm-classic/PAPA")
-
     for i in range(len(dt_cpl)):
         for j in cpl_schemes:
-            render_config_xml(destination, config_template, exp_setups[i][j])
+            render_config_xml(
+                context.runscript_dir, context.config_run_template, exp_setups[i][j]
+            )
             print(f"Config: {exp_setups[i][j]['exp_id']}")
             hlp.run_model()
         exp_ids = [exp_setups[i][j]["exp_id"] for j in cpl_schemes]

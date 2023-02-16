@@ -1,27 +1,22 @@
-import pathlib as Path
+from pathlib import Path
 
 import jinja2
-from files import ChangeDirectory
 
 
-def get_template(template_filename: str) -> jinja2.Template:
+def get_template(template_path: Path) -> jinja2.Template:
     """get Jinja2 template file"""
-    search_path = ["."]
-
-    loader = jinja2.FileSystemLoader(search_path)
+    loader = jinja2.FileSystemLoader(template_path.parent)
     environment = jinja2.Environment(loader=loader)
-    return environment.get_template(template_filename)
+    return environment.get_template(template_path.name)
 
 
 def render_config_xml(
-    destination: Path, config_template: jinja2.Template, experiment: dict
+    destination: Path, config_run_template: Path, experiment: dict
 ) -> None:
-    if not destination.is_dir():
-        raise TypeError(f"Destination is not a directory! {destination=}")
-    with ChangeDirectory(destination):
-        with open("./config-run.xml", "w") as config_out:
-            config_out.write(
-                config_template.render(
-                    setup_dict=experiment,
-                )
+    jinja_template = get_template(config_run_template)
+    with open(destination / "config-run.xml", "w") as config_run_xml:
+        config_run_xml.write(
+            jinja_template.render(
+                setup_dict=experiment,
             )
+        )

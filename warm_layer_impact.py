@@ -4,10 +4,11 @@ import numpy as np
 import proplot as pplt
 import xarray as xr
 
+import user_context as context
 import utils.helpers as hlp
 import utils.plotting as uplt
 from utils.files import NEMOPreprocessor, OIFSPreprocessor
-from utils.templates import get_template, render_config_xml
+from utils.templates import render_config_xml
 
 
 def generate_experiments(
@@ -88,12 +89,8 @@ exp_prefix = "OWA"
 experiments = generate_experiments(exp_prefix, dt_cpl, dt_ifs, dt_nemo, cpl_scheme)
 print(experiments)
 
-config_template = get_template("config-run.xml.j2")
-destination = Path("../aoscm/runtime/scm-classic/PAPA")
-
 for experiment in experiments:
-    render_config_xml(destination, config_template, experiment)
-    print(f"Config: {experiment['exp_id']}")
+    render_config_xml(context.runscript_dir, context.config_run_template, experiment)
     hlp.run_model()
 exp_ids = [experiment["exp_id"] for experiment in experiments]
 print("Creating plots")

@@ -4,9 +4,10 @@ from pathlib import Path
 import pandas as pd
 import xarray as xr
 
+import user_context as context
 import utils.helpers as hlp
 from utils.files import OIFSPreprocessor
-from utils.templates import get_template, render_config_xml
+from utils.templates import render_config_xml
 from utils.update_oifs_input_file import update_oifs_input_file_from_progvar
 
 ##################################################
@@ -36,12 +37,6 @@ simulation_duration = pd.Timedelta(2, "day")
 # other parameterization settings
 ifs_leocwa = "F"
 
-## Settings Related to config-run.xml ##
-# where is the template:
-config_xml_template_path = "config-run.xml.j2"
-# where to put it: (runtime directory of AOSCM)
-destination_dir = Path("../aoscm/runtime/scm-classic/PAPA")
-
 # Relative path to run directory:
 run_directory = Path("PAPA") / exp_id
 
@@ -63,8 +58,6 @@ experiment = {
     "ifs_nradfr": ifs_nradfr,
     "ifs_input_file": f"{input_files_dir.name}/{original_input_file.name}",
 }
-
-config_xml_template = get_template(config_xml_template_path)
 
 coupling_scheme_mapping = {
     0: "parallel",
@@ -118,13 +111,21 @@ def create_perturbed_input_files() -> None:
     for start_date in start_dates:
         oifs_preprocessor = OIFSPreprocessor(start_date)
 
-        update_experiment_date_properties(experiment, start_date, simulation_duration, input_file_start_date, input_file_freq)
+        update_experiment_date_properties(
+            experiment,
+            start_date,
+            simulation_duration,
+            input_file_start_date,
+            input_file_freq,
+        )
 
         for coupling_scheme in coupling_scheme_mapping.keys():
             experiment["cpl_scheme"] = coupling_scheme
 
             # render template and run model
-            render_config_xml(destination_dir, config_xml_template, experiment)
+            render_config_xml(
+                context.runscript_dir, context.config_run_template, experiment
+            )
             hlp.run_model()
 
             progvar = xr.open_mfdataset(

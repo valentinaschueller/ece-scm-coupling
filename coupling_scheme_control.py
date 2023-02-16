@@ -5,9 +5,10 @@ import pandas as pd
 import proplot as pplt
 import xarray as xr
 
+import user_context as context
 import utils.helpers as hlp
 import utils.plotting as uplt
-from utils.templates import get_template, render_config_xml
+from utils.templates import render_config_xml
 
 dt_cpl = 3600
 cpl_schemes = [0, 1, 2]
@@ -96,11 +97,10 @@ def create_and_save_plots(exp_ids):
 if __name__ == "__main__":
     experiments = generate_experiments(exp_prefix, cpl_schemes, base_dict)
 
-    config_template = get_template("config-run.xml.j2")
-    dst_folder = "../aoscm/runtime/scm-classic/PAPA"
-
     for experiment in experiments:
-        render_config_xml(dst_folder, config_template, experiment)
+        render_config_xml(
+            context.runscript_dir, context.config_run_template, experiment
+        )
         print(f"Config: {experiment['exp_id']}")
         hlp.run_model()
     create_and_save_plots([experiment["exp_id"] for experiment in experiments])
