@@ -1,9 +1,9 @@
 import pandas as pd
 
 import user_context as context
-from utils.helpers import AOSCM
 from schwarz_coupling import SchwarzCoupling
 from setup_experiment import set_experiment_date_properties, set_experiment_input_files
+from utils.helpers import AOSCM
 from utils.templates import render_config_xml
 
 cpl_schemes = [0, 1, 2]
