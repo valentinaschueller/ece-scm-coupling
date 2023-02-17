@@ -22,7 +22,7 @@ input_file_freq = pd.Timedelta(6, "h")
 
 original_input_file = ifn.get_oifs_input_file(context.ifs_input_files_dir, "era")
 
-### Experiment Settings ###
+# Experiment settings
 exp_id = "PERT"
 
 # time stepping settings
