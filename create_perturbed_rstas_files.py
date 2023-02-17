@@ -20,7 +20,7 @@ input_file_freq = pd.Timedelta(6, "h")
 # Option 1 - for input files from perturbed runs:
 # input_file_sources = ["par", "atm", "oce"]
 # first_start_date = pd.Timestamp("2014-07-03")
-# final_start_date = pd.Timestamp("2014-07-26 18:00")
+# final_start_date = pd.Timestamp("2014-07-28 18:00")
 
 # Option 2 - for existing ERA data:
 input_file_sources = ["era"]
