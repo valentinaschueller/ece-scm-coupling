@@ -3,14 +3,15 @@ from pathlib import Path
 import pandas as pd
 
 
-def get_oifs_input_file(directory: Path, source: str, exists_required: bool = True) -> Path:
+def get_oifs_input_file(
+    directory: Path, source: str, exists_required: bool = True
+) -> Path:
     oifs_input_file = directory / f"papa_2014-07_{source}.nc"
     if not exists_required:
         return oifs_input_file
     if not oifs_input_file.exists():
         raise ValueError(f"OIFS input file does not exist: {oifs_input_file}")
     return oifs_input_file
-    
 
 
 def get_nemo_input_file(directory: Path, start_date: pd.Timestamp) -> Path:
