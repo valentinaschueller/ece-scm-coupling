@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 
-import jinja2
 import numpy as np
 import xarray as xr
 
