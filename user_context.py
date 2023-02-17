@@ -18,6 +18,12 @@ rstos_dir = data_dir / "oasis/rstos_from_CMEMS"
 # where is the config-run.xml template (as a string!):
 config_run_template = template_data_dir / "config-run.xml.j2"
 
+# run scripts
+ascm_executable = runscript_dir / "ece-scm_oifs.sh"
+oscm_executable = runscript_dir / "ece-scm_nemo.sh"
+aoscm_executable = runscript_dir / "ece-scm_oifs+nemo.sh"
+aoscm_schwarz_correction_executable = runscript_dir / "ece-scm_oifs+nemo_2.sh"
+
 
 def check_paths_exist():
     """List all defined paths which are not found on the system."""

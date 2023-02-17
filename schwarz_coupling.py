@@ -1,28 +1,25 @@
 import user_context as context
-import utils.helpers as hlp
 from remapping import RemapCouplerOutput
+from utils.helpers import AOSCM
 from utils.templates import render_config_xml
 
 
 class SchwarzCoupling:
     def __init__(self, experiment_dict: dict):
-        self.input_dict = experiment_dict
         self.exp_id = experiment_dict["exp_id"]
         self.dt_cpl = experiment_dict["dt_cpl"]
         self.dt_ifs = experiment_dict["dt_ifs"]
         self.dt_nemo = experiment_dict["dt_nemo"]
         self.cpl_scheme = experiment_dict["cpl_scheme"]
-        self.initial_experiment = {}
-        self.correction_experiment = {}
-        self._generate_experiments()
+        self.experiment = experiment_dict
         self.iter = 1
         self.run_directory = context.output_dir / self.exp_id
-
-    def _generate_experiments(self):
-        self.initial_experiment = self.input_dict.copy()
-        dct = self.input_dict.copy()
-        dct["script_name"] = "ece-scm_oifs+nemo_2"
-        self.correction_experiment = dct
+        self.aoscm = AOSCM(
+            context.runscript_dir,
+            context.ecconf_executable,
+            self.run_directory,
+            context.platform,
+        )
 
     def run(self, max_iters: int, current_iter: int = 1):
         if max_iters < 1:
@@ -43,19 +40,18 @@ class SchwarzCoupling:
     def _initial_guess(self):
         print("Iteration 1")
         render_config_xml(
-            context.runscript_dir, context.config_run_template, self.initial_experiment
+            context.runscript_dir, context.config_run_template, self.experiment
         )
-        hlp.run_model()
+        self.aoscm.run_coupled_model(schwarz_correction=False)
 
     def _schwarz_correction(self):
         print(f"Iteration {self.iter}")
         render_config_xml(
             context.runscript_dir,
             context.config_run_template,
-            self.correction_experiment,
+            self.experiment,
         )
-        hlp.run_model(executable=f"./{self.correction_experiment['script_name']}.sh")
-        # hlp.clean_model_output(self.run_directory)
+        self.aoscm.run_coupled_model(schwarz_correction=True)
 
     def _rename_run_directory(self):
         self.run_directory.rename(

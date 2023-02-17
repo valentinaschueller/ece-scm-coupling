@@ -4,8 +4,8 @@
 
     <Translation name="RUN_ATM+OCE">
         <Description>Run script file (coupled run: atm+oce)</Description>
-        <Template>{{setup_dict.get("script_name", "ece-scm_oifs+nemo")}}.sh.tmpl</Template>
-        <Target>{{setup_dict.get("script_name", "ece-scm_oifs+nemo")}}.sh</Target>
+        <Template>ece-scm_oifs+nemo.sh.tmpl</Template>
+        <Target>ece-scm_oifs+nemo.sh</Target>
         <Properties>executable</Properties>
     </Translation>
 
@@ -13,6 +13,13 @@
         <Description>Run script file (coupled run with calculation of restart file: atm+oce_rst)</Description>
         <Template>ece-scm_oifs+nemo_rst.sh.tmpl</Template>
         <Target>ece-scm_oifs+nemo_rst.sh</Target>
+        <Properties>executable</Properties>
+    </Translation>
+
+    <Translation name="RUN_ATM+OCE_SWZ">
+        <Description>Run script file (coupled run, Schwarz correction: atm+oce)</Description>
+        <Template>ece-scm_oifs+nemo_2.sh.tmpl</Template>
+        <Target>ece-scm_oifs+nemo_2.sh</Target>
         <Properties>executable</Properties>
     </Translation>
 
