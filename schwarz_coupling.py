@@ -43,6 +43,7 @@ class SchwarzCoupling:
             context.runscript_dir, context.config_run_template, self.experiment
         )
         self.aoscm.run_coupled_model(schwarz_correction=False)
+        self.aoscm.reduce_output()
 
     def _schwarz_correction(self):
         print(f"Iteration {self.iter}")
@@ -52,6 +53,7 @@ class SchwarzCoupling:
             self.experiment,
         )
         self.aoscm.run_coupled_model(schwarz_correction=True)
+        self.aoscm.reduce_output()
 
     def _rename_run_directory(self):
         self.run_directory.rename(
