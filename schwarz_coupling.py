@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import user_context as context
 import utils.helpers as hlp
 from remapping import RemapCouplerOutput
@@ -18,7 +16,7 @@ class SchwarzCoupling:
         self.correction_experiment = {}
         self._generate_experiments()
         self.iter = 1
-        self.run_directory = Path(f"PAPA/{self.exp_id}")
+        self.run_directory = context.output_dir / self.exp_id
 
     def _generate_experiments(self):
         self.initial_experiment = self.input_dict.copy()

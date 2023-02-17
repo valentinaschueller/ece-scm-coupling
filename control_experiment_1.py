@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import user_context as context
 import utils.helpers as hlp
 from schwarz_coupling import SchwarzCoupling
@@ -30,7 +28,7 @@ def run_naive_experiments():
             context.runscript_dir, context.config_run_template, experiment
         )
         hlp.run_model()
-        run_directory = Path("PAPA") / experiment["exp_id"]
+        run_directory = context.output_dir / experiment["exp_id"]
         hlp.clean_model_output(run_directory)
 
 

@@ -74,8 +74,8 @@ def generate_experiments(
     return experiment_setups
 
 
-def load_datasets(setup: str, exp_ids: list):
-    run_directories = [Path(f"{setup}/{exp_id}") for exp_id in exp_ids]
+def load_datasets(exp_ids: list):
+    run_directories = [context.output_dir / exp_id for exp_id in exp_ids]
     oifs_preprocessor = uplt.OIFSPreprocessor(start_date, np.timedelta64(-7, "h"))
     nemo_preprocessor = uplt.NEMOPreprocessor(np.timedelta64(-7, "h"))
     oifs_progvars = [
@@ -104,8 +104,7 @@ def create_and_save_plots(exp_ids):
     plot_directory = Path("plots/cpl_conv")
     plot_directory.mkdir(exist_ok=True)
 
-    setup = "PAPA"
-    oifs_progvars, oifs_diagvars, nemo_t_grids = load_datasets(setup, exp_ids)
+    oifs_progvars, oifs_diagvars, nemo_t_grids = load_datasets(exp_ids)
 
     colors = ["k", "C8", "C9"]
     labels = ["parallel", "atm-first", "oce-first"]
@@ -120,7 +119,7 @@ def create_and_save_plots(exp_ids):
     uplt.create_oce_ssts_plot(axs[1], nemo_t_grids, colors, alpha, labels, linestyles)
     uplt.create_atm_ssws_plot(axs[2], oifs_diagvars, colors, alpha, labels, linestyles)
     fig.savefig(
-        plot_directory / f"cpl_scheme_conv_{setup}_{exp_ids[0][:-1]}.pdf",
+        plot_directory / f"cpl_scheme_conv_PAPA_{exp_ids[0][:-1]}.pdf",
         bbox_inches="tight",
     )
 

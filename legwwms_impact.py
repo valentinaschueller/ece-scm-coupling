@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import numpy as np
 import proplot as pplt
 import xarray as xr
@@ -28,8 +26,8 @@ def generate_experiments(
     return exp_setups
 
 
-def load_datasets(setup: str, exp_ids: list):
-    run_directories = [Path(f"{setup}/{exp_id}") for exp_id in exp_ids]
+def load_datasets(exp_ids: list):
+    run_directories = [context.output_dir / exp_id for exp_id in exp_ids]
     oifs_preprocessor = uplt.OIFSPreprocessor(
         np.datetime64("2014-07-01"), np.timedelta64(-7, "h")
     )

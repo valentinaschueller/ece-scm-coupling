@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import numpy as np
 import proplot as pplt
 import xarray as xr
@@ -29,8 +27,8 @@ def generate_experiments(
     return exp_setups
 
 
-def load_datasets(setup: str, exp_ids: list):
-    run_directories = [Path(f"{setup}/{exp_id}") for exp_id in exp_ids]
+def load_datasets(exp_ids: list):
+    run_directories = [context.output_dir / exp_id for exp_id in exp_ids]
     oifs_preprocessor = OIFSPreprocessor(
         np.datetime64("2014-07-01"), np.timedelta64(-7, "h")
     )
@@ -58,8 +56,7 @@ def load_datasets(setup: str, exp_ids: list):
 
 
 def create_and_save_plots(exp_ids):
-    setup = "PAPA"
-    oifs_progvars, oifs_diagvars, nemo_t_grids = load_datasets(setup, exp_ids)
+    oifs_progvars, oifs_diagvars, nemo_t_grids = load_datasets(exp_ids)
 
     colors = ["k", "C8"]
     labels = ["OCWA = TRUE", "OCWA = FALSE"]
@@ -74,7 +71,7 @@ def create_and_save_plots(exp_ids):
     uplt.create_oce_ssts_plot(axs[1], nemo_t_grids, colors, alpha, labels, linestyles)
     uplt.create_atm_ssws_plot(axs[2], oifs_diagvars, colors, alpha, labels, linestyles)
     fig.savefig(
-        f"plots/leocwa_impact/{setup}_{exp_ids[0][:-1]}.pdf",
+        f"plots/leocwa_impact/{exp_ids[0][:-1]}.pdf",
         bbox_inches="tight",
     )
 
