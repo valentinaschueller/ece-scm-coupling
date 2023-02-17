@@ -1,36 +1,20 @@
 import numpy as np
+import pandas as pd
 import proplot as pplt
 import xarray as xr
 
 import user_context as context
-import utils.helpers as hlp
 import utils.plotting as uplt
+from setup_experiment import set_experiment_date_properties, set_experiment_input_files
 from utils.files import NEMOPreprocessor, OIFSPreprocessor
+from utils.helpers import AOSCM
 from utils.templates import render_config_xml
-
-
-def generate_experiments(
-    exp_prefix: str, dt_cpl: int, dt_ifs: int, dt_nemo: int, cpl_scheme: int
-):
-    exp_setups = []
-    leocwa_vals = ["T", "F"]
-    for leocwa_val in leocwa_vals:
-        dct = {
-            "exp_id": f"{exp_prefix}{leocwa_val}",
-            "dt_cpl": dt_cpl,
-            "dt_nemo": dt_nemo,
-            "dt_ifs": dt_ifs,
-            "cpl_scheme": cpl_scheme,
-            "ifs_leocwa": leocwa_val,
-        }
-        exp_setups.append(dct)
-    return exp_setups
 
 
 def load_datasets(exp_ids: list):
     run_directories = [context.output_dir / exp_id for exp_id in exp_ids]
     oifs_preprocessor = OIFSPreprocessor(
-        np.datetime64("2014-07-01"), np.timedelta64(-7, "h")
+        ifs_input_file_start_date, np.timedelta64(-7, "h")
     )
     nemo_preprocessor = NEMOPreprocessor(np.timedelta64(-7, "h"))
     oifs_progvars = [
@@ -76,20 +60,59 @@ def create_and_save_plots(exp_ids):
     )
 
 
+start_date = pd.Timestamp("2014-07-01")
+simulation_duration = pd.Timedelta("4D")
+ifs_input_file_start_date = pd.Timestamp("2014-07-01")
+ifs_input_file_freq = pd.Timedelta("6H")
+
 dt_cpl = 3600
 dt_ifs = 900
 dt_nemo = 1800
 
 cpl_scheme = 0
+
+experiment = {
+    "dt_cpl": dt_cpl,
+    "dt_nemo": dt_nemo,
+    "dt_ifs": dt_ifs,
+    "cpl_scheme": cpl_scheme,
+}
+set_experiment_date_properties(
+    experiment,
+    start_date,
+    simulation_duration,
+    ifs_input_file_start_date,
+    ifs_input_file_freq,
+)
+set_experiment_input_files(experiment, start_date, "era")
+
 exp_prefix = "OWA"
 
-experiments = generate_experiments(exp_prefix, dt_cpl, dt_ifs, dt_nemo, cpl_scheme)
-print(experiments)
+model = AOSCM(
+    context.runscript_dir,
+    context.ecconf_executable,
+    context.output_dir,
+    context.platform,
+)
 
-for experiment in experiments:
+leocwa_values = ["T", "F"]
+exp_ids = []
+
+for leocwa in leocwa_values:
+    experiment["ifs_leocwa"] = leocwa
+
+    exp_id = f"{exp_prefix}{leocwa}"
+    exp_ids.append(exp_id)
+    experiment["exp_id"] = exp_id
+    model.run_directory = context.output_dir / exp_id
+
     render_config_xml(context.runscript_dir, context.config_run_template, experiment)
-    hlp.run_model()
-exp_ids = [experiment["exp_id"] for experiment in experiments]
+
+    print(f"Config: {experiment['exp_id']}")
+    model.run_coupled_model(print_time=False, schwarz_correction=False)
+
+    model.reduce_output()
+
 print("Creating plots")
 create_and_save_plots(exp_ids)
 print("Plots created!")
