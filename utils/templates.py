@@ -6,7 +6,7 @@ import jinja2
 def get_template(template_path: Path) -> jinja2.Template:
     """get Jinja2 template file"""
     loader = jinja2.FileSystemLoader(template_path.parent)
-    environment = jinja2.Environment(loader=loader)
+    environment = jinja2.Environment(loader=loader, undefined=jinja2.StrictUndefined)
     return environment.get_template(template_path.name)
 
 
