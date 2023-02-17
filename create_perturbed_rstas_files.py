@@ -57,6 +57,9 @@ experiment = {
     "dt_ifs": dt_ifs,
     "ifs_leocwa": ifs_leocwa,
     "ifs_nradfr": ifs_nradfr,
+    "cpl_scheme": None,
+    "oasis_rstas": None,
+    "oasis_rstos": None,
 }
 
 input_file_base = "papa_2014-07"
