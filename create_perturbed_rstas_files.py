@@ -3,6 +3,7 @@ import shutil
 import pandas as pd
 
 import user_context as context
+import utils.input_file_names as ifn
 from utils.compute_rstas import compute_rstas
 from utils.helpers import AOSCM, compute_nstrtini
 from utils.templates import render_config_xml
@@ -14,11 +15,17 @@ from utils.templates import render_config_xml
 
 input_file_start_date = pd.Timestamp("2014-07-01")
 
-first_start_date = pd.Timestamp("2014-07-03")
-final_start_date = pd.Timestamp("2014-07-03 12:00")
-# final_start_date = pd.Timestamp("2014-07-26 18:00")
 input_file_freq = pd.Timedelta(6, "h")
 
+# Option 1 - for input files from perturbed runs:
+# input_file_sources = ["par", "atm", "oce"]
+# first_start_date = pd.Timestamp("2014-07-03")
+# final_start_date = pd.Timestamp("2014-07-26 18:00")
+
+# Option 2 - for existing ERA data:
+input_file_sources = ["era"]
+first_start_date = input_file_start_date
+final_start_date = pd.Timestamp("2014-07-30 12:00")
 
 # experiment settings
 exp_id = "RSTA"
@@ -53,7 +60,6 @@ experiment = {
 }
 
 input_file_base = "papa_2014-07"
-input_file_sources = ["era", "par", "atm", "oce"]
 
 
 def update_experiment_date_properties(
@@ -81,13 +87,7 @@ def update_experiment_date_properties(
     """
     experiment["run_start_date"] = start_date
 
-    nemo_input_file = (
-        context.nemo_input_files_dir / f"init_PAPASTATION_{start_date.date()}.nc"
-    )
-    if not nemo_input_file.exists():
-        raise ValueError(
-            f"NEMO input file for selected start date does not exist: {nemo_input_file}"
-        )
+    nemo_input_file = ifn.get_nemo_input_file(context.nemo_input_files_dir, start_date)
     experiment["nem_input_file"] = f"{nemo_input_file.parent}/{nemo_input_file.name}"
 
     end_date = start_date + simulation_duration
@@ -99,31 +99,13 @@ def update_experiment_date_properties(
     experiment["ifs_nstrtini"] = nstrtini
 
 
-def generate_rstas_name(time_stamp: pd.Timestamp, source: str) -> str:
-    """generate name for restart file, with the pattern `rstas_YYYY-MM-DD_HH_source.nc`.
-
-    :param time_stamp: time stamp of the restart file
-    :type time_stamp: pd.Timestamp
-    :param source: source of the restart file (e.g., era)
-    :type source: str
-    :return: generated file name
-    :rtype: str
-    """
-    date = time_stamp.date()
-    hour = f"{time_stamp.time().hour:02}"
-
-    rstas_name = f"rstas_{date}_{hour}_{source}.nc"
-
-    return rstas_name
-
-
-def create_perturbed_rstas_files() -> None:
+def create_rstas_files() -> None:
     """create the atmosphere restart files from existing forcing files and save them as OASIS initial data."""
     for input_file_source in input_file_sources:
-        input_file_name = f"{input_file_base}_{input_file_source}.nc"
-        experiment[
-            "ifs_input_file"
-        ] = f"{context.ifs_input_files_dir.name}/{input_file_name}"
+        oifs_input_file = ifn.get_oifs_input_file(
+            context.ifs_input_files_dir, input_file_source
+        )
+        experiment["ifs_input_file"] = oifs_input_file
 
         for start_date in start_dates:
 
@@ -147,7 +129,7 @@ def create_perturbed_rstas_files() -> None:
             )
             aoscm.run_atmosphere_only()
 
-            out_file = context.rstas_dir / generate_rstas_name(
+            out_file = context.rstas_dir / ifn.get_rstas_name(
                 start_date, input_file_source
             )
             compute_rstas(run_directory, rstas_template, out_file)
@@ -157,4 +139,4 @@ def create_perturbed_rstas_files() -> None:
 
 if __name__ == "__main__":
 
-    create_perturbed_rstas_files()
+    create_rstas_files()

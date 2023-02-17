@@ -6,23 +6,21 @@ import xarray as xr
 
 import user_context as context
 import utils.helpers as hlp
+import utils.input_file_names as ifn
 from utils.files import OIFSPreprocessor
 from utils.templates import render_config_xml
 from utils.update_oifs_input_file import update_oifs_input_file_from_progvar
 
-##################################################
-############### User Input: ######################
-##################################################
+# ------------------------------------------------
+# User input starts here:
+# ------------------------------------------------
 
 
 input_file_start_date = pd.Timestamp("2014-07-01")
 final_start_date = pd.Timestamp("2014-07-26 18:00")
 input_file_freq = pd.Timedelta(6, "h")
 
-input_files_dir = Path(
-    "/Users/valentina/dev/aoscm/runtime/scm-classic/PAPA/data/oifs/input_files"
-)
-original_input_file = input_files_dir / "papa_2014-07_era.nc"
+original_input_file = ifn.get_oifs_input_file(context.ifs_input_files_dir, "era")
 
 ### Experiment Settings ###
 exp_id = "PERT"
@@ -37,12 +35,11 @@ simulation_duration = pd.Timedelta(2, "day")
 # other parameterization settings
 ifs_leocwa = "F"
 
-# Relative path to run directory:
-run_directory = Path("PAPA") / exp_id
+run_directory = context.output_dir / exp_id
 
-##################################################
-####### User input ends here. ####################
-##################################################
+# ------------------------------------------------
+# End of user input.
+# ------------------------------------------------
 
 start_dates = pd.date_range(
     input_file_start_date, final_start_date, freq=input_file_freq
@@ -56,13 +53,13 @@ experiment = {
     "dt_ifs": dt_ifs,
     "ifs_leocwa": ifs_leocwa,
     "ifs_nradfr": ifs_nradfr,
-    "ifs_input_file": f"{input_files_dir.name}/{original_input_file.name}",
+    "ifs_input_file": original_input_file,
 }
 
 coupling_scheme_mapping = {
-    0: "parallel",
-    1: "atmosphere-first",
-    2: "ocean-first",
+    0: "par",
+    1: "atm",
+    2: "oce",
 }
 
 
@@ -72,7 +69,9 @@ def create_input_file_copies(original_input_file: Path) -> list[Path]:
     for coupling_scheme_string in coupling_scheme_mapping.values():
         copied_input_file = shutil.copy(
             original_input_file,
-            input_files_dir / f"papa_2014-07_{coupling_scheme_string[:3]}.nc",
+            ifn.get_oifs_input_file(
+                context.ifs_input_files_dir, coupling_scheme_string, False
+            ),
         )
         copied_input_files.append(copied_input_file)
     return copied_input_files
@@ -92,9 +91,9 @@ def update_experiment_date_properties(
     - ifs_nstrtini
     """
     experiment["run_start_date"] = start_date
-    experiment[
-        "nem_input_file"
-    ] = f"init_from_CMEMS/init_PAPASTATION_{start_date.date()}.nc"
+
+    nemo_input_file = ifn.get_nemo_input_file(context.nemo_input_files_dir, start_date)
+    experiment["nem_input_file"] = nemo_input_file
 
     end_date = start_date + simulation_duration
     experiment["run_end_date"] = end_date
@@ -103,6 +102,15 @@ def update_experiment_date_properties(
         start_date, input_file_start_date, int(input_file_freq.seconds / 3600)
     )
     experiment["ifs_nstrtini"] = nstrtini
+
+    rstas_file = context.rstas_dir / ifn.get_rstas_name(start_date, "era")
+    if not rstas_file.exists():
+        raise ValueError(f"{rstas_file} does not exist!")
+    rstos_file = context.rstos_dir / ifn.get_rstos_name(start_date)
+    if not rstos_file.exists():
+        raise ValueError(f"{rstos_file} does not exist!")
+    experiment["oasis_rstas"] = rstas_file
+    experiment["oasis_rstos"] = rstos_file
 
 
 def create_perturbed_input_files() -> None:
