@@ -7,7 +7,7 @@ import user_context as context
 import utils.plotting as uplt
 from setup_experiment import set_experiment_date_properties, set_experiment_input_files
 from utils.files import NEMOPreprocessor, OIFSPreprocessor
-from utils.helpers import AOSCM
+from utils.helpers import AOSCM, reduce_output
 from utils.templates import render_config_xml
 
 
@@ -91,7 +91,6 @@ exp_prefix = "OWA"
 model = AOSCM(
     context.runscript_dir,
     context.ecconf_executable,
-    context.output_dir,
     context.platform,
 )
 
@@ -104,14 +103,13 @@ for leocwa in leocwa_values:
     exp_id = f"{exp_prefix}{leocwa}"
     exp_ids.append(exp_id)
     experiment["exp_id"] = exp_id
-    model.run_directory = context.output_dir / exp_id
 
     render_config_xml(context.runscript_dir, context.config_run_template, experiment)
 
     print(f"Config: {experiment['exp_id']}")
     model.run_coupled_model(print_time=False, schwarz_correction=False)
 
-    model.reduce_output()
+    reduce_output(context.output_dir / exp_id)
 
 print("Creating plots")
 create_and_save_plots(exp_ids)

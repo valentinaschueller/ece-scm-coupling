@@ -3,7 +3,7 @@ import pandas as pd
 import user_context as context
 from schwarz_coupling import SchwarzCoupling
 from setup_experiment import set_experiment_date_properties, set_experiment_input_files
-from utils.helpers import AOSCM
+from utils.helpers import AOSCM, reduce_output
 from utils.templates import render_config_xml
 
 dt_cpl = 3600
@@ -40,7 +40,6 @@ set_experiment_input_files(experiment, start_date, "era")
 aoscm = AOSCM(
     context.runscript_dir,
     context.ecconf_executable,
-    context.output_dir,
     context.platform,
 )
 
@@ -57,8 +56,7 @@ def run_naive_experiments():
                 context.runscript_dir, context.config_run_template, experiment
             )
             aoscm.run_coupled_model()
-            aoscm.run_directory = context.output_dir / experiment["exp_id"]
-            aoscm.reduce_output()
+            reduce_output(context.output_dir / experiment["exp_id"])
 
 
 def run_schwarz_experiments():

@@ -127,7 +127,6 @@ def create_rstas_files() -> None:
             aoscm = AOSCM(
                 context.runscript_dir,
                 context.ecconf_executable,
-                run_directory,
                 context.platform,
             )
             aoscm.run_atmosphere_only()

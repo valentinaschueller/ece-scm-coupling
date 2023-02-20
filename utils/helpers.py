@@ -2,18 +2,16 @@ import subprocess
 from pathlib import Path
 
 import pandas as pd
+import yaml
 
 import user_context as context
 from utils.files import ChangeDirectory
 
 
 class AOSCM:
-    def __init__(
-        self, runscript_dir: Path, ecconf_exe: Path, run_dir: Path, platform: str
-    ):
+    def __init__(self, runscript_dir: Path, ecconf_exe: Path, platform: str):
         self.runscript_dir = runscript_dir
         self.ecconf_executable = ecconf_exe
-        self.run_directory = run_dir
         self.platform = platform
 
     def _run_ecconf(self):
@@ -64,34 +62,42 @@ class AOSCM:
             if "Finished leg" in line:
                 print(line)
 
-    def reduce_output(self, keep_debug_output: bool = True) -> None:
-        """
-        remove some AOSCM output files which are irrelevant for further analysis.
-        """
-        for path in self.run_directory.glob("SO4*"):
-            path.unlink()
-        for path in self.run_directory.glob("*.exe"):
-            path.unlink()
-        for path in self.run_directory.glob("*CLIM"):
-            path.unlink()
-        for path in self.run_directory.glob("RAD*"):
-            path.unlink()
-        for path in self.run_directory.glob("*.lnk"):
-            path.unlink()
-        (self.run_directory / "onecol.r").unlink(missing_ok=True)
-        (self.run_directory / "K1rowdrg.nc").unlink(missing_ok=True)
-        (self.run_directory / "M2rowdrg.nc").unlink(missing_ok=True)
-        (self.run_directory / "fort.20").unlink(missing_ok=True)
-        (self.run_directory / "scm_in.nc").unlink(missing_ok=True)
-        (self.run_directory / "time.step").unlink(missing_ok=True)
-        (self.run_directory / "vtable").unlink(missing_ok=True)
-        (self.run_directory / "ECOZC").unlink(missing_ok=True)
-        (self.run_directory / "MCICA").unlink(missing_ok=True)
+
+def reduce_output(run_directory: Path, keep_debug_output: bool = True) -> None:
+    """
+    remove all AOSCM output which is irrelevant for further analysis.
+    """
+    output_files = list(run_directory.glob("*"))
+    output_files_to_remove = []
+    for output_file in output_files:
+        if "diagvar" in output_file.name:
+            continue
+        if "progvar" in output_file.name:
+            continue
+        if "_grid_" in output_file.name:
+            continue
+        if "_icemod" in output_file.name:
+            continue
+        if "namelist_" in output_file.name:
+            continue
+        if output_file.name == "namcouple":
+            continue
+        if output_file.name == "fort.4":
+            continue
         if keep_debug_output:
-            return
-        (self.run_directory / "debug.01.000000").unlink(missing_ok=True)
-        (self.run_directory / "debug.02.000000").unlink(missing_ok=True)
-        (self.run_directory / "nout.000000").unlink(missing_ok=True)
+            if "debug" in output_file.name:
+                continue
+            if output_file.name == "nout.000000":
+                continue
+        output_files_to_remove.append(output_file)
+
+    for file in output_files_to_remove:
+        file.unlink()
+
+
+def serialize_experiment_setup(experiment: dict, run_directory: Path):
+    with open(run_directory / "setup_dict.yaml", "w") as output_file:
+        yaml.dump(experiment, output_file)
 
 
 def compute_nstrtini(

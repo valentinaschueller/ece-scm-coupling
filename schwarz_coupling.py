@@ -1,6 +1,6 @@
 import user_context as context
 from remapping import RemapCouplerOutput
-from utils.helpers import AOSCM
+from utils.helpers import AOSCM, reduce_output
 from utils.templates import render_config_xml
 
 
@@ -17,7 +17,6 @@ class SchwarzCoupling:
         self.aoscm = AOSCM(
             context.runscript_dir,
             context.ecconf_executable,
-            self.run_directory,
             context.platform,
         )
 
@@ -43,7 +42,7 @@ class SchwarzCoupling:
             context.runscript_dir, context.config_run_template, self.experiment
         )
         self.aoscm.run_coupled_model(schwarz_correction=False)
-        self.aoscm.reduce_output()
+        reduce_output(self.run_directory)
 
     def _schwarz_correction(self):
         print(f"Iteration {self.iter}")
@@ -53,7 +52,7 @@ class SchwarzCoupling:
             self.experiment,
         )
         self.aoscm.run_coupled_model(schwarz_correction=True)
-        self.aoscm.reduce_output()
+        reduce_output(self.run_directory)
 
     def _rename_run_directory(self):
         self.run_directory.rename(

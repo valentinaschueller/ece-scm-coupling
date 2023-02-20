@@ -8,7 +8,7 @@ import user_context as context
 import utils.plotting as uplt
 from setup_experiment import set_experiment_date_properties, set_experiment_input_files
 from utils.files import NEMOPreprocessor, OIFSPreprocessor
-from utils.helpers import AOSCM
+from utils.helpers import AOSCM, reduce_output
 from utils.templates import render_config_xml
 
 dt_cpl_A = [
@@ -135,7 +135,6 @@ def create_and_save_plots(exp_ids):
 aoscm = AOSCM(
     context.runscript_dir,
     context.ecconf_executable,
-    context.output_dir,
     context.platform,
 )
 
@@ -153,8 +152,7 @@ if __name__ == "__main__":
             )
             print(f"Config: {exp_id}")
             aoscm.run_coupled_model()
-            aoscm.run_directory = context.output_dir / exp_id
-            aoscm.reduce_output(exp_id)
+            reduce_output(context.output_dir / exp_id)
         print(f"Creating plots for exp_ids: {exp_ids}")
         create_and_save_plots(exp_ids)
         print("Plots created!")
