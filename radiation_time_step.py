@@ -1,8 +1,9 @@
 import pandas as pd
 
 import user_context as context
-import utils.helpers as hlp
 from schwarz_coupling import SchwarzCoupling
+from setup_experiment import set_experiment_date_properties, set_experiment_input_files
+from utils.helpers import AOSCM
 from utils.templates import render_config_xml
 
 dt_cpl = 3600
@@ -19,21 +20,29 @@ nradfr_dict = {
     "S": 1,
 }
 
-forcing_start_date = pd.Timestamp("2014-07-01")
-start_date = pd.Timestamp("2014-07-01")
-end_date = start_date + pd.Timedelta(4, "days")
+ifs_input_start_date = pd.Timestamp("2014-07-01")
+ifs_input_freq = pd.Timedelta(6, "hours")
 
-nstrtini = hlp.compute_nstrtini(start_date, forcing_start_date)
+start_date = pd.Timestamp("2014-07-01")
+simulation_duration = pd.Timedelta(4, "days")
 
 experiment = {
     "dt_cpl": dt_cpl,
     "dt_nemo": dt_nemo,
     "dt_ifs": dt_ifs,
     "ifs_leocwa": "F",
-    "ifs_nstrtini": nstrtini,
-    "run_start_date": str(start_date),
-    "run_end_date": str(end_date),
 }
+set_experiment_date_properties(
+    experiment, start_date, simulation_duration, ifs_input_start_date, ifs_input_freq
+)
+set_experiment_input_files(experiment, start_date, "era")
+
+aoscm = AOSCM(
+    context.runscript_dir,
+    context.ecconf_executable,
+    context.output_dir,
+    context.platform,
+)
 
 
 def run_naive_experiments():
@@ -47,9 +56,9 @@ def run_naive_experiments():
             render_config_xml(
                 context.runscript_dir, context.config_run_template, experiment
             )
-            hlp.run_model()
-            run_directory = context.output_dir / experiment["exp_id"]
-            hlp.clean_model_output(run_directory)
+            aoscm.run_coupled_model()
+            aoscm.run_directory = context.output_dir / experiment["exp_id"]
+            aoscm.reduce_output()
 
 
 def run_schwarz_experiments():
