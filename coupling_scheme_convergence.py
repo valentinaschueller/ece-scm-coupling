@@ -1,13 +1,14 @@
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 import proplot as pplt
 import xarray as xr
 
 import user_context as context
-import utils.helpers as hlp
 import utils.plotting as uplt
+from setup_experiment import set_experiment_date_properties, set_experiment_input_files
+from utils.files import NEMOPreprocessor, OIFSPreprocessor
+from utils.helpers import AOSCM
 from utils.templates import render_config_xml
 
 dt_cpl_A = [
@@ -27,25 +28,32 @@ dt_cpl_B = [
 cpl_schemes = [0, 1, 2]
 exp_prefix = "V"
 nradfr = 1
-forcing_start_date = pd.Timestamp("2014-07-01")
-start_date = pd.Timestamp("2014-07-01")
-end_date = start_date + pd.Timedelta(4, "days")
-nstrtini = hlp.compute_nstrtini(start_date, forcing_start_date, 6)
 
-#####################################################################
+start_date = pd.Timestamp("2014-07-01")
+simulation_duration = pd.Timedelta(4, "days")
+
+ifs_input_start_date = pd.Timestamp("2014-07-01")
+ifs_input_file_freq = pd.Timedelta(6, "hours")
+
+# -------------------------------------------------------------------
 # change the following two lines to switch between experiment A and B
 dt_cpl = dt_cpl_B
 exp_type = "B"
-#####################################################################
+# -------------------------------------------------------------------
 
 
-base_dict = {
+experiment = {
     "ifs_leocwa": "F",
     "ifs_nradfr": nradfr,
-    "ifs_nstrtini": nstrtini,
-    "run_start_date": str(start_date),
-    "run_end_date": str(end_date),
 }
+set_experiment_date_properties(
+    experiment,
+    start_date,
+    simulation_duration,
+    ifs_input_start_date,
+    ifs_input_file_freq,
+)
+set_experiment_input_files(experiment, start_date, "era")
 
 
 def generate_experiments(
@@ -76,8 +84,8 @@ def generate_experiments(
 
 def load_datasets(exp_ids: list):
     run_directories = [context.output_dir / exp_id for exp_id in exp_ids]
-    oifs_preprocessor = uplt.OIFSPreprocessor(start_date, np.timedelta64(-7, "h"))
-    nemo_preprocessor = uplt.NEMOPreprocessor(np.timedelta64(-7, "h"))
+    oifs_preprocessor = OIFSPreprocessor(start_date, pd.Timedelta(-7, "hours"))
+    nemo_preprocessor = NEMOPreprocessor(pd.Timedelta(-7, "hours"))
     oifs_progvars = [
         xr.open_mfdataset(
             run_directory / "progvar.nc", preprocess=oifs_preprocessor.preprocess
@@ -106,12 +114,12 @@ def create_and_save_plots(exp_ids):
 
     oifs_progvars, oifs_diagvars, nemo_t_grids = load_datasets(exp_ids)
 
-    colors = ["k", "C8", "C9"]
+    colors = ["m", "c", "y"]
     labels = ["parallel", "atm-first", "oce-first"]
-    alpha = 0.7
-    linestyles = ["-", "-", "-"]
+    alpha = 1
+    linestyles = ["--", ":", "-."]
 
-    fig, axs = pplt.subplots(nrows=3)
+    fig, axs = pplt.subplots(nrows=3, spany=False)
     fig.set_size_inches(15, 10)
     fig.suptitle(f"{exp_ids[0]}, {exp_ids[1]}, {exp_ids[2]}", y=0.95, size=14)
 
@@ -124,18 +132,29 @@ def create_and_save_plots(exp_ids):
     )
 
 
+aoscm = AOSCM(
+    context.runscript_dir,
+    context.ecconf_executable,
+    context.output_dir,
+    context.platform,
+)
+
 if __name__ == "__main__":
 
-    exp_setups = generate_experiments(exp_prefix, exp_type, dt_cpl, base_dict)
+    exp_setups = generate_experiments(exp_prefix, exp_type, dt_cpl, experiment)
 
     for i in range(len(dt_cpl)):
+        exp_ids = []
         for j in cpl_schemes:
+            exp_id = exp_setups[i][j]["exp_id"]
+            exp_ids.append(exp_id)
             render_config_xml(
                 context.runscript_dir, context.config_run_template, exp_setups[i][j]
             )
-            print(f"Config: {exp_setups[i][j]['exp_id']}")
-            hlp.run_model()
-        exp_ids = [exp_setups[i][j]["exp_id"] for j in cpl_schemes]
+            print(f"Config: {exp_id}")
+            aoscm.run_coupled_model()
+            aoscm.run_directory = context.output_dir / exp_id
+            aoscm.reduce_output(exp_id)
         print(f"Creating plots for exp_ids: {exp_ids}")
         create_and_save_plots(exp_ids)
         print("Plots created!")
