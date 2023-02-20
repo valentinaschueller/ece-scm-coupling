@@ -1,22 +1,10 @@
 import pandas as pd
 
 import user_context as context
-import utils.helpers as hlp
 from schwarz_coupling import SchwarzCoupling
+from setup_experiment import set_experiment_date_properties, set_experiment_input_files
+from utils.helpers import AOSCM
 from utils.templates import render_config_xml
-
-
-def compute_nstrtini(
-    simulation_start_date: pd.Timestamp,
-    forcing_start_date: pd.Timestamp,
-    forcing_dt_hours: int = 6,
-) -> int:
-    delta = (simulation_start_date - forcing_start_date).total_seconds()
-    nstrtini = (delta / (forcing_dt_hours * 3600)) + 1
-    if abs(int(nstrtini) - nstrtini) > 1e-10:
-        raise ValueError("Start date is not available in forcing file!")
-    return int(nstrtini)
-
 
 cpl_schemes = [0, 1, 2]
 dt_cpl = 14400
@@ -25,11 +13,11 @@ dt_nemo = 1800
 max_iters = 60
 exp_prefix = "M4S"
 
-forcing_start_date = pd.Timestamp("2014-07-01")
 start_date = pd.Timestamp("2014-07-01")
-end_date = start_date + pd.Timedelta(5, "days")
+simulation_duration = pd.Timedelta(5, "days")
+ifs_input_start_date = pd.Timestamp("2014-07-01")
+ifs_input_freq = pd.Timedelta(6, "hours")
 
-nstrtini = compute_nstrtini(start_date, forcing_start_date)
 
 experiment = {
     "dt_cpl": dt_cpl,
@@ -37,10 +25,18 @@ experiment = {
     "dt_ifs": dt_ifs,
     "ifs_leocwa": "F",
     "ifs_nradfr": -1,
-    "ifs_nstrtini": nstrtini,
-    "run_start_date": str(start_date),
-    "run_end_date": str(end_date),
 }
+set_experiment_date_properties(
+    experiment, start_date, simulation_duration, ifs_input_start_date, ifs_input_freq
+)
+set_experiment_input_files(experiment, start_date, "era")
+
+aoscm = AOSCM(
+    context.runscript_dir,
+    context.ecconf_executable,
+    context.output_dir,
+    context.platform,
+)
 
 
 def run_naive_experiments():
@@ -51,9 +47,9 @@ def run_naive_experiments():
         render_config_xml(
             context.runscript_dir, context.config_run_template, experiment
         )
-        hlp.run_model()
-        run_directory = context.output_dir / experiment["exp_id"]
-        hlp.clean_model_output(run_directory)
+        aoscm.run_coupled_model()
+        aoscm.run_directory = context.output_dir / experiment["exp_id"]
+        aoscm.reduce_output()
 
 
 def run_schwarz_experiments():
