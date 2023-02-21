@@ -26,52 +26,32 @@ class SchwarzCoupling:
         if current_iter < 1:
             raise ValueError("Current iteration must be >=1")
         self.iter = current_iter
-        if self.iter == 1:
-            self._initial_guess()
-            self._rename_run_directory()
-        while self.iter < max_iters:
+        while self.iter <= max_iters:
+            print(f"Iteration {self.iter}")
+            render_config_xml(
+                context.runscript_dir, context.config_run_template, self.experiment
+            )
+            self.aoscm.run_coupled_model(schwarz_correction=bool(self.iter - 1))
+            self._postprocess_iteration(next_iteration_exists=(self.iter < max_iters))
             self.iter += 1
-            self._prepare_iteration()
-            self._schwarz_correction()
-            self._rename_run_directory()
-        self.run_directory.rmdir()
 
-    def _initial_guess(self):
-        print("Iteration 1")
-        render_config_xml(
-            context.runscript_dir, context.config_run_template, self.experiment
-        )
-        self.aoscm.run_coupled_model(schwarz_correction=False)
+    def _postprocess_iteration(self, next_iteration_exists: bool):
+        print(f"Postprocessing iteration {self.iter}")
 
-    def _schwarz_correction(self):
-        print(f"Iteration {self.iter}")
-        render_config_xml(
-            context.runscript_dir,
-            context.config_run_template,
-            self.experiment,
-        )
-        self.aoscm.run_coupled_model(schwarz_correction=True)
+        renamed_directory = self.run_directory.parent / f"{self.exp_id}_{self.iter}"
+        self.run_directory.rename(renamed_directory)
 
-    def _rename_run_directory(self):
-        self.run_directory.rename(
-            self.run_directory.parent / f"{self.exp_id}_{self.iter}"
-        )
-        self.run_directory.mkdir()
+        if next_iteration_exists:
+            self.run_directory.mkdir()
+            remapper = RemapCouplerOutput(
+                renamed_directory,
+                self.run_directory,
+                self.cpl_scheme,
+                self.dt_cpl,
+                self.dt_ifs,
+                self.dt_nemo,
+            )
+            remapper.remap()
 
-    def _prepare_iteration(self):
-        print(f"Preparing iteration {self.iter}")
-
-        old_run_directory = self.run_directory.parent / f"{self.exp_id}_{self.iter - 1}"
-
-        remapper = RemapCouplerOutput(
-            old_run_directory,
-            self.run_directory,
-            self.cpl_scheme,
-            self.dt_cpl,
-            self.dt_ifs,
-            self.dt_nemo,
-        )
-        remapper.remap()
-
-        reduce_output(old_run_directory, keep_debug_output=False)
-        serialize_experiment_setup(self.experiment, old_run_directory)
+        reduce_output(renamed_directory, keep_debug_output=False)
+        serialize_experiment_setup(self.experiment, renamed_directory)
