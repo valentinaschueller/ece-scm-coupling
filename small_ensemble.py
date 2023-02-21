@@ -9,7 +9,9 @@ from setup_experiment import set_experiment_date_properties, set_experiment_inpu
 from utils.helpers import AOSCM, reduce_output, serialize_experiment_setup
 from utils.templates import render_config_xml
 
-start_dates = pd.date_range(pd.Timestamp("2014-07-03 06:00"), pd.Timestamp("2014-07-04 00:00"), freq="6H")
+start_dates = pd.date_range(
+    pd.Timestamp("2014-07-03 06:00"), pd.Timestamp("2014-07-04 00:00"), freq="6H"
+)
 simulation_time = pd.Timedelta(2, "days")
 
 ifs_input_file_start_date = pd.Timestamp("2014-07-01")
@@ -34,7 +36,6 @@ sources = ["era", "par", "atm", "oce"]
 if __name__ == "__main__":
 
     ensemble_directory.mkdir(exist_ok=True)
-        
 
     aoscm = AOSCM(context.runscript_dir, context.ecconf_executable, context.platform)
 
@@ -53,7 +54,6 @@ if __name__ == "__main__":
         for source in sources:
             (start_date_directory / source).mkdir(exist_ok=True)
 
-    
         set_experiment_date_properties(
             experiment,
             start_date,
