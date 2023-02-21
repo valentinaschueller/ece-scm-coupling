@@ -2,7 +2,7 @@ import subprocess
 from pathlib import Path
 
 import pandas as pd
-import yaml
+import ruamel.yaml as yaml
 
 import user_context as context
 from utils.files import ChangeDirectory
