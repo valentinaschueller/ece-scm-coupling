@@ -42,7 +42,7 @@ def set_experiment_input_files(
     experiment: dict, start_date: pd.Timestamp, ifs_input_file_source: str = "era"
 ):
     nemo_input_file = ifn.get_nemo_input_file(context.nemo_input_files_dir, start_date)
-    experiment["nem_input_file"] = f"{nemo_input_file.parent}/{nemo_input_file.name}"
+    experiment["nem_input_file"] = nemo_input_file.parent / nemo_input_file.name
 
     oifs_input_file = ifn.get_oifs_input_file(
         context.ifs_input_files_dir, ifs_input_file_source
