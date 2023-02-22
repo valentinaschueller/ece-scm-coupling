@@ -46,7 +46,9 @@ def run_naive_experiments():
             context.runscript_dir, context.config_run_template, experiment
         )
         aoscm.run_coupled_model()
-        reduce_output(context.output_dir / experiment["exp_id"])
+        reduce_output(
+            context.output_dir / experiment["exp_id"], keep_debug_output=False
+        )
 
 
 def run_schwarz_experiments():
