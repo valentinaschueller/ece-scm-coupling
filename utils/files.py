@@ -66,6 +66,7 @@ class OIFSPreprocessor:
 class NEMOPreprocessor:
     """Preprocessor for Output Data from the NEMO SCM.
 
+    - drops the meaningless horizontal dimension
     - renames the time coordinate to `time`
     - sets the correct start date (NEMO always starts its output at 00:00 UTC)
     - applies a time shift for local time zones
@@ -95,6 +96,7 @@ class NEMOPreprocessor:
         :return: preprocessed dataset
         :rtype: xr.Dataset
         """
+        ds = ds.isel(y=0, x=0)
         ds = ds.rename(time_counter="time")
         if self.fix_start_date:
             time_as_timedelta = ds.time.data - np.datetime64(self.origin.date())
@@ -157,6 +159,7 @@ class NEMOEnsemblePreprocessor:
             source_file.parent.parent.parent.name.replace("_", ", ")
         )
         initial_condition = source_file.parent.parent.name
+        ds = ds.isel(y=0, x=0)
         ds = ds.rename(time_counter="time")
         ds = ds.assign_coords(time=ds.time.data - np.datetime64(start_date.date()))
         ds = ds.expand_dims(
@@ -174,6 +177,7 @@ class NEMOEnsemblePreprocessor:
             source_file.parent.parent.parent.name.replace("_", ", ")
         )
         initial_condition = source_file.parent.parent.name
+        ds = ds.isel(y=0, x=0)
         ds = ds.rename(time_counter="time")
         ds = ds.assign_coords(time=ds.time.data - np.datetime64(start_date.date()))
         ds = ds.expand_dims(
