@@ -85,7 +85,7 @@ def generate_experiments(
 def load_datasets(exp_ids: list):
     run_directories = [context.output_dir / exp_id for exp_id in exp_ids]
     oifs_preprocessor = OIFSPreprocessor(start_date, pd.Timedelta(-7, "hours"))
-    nemo_preprocessor = NEMOPreprocessor(pd.Timedelta(-7, "hours"))
+    nemo_preprocessor = NEMOPreprocessor(start_date, pd.Timedelta(-7, "hours"))
     oifs_progvars = [
         xr.open_mfdataset(
             run_directory / "progvar.nc", preprocess=oifs_preprocessor.preprocess

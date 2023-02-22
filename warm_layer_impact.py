@@ -13,10 +13,8 @@ from utils.templates import render_config_xml
 
 def load_datasets(exp_ids: list):
     run_directories = [context.output_dir / exp_id for exp_id in exp_ids]
-    oifs_preprocessor = OIFSPreprocessor(
-        ifs_input_file_start_date, np.timedelta64(-7, "h")
-    )
-    nemo_preprocessor = NEMOPreprocessor(np.timedelta64(-7, "h"))
+    oifs_preprocessor = OIFSPreprocessor(start_date, np.timedelta64(-7, "h"))
+    nemo_preprocessor = NEMOPreprocessor(start_date, np.timedelta64(-7, "h"))
     oifs_progvars = [
         xr.open_mfdataset(
             run_directory / "progvar.nc", preprocess=oifs_preprocessor.preprocess
