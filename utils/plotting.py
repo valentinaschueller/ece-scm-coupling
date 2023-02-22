@@ -37,7 +37,7 @@ def create_oce_ssts_plot(
         label = labels[i]
         linestyle = linestyles[i]
         ax_oce_sst.plot(
-            oce_t_grid.sosstsst[:, 1, 1],
+            oce_t_grid.sosstsst,
             color=color,
             label=label,
             alpha=alpha,
