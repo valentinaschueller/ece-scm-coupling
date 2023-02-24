@@ -186,3 +186,8 @@ class NEMOEnsemblePreprocessor:
             schwarz_iteration=[int(iteration)],
         )
         return ds
+
+class OASISPreprocessor:
+    def preprocess(self, ds: xr.Dataset) -> xr.Dataset:
+        ds = ds.isel(ny=0, nx=0)
+        return ds
