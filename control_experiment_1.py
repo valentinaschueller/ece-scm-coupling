@@ -55,7 +55,7 @@ def run_schwarz_experiments():
 
     for cpl_scheme in cpl_schemes:
         experiment["exp_id"] = f"{exp_prefix_schwarz}{cpl_scheme}"
-        schwarz_exp = SchwarzCoupling(experiment)
+        experiment["cpl_scheme"] = cpl_scheme
         schwarz_exp.run(max_iters)
 
 
