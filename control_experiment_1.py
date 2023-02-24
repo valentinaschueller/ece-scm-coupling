@@ -52,11 +52,18 @@ def run_naive_experiments():
 
 
 def run_schwarz_experiments():
-
     for cpl_scheme in cpl_schemes:
         experiment["exp_id"] = f"{exp_prefix_schwarz}{cpl_scheme}"
         experiment["cpl_scheme"] = cpl_scheme
+        schwarz_exp = SchwarzCoupling(experiment)
         schwarz_exp.run(max_iters)
+
+
+def run_parallel_schwarz_without_cleanup():
+    experiment["exp_id"] = f"{exp_prefix_schwarz}P"
+    experiment["cpl_scheme"] = 0
+    schwarz_exp = SchwarzCoupling(experiment, False)
+    schwarz_exp.run(max_iters)
 
 
 if __name__ == "__main__":
