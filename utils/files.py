@@ -115,7 +115,7 @@ class OIFSEnsemblePreprocessor:
     def preprocess_ensemble(self, ds: xr.Dataset) -> xr.Dataset:
         source_file = Path(ds.encoding["source"])
         coupling_scheme = source_file.parent.name
-        if "schwarz" in coupling_scheme:
+        if coupling_scheme == "schwarz":
             coupling_scheme = "converged SWR"
 
         start_date = pd.Timestamp(
@@ -128,22 +128,6 @@ class OIFSEnsemblePreprocessor:
             initial_condition=[initial_condition],
         )
         return ds
-
-    def preprocess_schwarz_iterations(self, ds: xr.Dataset) -> xr.Dataset:
-        source_file = Path(ds.encoding["source"])
-        _, iteration = source_file.parent.name.split("_")
-
-        start_date = pd.Timestamp(
-            source_file.parent.parent.parent.name.replace("_", ", ")
-        )
-        initial_condition = source_file.parent.parent.name
-        ds = ds.expand_dims(
-            start_date=[start_date + self.time_shift],
-            initial_condition=[initial_condition],
-            schwarz_iteration=[int(iteration)],
-        )
-        return ds
-
 
 class NEMOEnsemblePreprocessor:
     def __init__(self, time_shift: pd.Timedelta = pd.Timedelta(0)):
@@ -152,7 +136,7 @@ class NEMOEnsemblePreprocessor:
     def preprocess_ensemble(self, ds: xr.Dataset) -> xr.Dataset:
         source_file = Path(ds.encoding["source"])
         coupling_scheme = source_file.parent.name
-        if "schwarz" in coupling_scheme:
+        if coupling_scheme == "schwarz":
             coupling_scheme = "converged SWR"
 
         start_date = pd.Timestamp(
@@ -166,24 +150,6 @@ class NEMOEnsemblePreprocessor:
             coupling_scheme=[coupling_scheme],
             start_date=[start_date + self.time_shift],
             initial_condition=[initial_condition],
-        )
-        return ds
-
-    def preprocess_schwarz_iterations(self, ds: xr.Dataset) -> xr.Dataset:
-        source_file = Path(ds.encoding["source"])
-        _, iteration = source_file.parent.name.split("_")
-
-        start_date = pd.Timestamp(
-            source_file.parent.parent.parent.name.replace("_", ", ")
-        )
-        initial_condition = source_file.parent.parent.name
-        ds = ds.isel(y=0, x=0)
-        ds = ds.rename(time_counter="time")
-        ds = ds.assign_coords(time=ds.time.data - np.datetime64(start_date.date()))
-        ds = ds.expand_dims(
-            start_date=[start_date + self.time_shift],
-            initial_condition=[initial_condition],
-            schwarz_iteration=[int(iteration)],
         )
         return ds
 

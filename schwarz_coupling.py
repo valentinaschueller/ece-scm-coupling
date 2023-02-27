@@ -26,8 +26,11 @@ class SchwarzCoupling:
         )
         self.convergence_checker = ConvergenceChecker()
         self.reduce_output = reduce_output_after_iteration
+        self.converged = False
 
-    def run(self, max_iters: int, current_iter: int = 1):
+    def run(
+        self, max_iters: int, current_iter: int = 1, stop_at_convergence: bool = False
+    ) -> int:
         if max_iters < 1:
             raise ValueError("Maximum amount of iterations must be >= 1")
         if current_iter < 1:
@@ -41,6 +44,8 @@ class SchwarzCoupling:
             self.aoscm.run_coupled_model(schwarz_correction=bool(self.iter - 1))
             self._postprocess_iteration(next_iteration_exists=(self.iter < max_iters))
             self.iter += 1
+            if stop_at_convergence and self.converged:
+                break
 
     def _postprocess_iteration(self, next_iteration_exists: bool):
         print(f"Postprocessing iteration {self.iter}")
@@ -67,6 +72,11 @@ class SchwarzCoupling:
                 "local": local_conv,
                 "amplitude": ampl_conv,
             }
+            if local_conv and ampl_conv:
+                self.converged = True
+                print(f"Iteration {self.iter - 1} converged!")
+
+        self.experiment["iteration"] = self.iter
 
         if self.reduce_output:
             if not next_iteration_exists:

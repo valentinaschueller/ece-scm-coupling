@@ -22,16 +22,23 @@ dt_nemo = 1800
 dt_cpl = 3600
 ifs_nradfr = -1
 ifs_leocwa = "F"
-coupling_scheme = 0
 exp_id = "ENSB"
 run_directory = context.output_dir / exp_id
 
-max_iters = 5
+coupling_scheme_to_name = {
+    0: "parallel",
+    1: "atm-first",
+    2: "oce-first",
+}
+
+max_iters = 11
 
 ensemble_directory = context.output_dir / "ensemble_output"
 
 
-sources = ["era", "par", "atm", "oce"]
+sources = ["par", "atm", "oce"]
+
+non_converged_experiments = []
 
 if __name__ == "__main__":
 
@@ -44,7 +51,6 @@ if __name__ == "__main__":
         "dt_nemo": dt_nemo,
         "dt_ifs": dt_ifs,
         "ifs_leocwa": "F",
-        "cpl_scheme": coupling_scheme,
         "exp_id": exp_id,
     }
     for start_date in start_dates:
@@ -65,21 +71,33 @@ if __name__ == "__main__":
         for source in sources:
             set_experiment_input_files(experiment, start_date, source)
 
-            render_config_xml(
-                context.runscript_dir, context.config_run_template, experiment
-            )
-            aoscm.run_coupled_model()
-            reduce_output(run_directory, keep_debug_output=False)
-            serialize_experiment_setup(experiment, run_directory)
-            new_directory = start_date_directory / source / "parallel"
-            run_directory.rename(new_directory)
+            for coupling_scheme, cpl_scheme_name in coupling_scheme_to_name.items():
+                experiment["cpl_scheme"] = coupling_scheme
+                render_config_xml(
+                    context.runscript_dir, context.config_run_template, experiment
+                )
+                aoscm.run_coupled_model()
+                reduce_output(run_directory, keep_debug_output=False)
+                serialize_experiment_setup(experiment, run_directory)
+                new_directory = start_date_directory / source / cpl_scheme_name
+                run_directory.rename(new_directory)
 
+            experiment["cpl_scheme"] = 0
             schwarz = SchwarzCoupling(experiment)
-            schwarz.run(max_iters)
+            schwarz.run(max_iters, stop_at_convergence=True)
             new_directory = start_date_directory / source / "schwarz"
-            for iter in range(1, max_iters + 1):
-                schwarz_run_dir = Path(f"{schwarz.run_directory}_{iter}")
-                schwarz_run_dir.rename(f"{new_directory}_{iter}")
+            converged_schwarz_dir = Path(f"{schwarz.run_directory}_{schwarz.iter - 2}")
+            converged_schwarz_dir.rename(new_directory)
+            for iter in range(1, schwarz.iter - 2):
+                nonconverged_schwarz_dir = Path(f"{schwarz.run_directory}_{iter}")
+                shutil.rmtree(nonconverged_schwarz_dir)
+            final_schwarz_dir = Path(f"{schwarz.run_directory}_{schwarz.iter - 1}")
+            shutil.rmtree(final_schwarz_dir)
+            if not schwarz.converged:
+                non_converged_experiments.append(experiment.copy())
+
+    print("Experiments which did not converge:")
+    print(non_converged_experiments)
 
     if run_directory.exists():
         shutil.rmtree(run_directory)
