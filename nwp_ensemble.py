@@ -10,7 +10,7 @@ from utils.helpers import AOSCM, reduce_output, serialize_experiment_setup
 from utils.templates import render_config_xml
 
 start_dates = pd.date_range(
-    pd.Timestamp("2014-07-03 06:00"), pd.Timestamp("2014-07-04 00:00"), freq="6H"
+    pd.Timestamp("2014-07-03 00:00:00"), pd.Timestamp("2014-07-28 18:00:00"), freq="6H"
 )
 simulation_time = pd.Timedelta(2, "days")
 
@@ -31,7 +31,7 @@ coupling_scheme_to_name = {
     2: "oce-first",
 }
 
-max_iters = 11
+max_iters = 20
 
 ensemble_directory = context.output_dir / "ensemble_output"
 
@@ -70,6 +70,9 @@ if __name__ == "__main__":
 
         for source in sources:
             set_experiment_input_files(experiment, start_date, source)
+
+            experiment["iteration"] = None
+            experiment["previous_iter_converged"] = None
 
             for coupling_scheme, cpl_scheme_name in coupling_scheme_to_name.items():
                 experiment["cpl_scheme"] = coupling_scheme
