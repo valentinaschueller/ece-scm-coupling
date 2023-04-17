@@ -109,10 +109,32 @@ class NEMOPreprocessor:
 
 
 class OIFSEnsemblePreprocessor:
+    """Preprocessor for Ensemble Output Data from the NEMO SCM.
+
+    Loads multiple output files into a Dataset with additional metadata based on the source file path.
+    The coupling scheme, start date and type of initial condition is deduced from the path.
+
+    Additionally:
+    - converts the `time` coordinate to valid datetime objects, computed relative to the simulation start date, `origin`
+    - optional: applies a time shift for local time zones using `time_shift`
+    """
+
     def __init__(self, time_shift: pd.Timedelta = pd.Timedelta(0)):
+        """Constructor.
+
+        :param time_shift: time shift to apply for local time, defaults to pd.Timedelta(0)
+        :type time_shift: pd.Timedelta, optional
+        """
         self.time_shift = time_shift
 
     def preprocess_ensemble(self, ds: xr.Dataset) -> xr.Dataset:
+        """Preprocess function for use with `xr.open_mfdataset()`.
+
+        :param ds: dataset as loaded from disk
+        :type ds: xr.Dataset
+        :return: preprocessed dataset
+        :rtype: xr.Dataset
+        """
         source_file = Path(ds.encoding["source"])
         coupling_scheme = source_file.parent.name
         if coupling_scheme == "schwarz":
@@ -129,11 +151,36 @@ class OIFSEnsemblePreprocessor:
         )
         return ds
 
+
 class NEMOEnsemblePreprocessor:
+    """Preprocessor for Ensemble Output Data from the NEMO SCM.
+
+    Loads multiple output files into a Dataset with additional metadata based on the source file path.
+    The coupling scheme, start date and type of initial condition is deduced from the path.
+
+    Additionally:
+    - drops the meaningless horizontal dimension
+    - renames the time coordinate to `time`
+    - sets the correct start date (NEMO always starts its output at 00:00 UTC)
+    - optional: applies a time shift for local time zones
+    """
+
     def __init__(self, time_shift: pd.Timedelta = pd.Timedelta(0)):
+        """Constructor.
+
+        :param time_shift: time shift to apply for local time, defaults to pd.Timedelta(0)
+        :type time_shift: pd.Timedelta, optional
+        """
         self.time_shift = time_shift
 
     def preprocess_ensemble(self, ds: xr.Dataset) -> xr.Dataset:
+        """Preprocess function for use with `xr.open_mfdataset()`.
+
+        :param ds: dataset as loaded from disk
+        :type ds: xr.Dataset
+        :return: preprocessed dataset
+        :rtype: xr.Dataset
+        """
         source_file = Path(ds.encoding["source"])
         coupling_scheme = source_file.parent.name
         if coupling_scheme == "schwarz":
@@ -153,7 +200,20 @@ class NEMOEnsemblePreprocessor:
         )
         return ds
 
+
 class OASISPreprocessor:
+    """Preprocessor for OASIS Output Files from EC-Earth SCM runs.
+
+    Drops the horizontal dimension which is added for NEMO but meaningless.
+    """
+
     def preprocess(self, ds: xr.Dataset) -> xr.Dataset:
+        """Preprocess function for use with `xr.open_mfdataset()`.
+
+        :param ds: dataset as loaded from disk
+        :type ds: xr.Dataset
+        :return: preprocessed dataset
+        :rtype: xr.Dataset
+        """
         ds = ds.isel(ny=0, nx=0)
         return ds
