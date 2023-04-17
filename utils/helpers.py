@@ -9,7 +9,22 @@ from utils.files import ChangeDirectory
 
 
 class AOSCM:
+    """Python wrapper to run an EC-Earth AOSCM experiment.
+
+    The class takes care of running `ec-conf` as well as calling the correct run script inside `runscript_dir`.
+    We assume that the experiment is already configured correctly with `config-run.xml` inside the `runscript_dir`.
+    """
+
     def __init__(self, runscript_dir: Path, ecconf_exe: Path, platform: str):
+        """Constructor.
+
+        :param runscript_dir: directory where the run scripts lie (something like runtime/scm-classic/PAPA)
+        :type runscript_dir: Path
+        :param ecconf_exe: path to ecconf executable
+        :type ecconf_exe: Path
+        :param platform: platform to use for ecconf
+        :type platform: str
+        """
         self.runscript_dir = runscript_dir
         self.ecconf_executable = ecconf_exe
         self.platform = platform
@@ -29,6 +44,13 @@ class AOSCM:
     def run_coupled_model(
         self, print_time: bool = False, schwarz_correction: bool = False
     ):
+        """run the EC-Earth AOSCM in coupled mode.
+
+        :param print_time: print wall clock time at the end of the run, defaults to False
+        :type print_time: bool, optional
+        :param schwarz_correction: whether to use the Schwarz correction run script, defaults to False
+        :type schwarz_correction: bool, optional
+        """
         self._run_ecconf()
         aoscm_executable = context.aoscm_executable
         if schwarz_correction:
@@ -36,11 +58,21 @@ class AOSCM:
         self._run_model(aoscm_executable, print_time)
 
     def run_atmosphere_only(self, print_time: bool = False):
+        """do an atmosphere-only run of the EC-Earth AOSCM.
+
+        :param print_time: print wall clock time at the end of the run, defaults to False
+        :type print_time: bool, optional
+        """
         self._run_ecconf()
         ascm_executable = context.ascm_executable
         self._run_model(ascm_executable, print_time)
 
     def run_ocean_only(self, print_time: bool = False):
+        """do an ocean-only run of the EC-Earth AOSCM.
+
+        :param print_time: print wall clock time at the end of the run, defaults to False
+        :type print_time: bool, optional
+        """
         self._run_ecconf()
         oscm_executable = context.oscm_executable
         self._run_model(oscm_executable, print_time)
