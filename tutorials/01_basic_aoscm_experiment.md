@@ -14,7 +14,7 @@ All paths were found!
 As described in the [EC-Earth SCM documentation](https://dev.ec-earth.org/projects/ecearth3/wiki/Single_Column_Coupled_EC-Earth#Running-the-model), one would normally set up an experiment using the XML parameters in `config-run.xml`.
 The scripts in this repository allow us to generate such an XML file directly from Python.
 For this, a dictionary is filled with common simulation parameters:
-- the input files for OpenIFS, NEMO, and OASIS (see `02_input_files.md`)
+- the input files for OpenIFS, NEMO, and OASIS (see [this page](02_input_files.md))
 - time step sizes for NEMO, OpenIFS
 - the simulation length and start date
 - the coupling method: parallel, atmosphere-first, and ocean-first (0, 1, 2)
