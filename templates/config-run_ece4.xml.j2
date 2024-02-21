@@ -1,0 +1,352 @@
+<?xml version="1.0"?>
+
+<Configuration>
+
+    <Translation name="RUN_ATM+OCE">
+        <Description>Run script file (coupled run: atm+oce)</Description>
+        <Template>ece4-scm_oifs+nemo.sh.tmpl</Template>
+        <Target>ece4-scm_oifs+nemo.sh</Target>
+        <Properties>executable</Properties>
+    </Translation>
+
+    <Translation name="RUN_ATM+OCE_SWZ">
+        <Description>Run script file (coupled run, Schwarz correction: atm+oce)</Description>
+        <Template>ece4-scm_oifs+nemo_2.sh.tmpl</Template>
+        <Target>ece4-scm_oifs+nemo_2.sh</Target>
+        <Properties>executable</Properties>
+    </Translation>
+
+    <Translation name="RUN_ATM">
+        <Description>Run script file (OpenIFS single column model)</Description>
+        <Template>ece4-scm_oifs.sh.tmpl</Template>
+        <Target>ece4-scm_oifs.sh</Target>
+        <Properties>executable</Properties>
+    </Translation>
+
+    <Translation name="RUN_OCE">
+        <Description>Run script file (NEMO single column model)</Description>
+        <Template>ece4-scm_nemo.sh.tmpl</Template>
+        <Target>ece4-scm_nemo.sh</Target>
+        <Properties>executable</Properties>
+    </Translation>
+
+    <Platform name="tetralith">
+        <Description></Description>
+
+        <Translation name="TETRALITH_CFG">
+            <Description>Platform dependent configuration (tetralith)</Description>
+            <Template>platform/tetralith-scm.cfg.tmpl</Template>
+            <Target>ecconf.cfg</Target>
+            <Properties></Properties>
+        </Translation>
+
+        <Parameter name="BUILD_ARCH">
+            <Description>Architecture used when building EC-Earth</Description>
+            <Type>STRING</Type>
+            <Value>ecconf</Value>
+        </Parameter>
+
+        <Parameter name="ECEARTH_SRC_DIR">
+            <Description>Base directory for EC-Earth sources</Description>
+            <Type>PATH</Type>
+            <Value>/proj/nsc/users/struthers/EC-Earth/r2740-coupled-SCM/sources</Value>
+        </Parameter>
+
+        <Parameter name="RUN_DIR_BASE">
+            <Description>EC-Earth run directory</Description>
+            <Type>PATH</Type>
+            <Value>/proj/nsc/users/${USER}/ecearth3/r2740-coupled-SCM</Value>
+        </Parameter>
+
+        <Parameter name="PROC_PER_NODE">
+            <Description>Number of processors per node</Description>
+            <Type>INTEGER</Type>
+            <Value>32</Value>
+        </Parameter>
+
+        <Parameter name="ADD_TO_LD_LIBRARY_PATH">
+            <Description>Additional shared library paths needed at runtime</Description>
+            <Type>STRING</Type>
+            <Value></Value>
+        </Parameter>
+
+        <Parameter name="PRE_LOAD_MODULES_CMD">
+            <Description>Command run before any modules are loaded</Description>
+            <Type>STRING</Type>
+            <Value></Value>
+        </Parameter>
+
+        <Parameter name="MODULE_LIST">
+            <Description>List of modules to load</Description>
+            <Type>STRING</Type>
+            <Value></Value>
+        </Parameter>
+
+    </Platform>
+
+    <Platform name="ubuntu-gcc-openmpi">
+        <Description></Description>
+
+        <Translation name="PC-GCC-OPENMPI_CFG">
+            <Description>Platform dependent configuration (pc-gcc-openmpi)</Description>
+            <Template>platform/ubuntu-gcc-openmpi.cfg.tmpl</Template>
+            <Target>ecconf.cfg</Target>
+            <Properties></Properties>
+        </Translation>
+
+        <Parameter name="BUILD_ARCH">
+            <Description>Architecture used when building EC-Earth</Description>
+            <Type>STRING</Type>
+            <Value>ecconf</Value>
+        </Parameter>
+
+        <Parameter name="ECEARTH_SRC_DIR">
+            <Description>Base directory for EC-Earth sources</Description>
+            <Type>PATH</Type>
+            <Value>/home/struthers/NSC/Projects/EC-Earth4-SCM/r8215-ECE4-AOSCM/sources</Value>
+        </Parameter>
+
+        <Parameter name="RUN_DIR_BASE">
+            <Description>EC-Earth run directory</Description>
+            <Type>PATH</Type>
+            <Value>/home/struthers/NSC/Projects/EC-Earth4-SCM/run/r8215-ECE4-AOSCM</Value>
+        </Parameter>
+
+        <Parameter name="PROC_PER_NODE">
+            <Description>Number of processors per node</Description>
+            <Type>INTEGER</Type>
+            <Value></Value>
+        </Parameter>
+
+        <Parameter name="ADD_TO_LD_LIBRARY_PATH">
+            <Description>Additional shared library paths needed at runtime</Description>
+            <Type>STRING</Type>
+            <Value></Value>
+        </Parameter>
+
+        <Parameter name="PRE_LOAD_MODULES_CMD">
+            <Description>Command run before any modules are loaded</Description>
+            <Type>STRING</Type>
+            <Value></Value>
+        </Parameter>
+
+        <Parameter name="MODULE_LIST">
+            <Description>List of modules to load</Description>
+            <Type>STRING</Type>
+            <Value></Value>
+        </Parameter>
+
+    </Platform>
+
+    <Platform name="valentinair">
+        <Description></Description>
+
+        <Translation name="VALENTINAIR_CFG">
+            <Description>Platform dependent configuration (valentinair)</Description>
+            <Template>platform/valentinair-scm.cfg.tmpl</Template>
+            <Target>ecconf.cfg</Target>
+            <Properties></Properties>
+        </Translation>
+
+        <Parameter name="BUILD_ARCH">
+            <Description>Architecture used when building EC-Earth</Description>
+            <Type>STRING</Type>
+            <Value>ecconf</Value>
+        </Parameter>
+
+        <Parameter name="ECEARTH_SRC_DIR">
+            <Description>Base directory for EC-Earth sources</Description>
+            <Type>PATH</Type>
+            <Value>/Users/valentina/dev/aoscm4/sources</Value>
+        </Parameter>
+
+        <Parameter name="RUN_DIR_BASE">
+            <Description>EC-Earth run directory</Description>
+            <Type>PATH</Type>
+            <Value>/Users/valentina/dev/aoscm_rundir</Value>
+        </Parameter>
+
+        <Parameter name="PROC_PER_NODE">
+            <Description>Number of processors per node</Description>
+            <Type>INTEGER</Type>
+            <Value></Value>
+        </Parameter>
+
+        <Parameter name="ADD_TO_LD_LIBRARY_PATH">
+            <Description>Additional shared library paths needed at runtime</Description>
+            <Type>STRING</Type>
+            <Value></Value>
+        </Parameter>
+
+        <Parameter name="PRE_LOAD_MODULES_CMD">
+            <Description>Command run before any modules are loaded</Description>
+            <Type>STRING</Type>
+            <Value></Value>
+        </Parameter>
+
+        <Parameter name="MODULE_LIST">
+            <Description>List of modules to load</Description>
+            <Type>STRING</Type>
+            <Value></Value>
+        </Parameter>
+
+    </Platform>
+
+    <Model name="GENERAL">
+        <Description></Description>
+
+        <Parameter name="EXP_NAME">
+            <Description>Experiment name (4 letters)</Description>
+            <Type>STRING</Type>
+            <Value>{{setup_dict["exp_id"]}}</Value>
+        </Parameter>
+
+        <Parameter name="RUN_START_DATE">
+            <Description>Start date of the simulation. Use any reasonable syntax.</Description>
+            <Type>DATE</Type>
+            <Value>{{setup_dict.get("run_start_date")}}</Value>
+        </Parameter>
+
+        <Parameter name="RUN_END_DATE">
+            <Description>End date of the simulation. Use any reasonable syntax.</Description>
+            <Type>STRING</Type>
+            <Value>{{setup_dict.get("run_end_date")}}</Value>
+        </Parameter>
+
+    </Model>
+
+    <Model name="IFS">
+        <Description></Description>
+
+        <Parameter name="IFS_LEVELS">
+            <Description>Vertical resolution of IFS-SCM</Description>
+            <Type>STRING</Type>
+            <Value>60</Value>
+        </Parameter>
+
+        <Parameter name="IFS_TIME_STEP_SEC">
+            <Description>IFS-SCM time step in seconds</Description>
+            <Type>INTEGER</Type>
+            <Value>900</Value>
+        </Parameter>
+
+        <Parameter name="CMIP5">
+            <Description>Toogle CMIP5 forcings (TRUE or FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
+        </Parameter>
+
+        <Parameter name="CMIP5_RCP">
+            <Description>RCP selection (1-4 or 0 for historical run)</Description>
+            <Type>INTEGER</Type>
+            <Value>0</Value>
+        </Parameter>
+
+        <Parameter name="CMIP5_FIXYEAR">
+            <Description>Fix CMIP5 forcings at the indicated year (or 0 to ignore for transient runs)</Description>
+            <Type>INTEGER</Type>
+            <Value>0</Value>
+        </Parameter>
+
+        <Parameter name="IFS_INPUT_FILE">
+            <Description>Path to OIFS init and forcing file (will be copied as scm_in.nc)</Description>
+            <Type>PATH</Type>
+            <Value>{{setup_dict["ifs_input_file"]}}</Value>
+        </Parameter>
+
+        <Parameter name="VOLCANOES">
+            <Description>Include volcanic aerosols (TRUE or FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
+        </Parameter>
+
+        <Parameter name="IFS_LEGWWMS">
+            <Description>Use non-orographic gravity wave scheme (T or F)</Description>
+            <Type>STRING</Type>
+            <Value>{{setup_dict.get("ifs_legwwms", "T")}}</Value>
+        </Parameter>
+
+        <Parameter name="IFS_LECUMF">
+            <Description>Use mass-flux cumulus convection scheme (T or F)</Description>
+            <Type>STRING</Type>
+            <Value>{{setup_dict.get("ifs_lecumf", "T")}}</Value>
+        </Parameter>
+
+        <Parameter name="IFS_LEOCWA">
+            <Description>Use ocean warm layer parameterization (T or F)</Description>
+            <Type>STRING</Type>
+            <Value>{{setup_dict.get("ifs_leocwa", "F")}}</Value>
+        </Parameter>
+
+        <Parameter name="IFS_NSTRTINI">
+            <Description>initial forcing time step, if uneqal 1 need correct "seconds" in scm_in.nc</Description>
+            <Type>INTEGER</Type>
+            <Value>{{setup_dict.get("ifs_nstrtini", 1)}}</Value>
+        </Parameter>
+
+        <Parameter name="IFS_NRADFR">
+            <Description>Frequency of full radiation, negative in hours, positive in time-steps</Description>
+            <Type>INTEGER</Type>
+            <Value>{{setup_dict.get("ifs_nradfr", 1)}}</Value>
+        </Parameter>
+
+        <Parameter name="IFS_OUTPUT_FORMAT">
+            <Description>IFS-SCM output format</Description>
+            <Type>STRING</Type>
+            <Value>netcdf</Value>
+        </Parameter>
+
+    </Model>
+
+    <Model name="NEM">
+
+        <Parameter name="NEM_TIME_STEP_SEC">
+            <Description>NEMO time step in seconds</Description>
+            <Type>INTEGER</Type>
+            <Value>{{setup_dict["dt_nemo"]}}</Value>
+        </Parameter>
+
+        <Parameter name="NEM_INPUT_FILE">
+            <Description>Path to NEMO init file, relative to NEMO init data directory (will be copied as init_C1D.nc)</Description>
+            <Type>PATH</Type>
+            <Value>{{setup_dict["nem_input_file"]}}</Value>
+        </Parameter>
+
+        <Parameter name="LIM_TIME_STEP_SEC">
+            <Description>LIM time step in seconds</Description>
+            <Type>INTEGER</Type>
+            <Value>{{setup_dict["dt_nemo"]}}</Value>
+        </Parameter>
+
+    </Model>
+
+    <Model name="OASIS">
+        <Description></Description>
+
+        <Parameter name="CPL_FREQ_ATM_OCE_SEC">
+            <Description>Coupling frequency between IFS and NEMO in seconds</Description>
+            <Type>INTEGER</Type>
+            <Value>{{setup_dict["dt_cpl"]}}</Value>
+        </Parameter>
+
+        <Parameter name="CPL_SCHEME">
+            <Description>Coupling scheme used by OASIS. Parallel (0), sequential atmosphere-first (1), or sequential ocean-first (2) possible.</Description>
+            <Type>INTEGER</Type>
+            <Value>{{setup_dict["cpl_scheme"]}}</Value>
+        </Parameter>
+
+        <Parameter name="RSTAS_FILE">
+            <Description>Path to atmosphere restart file (will be copied as rstas.nc)</Description>
+            <Type>PATH</Type>
+            <Value>{{setup_dict["oasis_rstas"]}}</Value>
+        </Parameter>
+
+        <Parameter name="RSTOS_FILE">
+            <Description>Path to ocean restart file (will be copied as rstos.nc)</Description>
+            <Type>PATH</Type>
+            <Value>{{setup_dict["oasis_rstos"]}}</Value>
+        </Parameter>
+
+    </Model>
+
+</Configuration>
