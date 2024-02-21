@@ -323,6 +323,12 @@
     <Model name="OASIS">
         <Description></Description>
 
+        <Parameter name="CPL_FREQ_ATM_OCE_SEC">
+            <Description>Coupling frequency between IFS and NEMO in seconds</Description>
+            <Type>INTEGER</Type>
+            <Value>{{setup_dict["dt_cpl"]}}</Value>
+        </Parameter>
+
         <Parameter name="CPL_SCHEME">
             <Description>Coupling scheme used by OASIS. Parallel (0), sequential atmosphere-first (1), or sequential ocean-first (2) possible.</Description>
             <Type>INTEGER</Type>
