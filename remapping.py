@@ -27,6 +27,10 @@ oce_to_atm = {
     "OSnwTck": "A_Snow_thickness",
 }
 
+# TODO: move this somewhere more sensible
+oifs_separator = "_OpenIFS_"
+nemo_separator = "_oceanx_"
+
 
 class RemapCouplerOutput:
     """
@@ -53,13 +57,13 @@ class RemapCouplerOutput:
 
     def remap(self) -> None:
         for path in self.read_directory.glob("*.nc"):
-            if "_ATMIFS_" in path.stem:
+            if oifs_separator in path.stem:
                 self._remap_atm_to_oce(path)
-            if "_oceanx_" in path.stem:
+            if nemo_separator in path.stem:
                 self._remap_oce_to_atm(path)
 
     def _remap_oce_to_atm(self, oce_file_path: Path) -> None:
-        oce_var_name = oce_file_path.stem.split("_oceanx_")[0]
+        oce_var_name = oce_file_path.stem.split(nemo_separator)[0]
         atm_var_name = oce_to_atm.get(oce_var_name, None)
         if atm_var_name is None:
             return
@@ -78,7 +82,7 @@ class RemapCouplerOutput:
         atm_da.to_netcdf(atm_file_path)
 
     def _remap_atm_to_oce(self, atm_file_path: Path) -> None:
-        atm_var_name = atm_file_path.stem.split("_ATMIFS_")[0]
+        atm_var_name = atm_file_path.stem.split(oifs_separator)[0]
         oce_var_name = atm_to_oce.get(atm_var_name, None)
         if oce_var_name is None:
             return
