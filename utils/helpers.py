@@ -2,7 +2,7 @@ import subprocess
 from pathlib import Path
 
 import pandas as pd
-import ruamel.yaml as yaml
+from ruamel.yaml import YAML
 
 import user_context as context
 from utils.files import ChangeDirectory
@@ -77,12 +77,15 @@ class AOSCM:
         oscm_executable = context.oscm_executable
         self._run_model(oscm_executable, print_time)
 
-    def _run_model(self, executable: str, print_time: bool = False) -> None:
+    def _run_model(self, executable: Path, print_time: bool = False) -> None:
         print("Running model...")
+        args = [str(executable)]
+        # if context.use_slurm:
+        #     args = ["sbatch"] + args
+        #     print_time = False
         with ChangeDirectory(context.runscript_dir):
             completed_process = subprocess.run(
-                [],
-                executable=executable,
+                args,
                 capture_output=True,
                 text=print_time,  # if print_time, we want stdout and stderr to be string instead of bytes.
             )
@@ -129,6 +132,7 @@ def reduce_output(run_directory: Path, keep_debug_output: bool = True) -> None:
 
 def serialize_experiment_setup(experiment: dict, run_directory: Path):
     with open(run_directory / "setup_dict.yaml", "w") as output_file:
+        yaml = YAML(typ="safe", pure=True)
         yaml.dump(experiment, output_file)
 
 
