@@ -204,13 +204,13 @@
         <Parameter name="RUN_START_DATE">
             <Description>Start date of the simulation. Use any reasonable syntax.</Description>
             <Type>DATE</Type>
-            <Value>{{setup_dict.get("run_start_date")}}</Value>
+            <Value>{{setup_dict["run_start_date"]}}</Value>
         </Parameter>
 
         <Parameter name="RUN_END_DATE">
             <Description>End date of the simulation. Use any reasonable syntax.</Description>
             <Type>STRING</Type>
-            <Value>{{setup_dict.get("run_end_date")}}</Value>
+            <Value>{{setup_dict["run_end_date"]}}</Value>
         </Parameter>
 
     </Model>
