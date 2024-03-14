@@ -258,10 +258,16 @@
             <Value>{{setup_dict["nem_input_file"]}}</Value>
         </Parameter>
 
-        <Parameter name="LIM_TIME_STEP_SEC">
-            <Description>LIM time step in seconds</Description>
+        <Parameter name="SI3_TIME_STEP_SEC">
+            <Description>SI3 time step in seconds</Description>
             <Type>INTEGER</Type>
             <Value>{{setup_dict["dt_nemo"]}}</Value>
+        </Parameter>
+
+        <Parameter name="SI3_INPUT_FILE">
+            <Description>Path to SI3 init file, relative to SI3 init data directory</Description>
+            <Type>PATH</Type>
+            <Value>{{setup_dict.get("si3_input_file")}}</Value>
         </Parameter>
 
     </Model>
