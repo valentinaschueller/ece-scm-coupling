@@ -18,6 +18,11 @@ class ConvergenceChecker:
             "OTotRain",
             "OTotSnow",
             "A_SST",
+            "A_Ice_temp",
+            "A_Ice_albedo",
+            "A_Ice_frac",
+            "A_Ice_thickness",
+            "A_Snow_thickness",
         ]
         self.tolerance = tolerance
 
