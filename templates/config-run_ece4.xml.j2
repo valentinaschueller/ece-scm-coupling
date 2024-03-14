@@ -138,60 +138,6 @@
 
     </Platform>
 
-    <Platform name="valentinair">
-        <Description></Description>
-
-        <Translation name="VALENTINAIR_CFG">
-            <Description>Platform dependent configuration (valentinair)</Description>
-            <Template>platform/valentinair-scm.cfg.tmpl</Template>
-            <Target>ecconf.cfg</Target>
-            <Properties></Properties>
-        </Translation>
-
-        <Parameter name="BUILD_ARCH">
-            <Description>Architecture used when building EC-Earth</Description>
-            <Type>STRING</Type>
-            <Value>ecconf</Value>
-        </Parameter>
-
-        <Parameter name="ECEARTH_SRC_DIR">
-            <Description>Base directory for EC-Earth sources</Description>
-            <Type>PATH</Type>
-            <Value>{{setup_dict.get("model_dir")}}/sources</Value>
-        </Parameter>
-
-        <Parameter name="RUN_DIR_BASE">
-            <Description>EC-Earth run directory</Description>
-            <Type>PATH</Type>
-            <Value>{{setup_dict.get("run_dir")}}</Value>
-        </Parameter>
-
-        <Parameter name="PROC_PER_NODE">
-            <Description>Number of processors per node</Description>
-            <Type>INTEGER</Type>
-            <Value></Value>
-        </Parameter>
-
-        <Parameter name="ADD_TO_LD_LIBRARY_PATH">
-            <Description>Additional shared library paths needed at runtime</Description>
-            <Type>STRING</Type>
-            <Value></Value>
-        </Parameter>
-
-        <Parameter name="PRE_LOAD_MODULES_CMD">
-            <Description>Command run before any modules are loaded</Description>
-            <Type>STRING</Type>
-            <Value></Value>
-        </Parameter>
-
-        <Parameter name="MODULE_LIST">
-            <Description>List of modules to load</Description>
-            <Type>STRING</Type>
-            <Value></Value>
-        </Parameter>
-
-    </Platform>
-
     <Model name="GENERAL">
         <Description></Description>
 
