@@ -1,3 +1,4 @@
+# %% Setup
 from pathlib import Path
 import numpy as np
 import matplotlib.animation as animation
@@ -19,23 +20,35 @@ plot_folder.mkdir(exist_ok=True)
 max_iters = experiment_runner.max_iters
 alpha = 0.25
 
+sequential_swr = False
+if sequential_swr:
+    step = 2
+else:
+    step = 1
 oifs_diagvars = [
     xr.open_mfdataset(
         f"PAPA/{exp_id}_{iter}/diagvar.nc", preprocess=oifs_preprocessor.preprocess
     )
-    for iter in range(1, max_iters + 1)
+    for iter in range(1, max_iters + 1, step)
 ]
 oifs_progvars = [
     xr.open_mfdataset(
         f"PAPA/{exp_id}_{iter}/progvar.nc", preprocess=oifs_preprocessor.preprocess
     )
-    for iter in range(1, max_iters + 1)
+    for iter in range(1, max_iters + 1, step)
 ]
 nemo_t_grids = [
     xr.open_mfdataset(
         f"PAPA/{exp_id}_{iter}/{exp_id}_*_T.nc", preprocess=nemo_preprocessor.preprocess
     )
-    for iter in range(1, max_iters + 1)
+    for iter in range(1, max_iters + 1, step)
+]
+nemo_ice_grids = [
+    xr.open_mfdataset(
+        f"PAPA/{exp_id}_{iter}/{exp_id}*_icemod.nc",
+        preprocess=nemo_preprocessor.preprocess,
+    )
+    for iter in range(1, max_iters + 1, step)
 ]
 
 
@@ -68,7 +81,7 @@ def animate(da_list: list[xr.DataArray], **kwargs):
             alpha=alpha,
         )
 
-    ani = animation.FuncAnimation(fig=fig, func=update, frames=max_iters - 1)
+    ani = animation.FuncAnimation(fig=fig, func=update, frames=len(da_list) - 1)
     return ani
 
 
@@ -77,10 +90,10 @@ def create_plots(da_list: list[xr.DataArray], file_stem: str, axis_settings: dic
     axis_settings["xmargin"] = 0.0
 
     fig = plot_all_iterates(da_list, **axis_settings)
-    fig.savefig(f"plots/{exp_id}/{file_stem}.pdf", bbox_inches="tight")
+    fig.savefig(plot_folder / f"{file_stem}.pdf", bbox_inches="tight")
 
     ani = animate(da_list, **axis_settings)
-    ani.save(f"plots/{exp_id}/{file_stem}.mp4")
+    ani.save(plot_folder / f"{file_stem}.mp4")
 
 
 # %% 10m Temperature
@@ -100,8 +113,8 @@ ssh_flux = [diagvar.sfc_sen_flx for diagvar in oifs_diagvars]
 
 axis_settings = {
     "title": "Surface Sensible Heat Flux (OIFS)",
-    "ylabel": "Temperature [°C]",
-    "ylim": [-80, -35],
+    "ylabel": "Heat Flux $[W m^{-2}]$",
+    "ylim": [-1400, 200],
 }
 
 create_plots(ssh_flux, "ssh_oifs", axis_settings)
@@ -126,3 +139,41 @@ axis_settings = {
 }
 
 create_plots(ssw, "ssw_oifs", axis_settings)
+
+# %% Sea Ice Concentration
+
+iceconc = [ice_grid.iceconc for ice_grid in nemo_ice_grids]
+
+axis_settings = {
+    "title": "Sea Ice Concentration (LIM3)",
+    "ylabel": "Sea Ice Concentration [-]",
+    "ylim": [0.99, 1],
+}
+
+create_plots(iceconc, "iceconc_lim3", axis_settings)
+
+# %% Ice Surface Temperature
+
+icest = [ice_grid.icest for ice_grid in nemo_ice_grids]
+
+axis_settings = {
+    "title": "Sea Ice Surface Temperature (LIM3)",
+    "ylabel": "Temperature [°C]",
+    "ylim": [-90, 5],
+}
+
+create_plots(icest, "icest_lim3", axis_settings)
+
+# %% Mean Ice Temperature
+
+micet = [ice_grid.micet for ice_grid in nemo_ice_grids]
+
+axis_settings = {
+    "title": "Mean Sea Ice Temperature (LIM3)",
+    "ylabel": "Temperature [°C]",
+    "ylim": [-10, -6],
+}
+
+create_plots(micet, "micet_lim3", axis_settings)
+
+# %%
