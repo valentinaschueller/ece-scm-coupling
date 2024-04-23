@@ -2,7 +2,7 @@ import subprocess
 from pathlib import Path
 
 import pandas as pd
-import ruamel.yaml as yaml
+from ruamel.yaml import YAML
 
 import user_context as context
 from utils.files import ChangeDirectory
@@ -128,6 +128,7 @@ def reduce_output(run_directory: Path, keep_debug_output: bool = True) -> None:
 
 
 def serialize_experiment_setup(experiment: dict, run_directory: Path):
+    yaml = YAML(typ="unsafe", pure=True)
     with open(run_directory / "setup_dict.yaml", "w") as output_file:
         yaml.dump(experiment, output_file)
 
