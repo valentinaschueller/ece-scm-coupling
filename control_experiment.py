@@ -2,7 +2,7 @@ import pandas as pd
 
 import user_context as context
 from schwarz_coupling import SchwarzCoupling
-from setup_experiment import set_experiment_date_properties, set_experiment_input_files
+from setup_experiment import set_experiment_date_properties
 from utils.helpers import AOSCM, reduce_output
 from utils.templates import render_config_xml
 
@@ -28,7 +28,20 @@ experiment = {
 set_experiment_date_properties(
     experiment, start_date, simulation_duration, ifs_input_start_date, ifs_input_freq
 )
-set_experiment_input_files(experiment, start_date, "era")
+nemo_input_file = context.nemo_input_files_dir / "init_PAPASTATION_2014-07-01.nc"
+oifs_input_file = context.ifs_input_files_dir / "papa_2014-07_era.nc"
+oasis_rstas = context.rstas_dir / "rstas_2014-07-01_00_era.nc"
+oasis_rstos = context.rstos_dir / "rstos_2014-07-01.nc"
+
+assert nemo_input_file.exists()
+assert oifs_input_file.exists()
+assert oasis_rstas.exists()
+assert oasis_rstos.exists()
+
+experiment["nem_input_file"] = nemo_input_file.parent / nemo_input_file.name
+experiment["ifs_input_file"] = oifs_input_file
+experiment["oasis_rstas"] = oasis_rstas
+experiment["oasis_rstos"] = oasis_rstos
 
 aoscm = AOSCM(
     context.runscript_dir,
@@ -67,7 +80,6 @@ def run_parallel_schwarz_without_cleanup():
 
 
 if __name__ == "__main__":
-
     run_naive_experiments()
 
     run_schwarz_experiments()
