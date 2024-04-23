@@ -6,3 +6,9 @@ font.monospace : TeX Gyre Cursor
 mathtext.fontset : custom
 legend.fancybox : False
 legend.framealpha : 1
+axes.grid : True
+axes.xmargin : 0.01
+xtick.minor.visible : True
+ytick.minor.visible : True
+figure.titlesize : large
+axes.titlesize : large
