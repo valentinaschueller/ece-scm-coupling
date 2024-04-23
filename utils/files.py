@@ -60,6 +60,10 @@ class OIFSPreprocessor:
         :rtype: xr.Dataset
         """
         ds = ds.assign_coords(time=self.origin + ds.time.data + self.time_shift)
+        try:
+            ds = ds.drop_vars("ncextr")
+        except ValueError:
+            pass
         return ds
 
 
