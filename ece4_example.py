@@ -30,11 +30,13 @@ set_experiment_date_properties(
 )
 nem_input_file = context.nemo_input_files_dir / "init_PAPASTATION_2010-06-15.nc"
 oifs_input_file = context.ifs_input_files_dir / "papa_20100615.nc"
-oasis_rstas = context.rstas_dir / ifn.get_rstas_name(start_date, ifs_input_file_source)
-oasis_rstos = context.rstos_dir / ifn.get_rstos_name(start_date)
+oasis_rstas = context.rstas_dir / "rstas_2010-06-15.nc"
+oasis_rstos = context.rstos_dir / "rstos_2010-06-15.nc"
 
 assert nem_input_file.exists()
 assert oifs_input_file.exists()
+assert oasis_rstas.exists()
+assert oasis_rstos.exists()
 
 experiment["nem_input_file"] = nem_input_file
 experiment["ifs_input_file"] = oifs_input_file
@@ -51,7 +53,7 @@ aoscm = AOSCM(
 ifs_input_start_date = pd.Timestamp("2010-06-15")
 ifs_input_freq = pd.Timedelta(6, "hours")
 
-max_iters = 10
+max_iters = 5
 
 if __name__ == "__main__":
 
@@ -64,12 +66,12 @@ if __name__ == "__main__":
             context.runscript_dir, context.config_run_template, experiment
         )
         aoscm.run_coupled_model()
-        reduce_output(run_directory=context.output_dir / exp_id)
+        # reduce_output(run_directory=context.output_dir / exp_id)
 
-    cpl_scheme = 0
-    experiment["cpl_scheme"] = cpl_scheme
-    exp_id = "TESS"
-    experiment["exp_id"] = exp_id
+    # cpl_scheme = 0
+    # experiment["cpl_scheme"] = cpl_scheme
+    # exp_id = "TESS"
+    # experiment["exp_id"] = exp_id
 
-    schwarz_exp = SchwarzCoupling(experiment, reduce_output_after_iteration=True)
-    schwarz_exp.run(max_iters)
+    # schwarz_exp = SchwarzCoupling(experiment, reduce_output_after_iteration=True)
+    # schwarz_exp.run(max_iters)
