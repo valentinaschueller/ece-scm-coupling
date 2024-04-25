@@ -9,6 +9,9 @@ from utils.files import OIFSPreprocessor, NEMOPreprocessor
 
 plt.style.use("stylesheet.mpl")
 
+exp_id = f"{experiment_runner.exp_prefix}S"
+plot_folder = Path(f"plots/{exp_id}")
+
 
 def load_iterates(
     file_name: str, preprocess: callable, max_iters: int, step: int
@@ -24,10 +27,9 @@ def load_iterates(
 
 def plot_all_iterates(da: xr.DataArray, **kwargs):
     fig, ax = plt.subplots()
-    da[0].plot(ax=ax)
+    da[0].plot(ax=ax, color="#9C6114")
 
     ax.set(**kwargs)
-    ax.grid()
     for iter in range(1, max_iters):
         ax.plot(da.time, da[iter], alpha=alpha, color="k")
 
@@ -36,10 +38,12 @@ def plot_all_iterates(da: xr.DataArray, **kwargs):
 
 def animate(da: xr.DataArray, **kwargs):
     fig, ax = plt.subplots()
-    da[0].plot(ax=ax)
+    fig.set_figheight(5)
+    fig.set_figwidth(8)
+    fig.set_tight_layout(True)
+    da[0].plot(ax=ax, color="#9C6114")
 
     ax.set(**kwargs)
-    ax.grid()
 
     def update(frame):
         # update the line plot:
@@ -60,9 +64,11 @@ def create_plots(da: xr.DataArray, file_stem: str, axis_settings: dict):
 
     fig = plot_all_iterates(da, **axis_settings)
     fig.savefig(plot_folder / f"{file_stem}.pdf", bbox_inches="tight")
+    fig.savefig(plot_folder / f"{file_stem}.png", bbox_inches="tight", dpi=300)
 
     ani = animate(da, **axis_settings)
-    ani.save(plot_folder / f"{file_stem}.mp4")
+    ani.save(plot_folder / f"{file_stem}.mp4", dpi=300)
+    plt.close("all")
 
 
 # %%
@@ -72,8 +78,6 @@ time_shift = np.timedelta64(1, "h")
 oifs_preprocessor = OIFSPreprocessor(start_date, time_shift)
 nemo_preprocessor = NEMOPreprocessor(start_date, time_shift)
 
-exp_id = "TOPS"
-plot_folder = Path(f"plots/{exp_id}")
 plot_folder.mkdir(exist_ok=True)
 max_iters = experiment_runner.max_iters
 alpha = 0.25
@@ -97,23 +101,80 @@ nemo_ice_grids = load_iterates(
     f"{exp_id}_*_icemod.nc", nemo_preprocessor.preprocess, max_iters, step
 )
 
+# %% Poster Plot
+
+t10m = oifs_progvars.t[:, :, -1] - 273.15
+
+fig, ax = plt.subplots()
+
+for iter in range(1, max_iters):
+    ax.plot(t10m.time, t10m[iter], alpha=alpha, color="k")
+
+t10m[0].plot(ax=ax, color="#9C6114")
+ax.set(
+    title="Atmospheric Temperature at 10m",
+    ylabel="Temperature [°C]",
+    ylim=[-30, 5],
+    xlabel="Time",
+)
+
+fig.set_figheight(5)
+fig.set_figwidth(8)
+fig.set_tight_layout(True)
+fig.savefig(f"10t_oifs_poster.pdf")
+fig.savefig(f"10t_oifs_poster.png", dpi=300, transparent=True)
+
+# %% Surface Energy Budget
+
+oifs_seb = (
+    oifs_diagvars.sfc_sen_flx
+    + oifs_diagvars.sfc_lat_flx
+    + oifs_diagvars.sfc_lwrad
+    + oifs_diagvars.sfc_swrad
+)
+
+fig, ax = plt.subplots()
+
+for iter in range(1, max_iters):
+    ax.plot(oifs_seb.time, oifs_seb[iter], alpha=alpha, color="k")
+
+oifs_seb[0].plot(ax=ax, color="#9C6114")
+ax.set(
+    title="Surface Energy Budget",
+    ylabel="Energy Budget $[W m^{-2}]$",
+    ylim=[-150, 150],
+    xlabel="Time",
+)
+
+fig.set_figheight(5)
+fig.set_figwidth(8)
+fig.savefig(f"seb_oifs_poster.pdf", bbox_inches="tight")
 
 # %% 10m Temperature
 
 axis_settings = {
     "title": "Temperature at 10m (OIFS)",
     "ylabel": "Temperature [°C]",
-    "ylim": [-80, -35],
+    "ylim": [-30, 5],
 }
 
-create_plots(oifs_progvars.t[:, :, 59] - 273.15, "10t_oifs", axis_settings)
+create_plots(oifs_progvars.t[:, :, -1] - 273.15, "10t_oifs", axis_settings)
 
+# %% 2m Temperature
+
+axis_settings = {
+    "title": "2m Temperature (OIFS)",
+    "ylabel": "Temperature [°C]",
+    "ylim": [-30, 5],
+}
+
+create_plots(oifs_diagvars.temperature_2m - 273.15, "2t_oifs", axis_settings)
 
 # %% Surface Sensible Heat Flux
 axis_settings = {
     "title": "Surface Sensible Heat Flux (OIFS)",
     "ylabel": "Heat Flux $[W m^{-2}]$",
-    "ylim": [-1400, 200],
+    "ylim": [-200, 200],
 }
 
 create_plots(oifs_diagvars.sfc_sen_flx, "ssh_oifs", axis_settings)
@@ -123,7 +184,7 @@ create_plots(oifs_diagvars.sfc_sen_flx, "ssh_oifs", axis_settings)
 axis_settings = {
     "title": "Sea Surface Temperature (NEMO)",
     "ylabel": "Temperature [°C]",
-    "ylim": [-2.1, -1.3],
+    "ylim": [-2.0, -1.5],
 }
 create_plots(nemo_t_grids.sosstsst, "sst_nemo", axis_settings)
 
@@ -153,7 +214,7 @@ create_plots(nemo_ice_grids.iceconc, "iceconc_lim3", axis_settings)
 axis_settings = {
     "title": "Sea Ice Surface Temperature (LIM3)",
     "ylabel": "Temperature [°C]",
-    "ylim": [-90, 5],
+    "ylim": [-50, 5],
 }
 
 create_plots(nemo_ice_grids.icest, "icest_lim3", axis_settings)
@@ -163,10 +224,27 @@ create_plots(nemo_ice_grids.icest, "icest_lim3", axis_settings)
 axis_settings = {
     "title": "Mean Sea Ice Temperature (LIM3)",
     "ylabel": "Temperature [°C]",
-    "ylim": [-10, -6],
+    "ylim": [-20, 0],
 }
 
 create_plots(nemo_ice_grids.micet, "micet_lim3", axis_settings)
+
+# %% Surface Energy Budget
+
+oifs_seb = (
+    oifs_diagvars.sfc_sen_flx
+    + oifs_diagvars.sfc_lat_flx
+    + oifs_diagvars.sfc_lwrad
+    + oifs_diagvars.sfc_swrad
+)
+axis_settings = {
+    "title": "Surface Energy Budget",
+    "ylabel": "Energy Budget $[W m^{-2}]$",
+    "ylim": [-150, 150],
+}
+
+create_plots(oifs_seb, "seb_oifs", axis_settings)
+
 
 # %%
 
@@ -177,18 +255,3 @@ axis_settings = {
 }
 
 create_plots(nemo_ice_grids.icehc, "icehc_lim3", axis_settings)
-# %%
-
-for category in range(1, 6):
-    axis_settings = {
-        "title": f"Concentration of Thickness Category {category} (LIM3)",
-        "ylabel": "Sea Ice Concentration [-]",
-        "ylim": [0, 1],
-    }
-
-    create_plots(
-        nemo_ice_grids.iceconc_cat.sel(ncatice=category),
-        f"iceconc_cat{category}_lim3",
-        axis_settings,
-    )
-# %%
