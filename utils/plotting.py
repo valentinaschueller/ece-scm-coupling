@@ -1,6 +1,20 @@
 import xarray as xr
 
 
+def load_from_multiple_experiments(
+    file_name: str,
+    directories: list[str],
+    preprocess: callable,
+    dim=None,
+) -> xr.Dataset:
+    iterates = [
+        xr.open_mfdataset(f"PAPA/{directory}/{file_name}", preprocess=preprocess)
+        for directory in directories
+    ]
+    iterates = xr.concat(iterates, dim=dim)
+    return iterates
+
+
 def create_atm_temps_plot(
     ax_atm_temp, oifs_progvars: xr.Dataset, colors, alpha, labels, linestyles
 ):

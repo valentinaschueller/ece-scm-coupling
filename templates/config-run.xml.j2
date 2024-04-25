@@ -110,13 +110,13 @@
         <Parameter name="ECEARTH_SRC_DIR">
             <Description>Base directory for EC-Earth sources</Description>
             <Type>PATH</Type>
-            <Value>/home/struthers/Projects/EC-Earth3/SCM/scm-trunk/sources</Value>
+            <Value>/home/valentina/dev/ece-scm/sources</Value>
         </Parameter>
 
         <Parameter name="RUN_DIR_BASE">
             <Description>EC-Earth run directory</Description>
             <Type>PATH</Type>
-            <Value>/home/struthers/Projects/EC-Earth3/SCM/ecearth3/scm-trunk</Value>
+            <Value>/home/valentina/dev/scm_rundir</Value>
         </Parameter>
 
         <Parameter name="PROC_PER_NODE">
@@ -229,7 +229,7 @@
         <Parameter name="IFS_LEVELS">
             <Description>Vertical resolution of IFS-SCM</Description>
             <Type>STRING</Type>
-            <Value>60</Value>
+            <Value>{{setup_dict.get("ifs_levels", 60)}}</Value>
         </Parameter>
 
         <Parameter name="IFS_TIME_STEP_SEC">
@@ -320,10 +320,22 @@
             <Value>{{setup_dict["nem_input_file"]}}</Value>
         </Parameter>
 
+        <Parameter name="LIM_DIAG_INIT">
+            <Description>Toogle LIM3 diagnostic initialization (TRUE or FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>{{setup_dict.get("lim_diag_init", "T")}}</Value>
+        </Parameter>
+
         <Parameter name="LIM_TIME_STEP_SEC">
             <Description>LIM time step in seconds</Description>
             <Type>INTEGER</Type>
             <Value>{{setup_dict["dt_nemo"]}}</Value>
+        </Parameter>
+
+        <Parameter name="LIM_INPUT_FILE">
+            <Description>Path to LIM init file</Description>
+            <Type>PATH</Type>
+            <Value>{{setup_dict.get("lim_input_file")}}</Value>
         </Parameter>
 
     </Model>

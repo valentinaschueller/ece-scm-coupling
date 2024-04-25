@@ -135,3 +135,7 @@ dmypy.json
 
 # SLURM output
 *.out
+# Custom additions
+.vscode/
+*.png
+*.pdf
