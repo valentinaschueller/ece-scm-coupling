@@ -167,7 +167,7 @@
         <Parameter name="IFS_LEVELS">
             <Description>Vertical resolution of IFS-SCM</Description>
             <Type>STRING</Type>
-            <Value>60</Value>
+            <Value>{{setup_dict.get("ifs_levels", 60)}}</Value>
         </Parameter>
 
         <Parameter name="IFS_TIME_STEP_SEC">
