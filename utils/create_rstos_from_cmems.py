@@ -3,10 +3,10 @@ from pathlib import Path
 import pandas as pd
 import xarray as xr
 
-day_index = 2  # which daily average to extract from CMEMS data (counts from 0!)
+day_index = 0  # which daily average to extract from CMEMS data (counts from 0!)
 
 cmems_filename = Path(
-    "/home/x_valsc/aoscm/runtime/scm-classic/PAPA/data/nemo-4.0.1/init/cmems/cmems_extraction_mosaic_summer.nc"
+    "/home/x_valsc/aoscm/runtime/scm-classic/PAPA/data/nemo-4.0.1/init/cmems/cmems_top_case.nc"
 )
 old_rstos_filename = Path(
     "/home/x_valsc/aoscm/runtime/scm-classic/PAPA/data/oasis-mct-4.0/rstos.nc"
