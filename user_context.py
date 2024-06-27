@@ -1,28 +1,31 @@
 from pathlib import Path
 
-platform = "valentinair"
-model_dir = Path("/Users/valentina/dev/aoscm")
-output_dir = Path("/Users/valentina/dev/aoscm_rundir/PAPA")
+platform = "tetralith"
+model_dir = Path("/home/x_valsc/aoscm")
+output_dir = Path("/home/x_valsc/rundir/output")
 template_data_dir = Path("templates")
-plotting_dir = Path("/Users/valentina/dev/aoscm_rundir/plots")
+plotting_dir = Path("/home/x_valsc/rundir/plots")
 
 runscript_dir = model_dir / "runtime/scm-classic/PAPA"
 ecconf_executable = model_dir / "sources/util/ec-conf/ec-conf"
 
 data_dir = runscript_dir / "data"
-ifs_input_files_dir = data_dir / "oifs/input_files"
-nemo_input_files_dir = data_dir / "nemo/init/init_from_CMEMS"
-rstas_dir = data_dir / "oasis/rstas_from_AMIP"
-rstos_dir = data_dir / "oasis/rstos_from_CMEMS"
+si3_input_files_dir = data_dir / "si3/init"
+ifs_input_files_dir = data_dir / "oifs-43r3v1-ref/init"
+nemo_input_files_dir = data_dir / "nemo-4.0.1/init"
+rstas_dir = data_dir / "oasis-mct-4.0"
+rstos_dir = data_dir / "oasis-mct-4.0"
 
 # where is the config-run.xml template (as a string!):
-config_run_template = template_data_dir / "config-run.xml.j2"
+config_run_template = template_data_dir / "config-run_ece4.xml.j2"
 
 # run scripts
-ascm_executable = runscript_dir / "ece-scm_oifs.sh"
-oscm_executable = runscript_dir / "ece-scm_nemo.sh"
-aoscm_executable = runscript_dir / "ece-scm_oifs+nemo.sh"
-aoscm_schwarz_correction_executable = runscript_dir / "ece-scm_oifs+nemo_2.sh"
+ascm_executable = runscript_dir / "ece4-scm_oifs.sh"
+oscm_executable = runscript_dir / "ece4-scm_nemo.sh"
+aoscm_executable = runscript_dir / "ece4-scm_oifs+nemo.sh"
+aoscm_schwarz_correction_executable = (
+    runscript_dir / "ece4-scm_oifs+nemo_schwarz_corr.sh"
+)
 
 
 def check_paths_exist():

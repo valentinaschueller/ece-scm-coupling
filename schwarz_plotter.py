@@ -1,15 +1,18 @@
 # %% Setup
 from pathlib import Path
-import numpy as np
+
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
+import numpy as np
 import xarray as xr
-import top_case as experiment_runner
-from utils.files import OIFSPreprocessor, NEMOPreprocessor
 
-plt.style.use("stylesheet.mpl")
+import si3_example as experiment_runner
+from utils.files import NEMOPreprocessor, OIFSPreprocessor
+from utils.plotting import set_style
 
-exp_id = f"{experiment_runner.exp_prefix}S"
+set_style()
+
+exp_id = "SI3S"
 plot_folder = Path(f"plots/{exp_id}")
 
 
@@ -18,7 +21,7 @@ def load_iterates(
 ) -> xr.Dataset:
     swr_dim = xr.DataArray(np.arange(max_iters) + 1, dims="swr_iterate")
     iterates = [
-        xr.open_mfdataset(f"PAPA/{exp_id}_{iter}/{file_name}", preprocess=preprocess)
+        xr.open_mfdataset(f"output/{exp_id}_{iter}/{file_name}", preprocess=preprocess)
         for iter in range(1, max_iters + 1, step)
     ]
     iterates = xr.concat(iterates, swr_dim)
@@ -66,8 +69,8 @@ def create_plots(da: xr.DataArray, file_stem: str, axis_settings: dict):
     fig.savefig(plot_folder / f"{file_stem}.pdf", bbox_inches="tight")
     fig.savefig(plot_folder / f"{file_stem}.png", bbox_inches="tight", dpi=300)
 
-    ani = animate(da, **axis_settings)
-    ani.save(plot_folder / f"{file_stem}.mp4", dpi=300)
+    # ani = animate(da, **axis_settings)
+    # ani.save(plot_folder / f"{file_stem}.mp4", dpi=300)
     plt.close("all")
 
 
@@ -79,7 +82,7 @@ oifs_preprocessor = OIFSPreprocessor(start_date, time_shift)
 nemo_preprocessor = NEMOPreprocessor(start_date, time_shift)
 
 plot_folder.mkdir(exist_ok=True)
-max_iters = experiment_runner.max_iters
+max_iters = 8
 alpha = 0.25
 
 sequential_swr = False
@@ -95,10 +98,7 @@ oifs_progvars = load_iterates(
     "progvar.nc", oifs_preprocessor.preprocess, max_iters, step
 )
 nemo_t_grids = load_iterates(
-    f"{exp_id}_*_T.nc", nemo_preprocessor.preprocess, max_iters, step
-)
-nemo_ice_grids = load_iterates(
-    f"{exp_id}_*_icemod.nc", nemo_preprocessor.preprocess, max_iters, step
+    f"{exp_id}_*_T_*.nc", nemo_preprocessor.preprocess, max_iters, step
 )
 
 # %% Poster Plot
@@ -207,7 +207,7 @@ axis_settings = {
     "ylim": [0.99, 1],
 }
 
-create_plots(nemo_ice_grids.iceconc, "iceconc_lim3", axis_settings)
+create_plots(nemo_t_grids.iceconc, "iceconc_lim3", axis_settings)
 
 # %% Ice Surface Temperature
 
