@@ -7,7 +7,7 @@ template_data_dir = Path("templates")
 plotting_dir = Path("/home/x_valsc/rundir/plots")
 
 runscript_dir = model_dir / "runtime/scm-classic/PAPA"
-ecconf_executable = model_dir / "sources/util/ec-conf/ec-conf"
+ecconf_executable = model_dir / "sources/util/ec-conf/ec-conf3"
 
 data_dir = runscript_dir / "data"
 si3_input_files_dir = data_dir / "si3/init"
