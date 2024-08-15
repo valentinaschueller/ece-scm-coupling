@@ -36,11 +36,11 @@ class SchwarzCoupling:
         if current_iter < 1:
             raise ValueError("Current iteration must be >=1")
         self.iter = current_iter
+        render_config_xml(
+            context.runscript_dir, context.config_run_template, self.experiment
+        )
         while self.iter <= max_iters:
             print(f"Iteration {self.iter}")
-            render_config_xml(
-                context.runscript_dir, context.config_run_template, self.experiment
-            )
             self.aoscm.run_coupled_model(schwarz_correction=bool(self.iter - 1))
             self._postprocess_iteration(next_iteration_exists=(self.iter < max_iters))
             self.iter += 1
