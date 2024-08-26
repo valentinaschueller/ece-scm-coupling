@@ -80,9 +80,6 @@ class AOSCM:
     def _run_model(self, executable: Path, print_time: bool = False) -> None:
         print("Running model...")
         args = [str(executable)]
-        # if context.use_slurm:
-        #     args = ["sbatch"] + args
-        #     print_time = False
         with ChangeDirectory(context.runscript_dir):
             completed_process = subprocess.run(
                 args,
