@@ -1,20 +1,19 @@
 from pathlib import Path
 
-platform = "tetralith"
-model_dir = Path("/home/x_valsc/aoscm")
-output_dir = Path("/home/x_valsc/rundir/output")
-template_data_dir = Path("templates")
-plotting_dir = Path("/home/x_valsc/rundir/plots")
+platform = "cosmos"
+model_dir = Path("/home/vschuller/aoscm")
+output_dir = Path("/home/vschuller/rundir")
+template_data_dir = Path("/home/vschuller/ece-scm-coupling/templates")
+plotting_dir = Path("/home/vschuller/rundir/plots")
 
 runscript_dir = model_dir / "runtime/scm-classic/PAPA"
-ecconf_executable = model_dir / "sources/util/ec-conf/ec-conf3"
+ecconf_executable = model_dir / "sources/util/ec-conf/ec-conf"
 
-data_dir = runscript_dir / "data"
-si3_input_files_dir = data_dir / "si3/init"
-ifs_input_files_dir = data_dir / "oifs-43r3v1-ref/init"
-nemo_input_files_dir = data_dir / "nemo-4.0.1/init"
-rstas_dir = data_dir / "oasis-mct-4.0"
-rstos_dir = data_dir / "oasis-mct-4.0"
+data_dir = Path("/home/vschuller/initial_data/control_experiment")
+ifs_input_files_dir = data_dir
+nemo_input_files_dir = data_dir
+rstas_dir = data_dir
+rstos_dir = data_dir
 
 # where is the config-run.xml template (as a string!):
 config_run_template = template_data_dir / "config-run_ece4.xml.j2"

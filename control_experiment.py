@@ -28,10 +28,10 @@ experiment = {
 set_experiment_date_properties(
     experiment, start_date, simulation_duration, ifs_input_start_date, ifs_input_freq
 )
-nemo_input_file = context.nemo_input_files_dir / "init_PAPASTATION_2014-07-01.nc"
-oifs_input_file = context.ifs_input_files_dir / "papa_2014-07_era.nc"
-oasis_rstas = context.rstas_dir / "rstas_2014-07-01_00_era.nc"
-oasis_rstos = context.rstos_dir / "rstos_2014-07-01.nc"
+nemo_input_file = context.data_dir / "nemo_papa_2014-07-01.nc"
+oifs_input_file = context.data_dir / "oifs_papa_2014-07-01_30.nc"
+oasis_rstas = context.data_dir / "rstas_2014-07-01_00_era.nc"
+oasis_rstos = context.data_dir / "rstos_2014-07-01.nc"
 
 assert nemo_input_file.exists()
 assert oifs_input_file.exists()
