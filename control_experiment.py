@@ -24,6 +24,7 @@ experiment = {
     "dt_nemo": dt_nemo,
     "dt_ifs": dt_ifs,
     "ifs_leocwa": "F",
+    "with_si3": "F",
 }
 set_experiment_date_properties(
     experiment, start_date, simulation_duration, ifs_input_start_date, ifs_input_freq
@@ -82,4 +83,4 @@ def run_parallel_schwarz_without_cleanup():
 if __name__ == "__main__":
     run_naive_experiments()
 
-    run_schwarz_experiments()
+    # run_parallel_schwarz_without_cleanup()
