@@ -1,19 +1,20 @@
 from pathlib import Path
 
-platform = "valentinair"
-model_dir = Path("/Users/valentina/dev/aoscm")
-output_dir = Path("/Users/valentina/dev/aoscm_rundir/PAPA")
+platform = "pc-gcc-openmpi"
+model_dir = Path("/home/valentina/dev/ece-scm")
+output_dir = Path("/home/valentina/dev/scm_rundir/PAPA")
 template_data_dir = Path("templates")
-plotting_dir = Path("/Users/valentina/dev/aoscm_rundir/plots")
+plotting_dir = Path("/home/valentina/dev/scm_rundir/plots")
 
 runscript_dir = model_dir / "runtime/scm-classic/PAPA"
 ecconf_executable = model_dir / "sources/util/ec-conf/ec-conf"
 
 data_dir = runscript_dir / "data"
-ifs_input_files_dir = data_dir / "oifs/input_files"
-nemo_input_files_dir = data_dir / "nemo/init/init_from_CMEMS"
-rstas_dir = data_dir / "oasis/rstas_from_AMIP"
-rstos_dir = data_dir / "oasis/rstos_from_CMEMS"
+ifs_input_files_dir = data_dir / "oifs"
+nemo_input_files_dir = data_dir / "nemo/init"
+lim_input_files_dir = data_dir / "lim"
+rstas_dir = data_dir / "oasis"
+rstos_dir = data_dir / "oasis"
 
 # where is the config-run.xml template (as a string!):
 config_run_template = template_data_dir / "config-run.xml.j2"
@@ -37,6 +38,7 @@ def check_paths_exist():
         data_dir,
         ifs_input_files_dir,
         nemo_input_files_dir,
+        lim_input_files_dir,
         rstas_dir,
         rstos_dir,
         config_run_template,
