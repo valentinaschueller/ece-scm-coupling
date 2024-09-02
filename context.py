@@ -21,7 +21,7 @@ class Context:
     aoscm_schwarz_correction_executable: Path = field(init=False)
 
     def __post_init__(self):
-        if self.model_version not in (3,4):
+        if self.model_version not in (3, 4):
             raise ValueError("Model version {self.model_version=} not supported")
 
         self.model_dir = Path(self.model_dir)
@@ -32,13 +32,15 @@ class Context:
             self.config_run_template = self.template_dir / "config-run.xml.j2"
         else:
             self.config_run_template = self.template_dir / "config-run_ece4.xml.j2"
-        
+
         self.ecconf_executable = self.model_dir / "sources/util/ec-conf/ec-conf"
         self.runscript_dir = self.model_dir / "runtime/scm-classic/PAPA"
         self.ascm_executable = self.runscript_dir / "ece4-scm_oifs.sh"
         self.oscm_executable = self.runscript_dir / "ece4-scm_nemo.sh"
         self.aoscm_executable = self.runscript_dir / "ece4-scm_oifs+nemo.sh"
-        self.aoscm_schwarz_correction_executable = self.runscript_dir / "ece4-scm_oifs+nemo_schwarz_corr.sh"
+        self.aoscm_schwarz_correction_executable = (
+            self.runscript_dir / "ece4-scm_oifs+nemo_schwarz_corr.sh"
+        )
 
         paths_to_check = [
             self.model_dir,
@@ -50,8 +52,8 @@ class Context:
 
         for path in paths_to_check:
             if not path.exists():
-                raise FileNotFoundError(f"Path does not exist: {path=}")            
-        
+                raise FileNotFoundError(f"Path does not exist: {path=}")
+
         self.output_dir = Path(self.output_dir)
         self.output_dir.mkdir(exist_ok=True)
         if self.plotting_dir is not None:

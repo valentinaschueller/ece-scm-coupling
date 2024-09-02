@@ -9,7 +9,10 @@ from utils.templates import render_config_xml
 
 class SchwarzCoupling:
     def __init__(
-        self, experiment_dict: dict, context: Context, reduce_output_after_iteration: bool = True
+        self,
+        experiment_dict: dict,
+        context: Context,
+        reduce_output_after_iteration: bool = True,
     ):
         self.context = context
         self.exp_id = experiment_dict["exp_id"]
@@ -34,7 +37,9 @@ class SchwarzCoupling:
             raise ValueError("Current iteration must be >=1")
         self.iter = current_iter
         render_config_xml(
-            self.context.runscript_dir, self.context.config_run_template, self.experiment
+            self.context.runscript_dir,
+            self.context.config_run_template,
+            self.experiment,
         )
         while self.iter <= max_iters:
             print(f"Iteration {self.iter}")

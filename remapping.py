@@ -27,6 +27,7 @@ oce_to_atm = {
     "OSnwTck": "A_Snow_thickness",
 }
 
+
 class RemapCouplerOutput:
     """
     Create input files for an upcoming Schwarz iteration.

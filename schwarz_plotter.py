@@ -4,9 +4,9 @@ from pathlib import Path
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import numpy as np
+import si3_example as experiment_runner
 import xarray as xr
 
-import si3_example as experiment_runner
 from utils.files import NEMOPreprocessor, OIFSPreprocessor
 from utils.plotting import set_style
 

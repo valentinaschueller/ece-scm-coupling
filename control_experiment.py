@@ -56,6 +56,7 @@ experiment["oasis_rstos"] = oasis_rstos
 
 aoscm = AOSCM(context)
 
+
 def run_naive_experiments():
     for cpl_scheme in cpl_schemes:
         experiment["exp_id"] = f"{exp_prefix_naive}{cpl_scheme}"
@@ -88,4 +89,4 @@ def run_parallel_schwarz_without_cleanup():
 if __name__ == "__main__":
     run_naive_experiments()
 
-    # run_parallel_schwarz_without_cleanup()
+    run_schwarz_experiments()
