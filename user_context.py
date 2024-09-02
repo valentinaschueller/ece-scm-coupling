@@ -12,6 +12,7 @@ ecconf_executable = model_dir / "sources/util/ec-conf/ec-conf"
 data_dir = Path("/home/vschuller/initial_data/control_experiment")
 ifs_input_files_dir = data_dir
 nemo_input_files_dir = data_dir
+si3_input_files_dir = data_dir
 rstas_dir = data_dir
 rstos_dir = data_dir
 
