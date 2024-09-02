@@ -2,7 +2,7 @@ import shutil
 
 import pandas as pd
 
-import user_context as context
+from context import Context
 import utils.input_file_names as ifn
 from utils.compute_rstas import compute_rstas
 from utils.helpers import AOSCM, compute_nstrtini
@@ -11,7 +11,15 @@ from utils.templates import render_config_xml
 # ------------------------------------------------
 # User input starts here:
 # ------------------------------------------------
-
+context = Context(
+    platform="pc-gcc-openmpi",
+    model_version=3,
+    model_dir="/home/valentina/dev/aoscm/ece3-scm",
+    output_dir="/home/valentina/dev/aoscm/scm_rundir",
+    template_dir="/home/valentina/dev/aoscm/scm_rundir/templates",
+    plotting_dir="/home/valentina/dev/aoscm/scm_rundir/plots",
+    data_dir="/home/valentina/dev/aoscm/initial_data/nwp",
+)
 
 input_file_start_date = pd.Timestamp("2014-07-01")
 

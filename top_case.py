@@ -1,10 +1,20 @@
 import pandas as pd
 
-import user_context as context
+from context import Context
 from schwarz_coupling import SchwarzCoupling
 from setup_experiment import set_experiment_date_properties
 from utils.helpers import AOSCM, reduce_output
 from utils.templates import render_config_xml
+
+context = Context(
+    platform="pc-gcc-openmpi",
+    model_version=3,
+    model_dir="/home/valentina/dev/aoscm/ece3-scm",
+    output_dir="/home/valentina/dev/aoscm/scm_rundir",
+    template_dir="/home/valentina/dev/aoscm/scm_rundir/templates",
+    plotting_dir="/home/valentina/dev/aoscm/scm_rundir/plots",
+    data_dir="/home/valentina/dev/aoscm/initial_data/top_case",
+)
 
 cpl_schemes = [0, 1, 2]
 dt_cpl = 900

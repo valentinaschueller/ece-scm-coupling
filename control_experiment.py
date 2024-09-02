@@ -1,6 +1,6 @@
 import pandas as pd
 
-import user_context as context
+from context import Context
 from schwarz_coupling import SchwarzCoupling
 from setup_experiment import set_experiment_date_properties
 from utils.helpers import AOSCM, reduce_output
@@ -13,6 +13,16 @@ dt_nemo = 900
 max_iters = 20
 exp_prefix_naive = "C1N"
 exp_prefix_schwarz = "C1S"
+
+context = Context(
+    platform="pc-gcc-openmpi",
+    model_version=3,
+    model_dir="/home/valentina/dev/aoscm/ece3-scm",
+    output_dir="/home/valentina/dev/aoscm/scm_rundir",
+    template_dir="/home/valentina/dev/aoscm/scm_rundir/templates",
+    plotting_dir="/home/valentina/dev/aoscm/scm_rundir/plots",
+    data_dir="/home/valentina/dev/aoscm/initial_data/control_experiment",
+)
 
 start_date = pd.Timestamp("2014-07-01")
 simulation_duration = pd.Timedelta(4, "days")
@@ -44,12 +54,7 @@ experiment["ifs_input_file"] = oifs_input_file
 experiment["oasis_rstas"] = oasis_rstas
 experiment["oasis_rstos"] = oasis_rstos
 
-aoscm = AOSCM(
-    context.runscript_dir,
-    context.ecconf_executable,
-    context.platform,
-)
-
+aoscm = AOSCM(context)
 
 def run_naive_experiments():
     for cpl_scheme in cpl_schemes:
@@ -69,14 +74,14 @@ def run_schwarz_experiments():
     for cpl_scheme in cpl_schemes[:1]:
         experiment["exp_id"] = f"{exp_prefix_schwarz}{cpl_scheme}"
         experiment["cpl_scheme"] = cpl_scheme
-        schwarz_exp = SchwarzCoupling(experiment)
+        schwarz_exp = SchwarzCoupling(experiment, context)
         schwarz_exp.run(max_iters)
 
 
 def run_parallel_schwarz_without_cleanup():
     experiment["exp_id"] = f"{exp_prefix_schwarz}P"
     experiment["cpl_scheme"] = 0
-    schwarz_exp = SchwarzCoupling(experiment, False)
+    schwarz_exp = SchwarzCoupling(experiment, context, False)
     schwarz_exp.run(max_iters)
 
 

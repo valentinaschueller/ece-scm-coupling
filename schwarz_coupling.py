@@ -1,6 +1,6 @@
 import shutil
 
-import user_context as context
+from context import Context
 from convergence_checker import ConvergenceChecker
 from remapping import RemapCouplerOutput
 from utils.helpers import AOSCM, reduce_output, serialize_experiment_setup
@@ -9,8 +9,9 @@ from utils.templates import render_config_xml
 
 class SchwarzCoupling:
     def __init__(
-        self, experiment_dict: dict, reduce_output_after_iteration: bool = True
+        self, experiment_dict: dict, context: Context, reduce_output_after_iteration: bool = True
     ):
+        self.context = context
         self.exp_id = experiment_dict["exp_id"]
         self.dt_cpl = experiment_dict["dt_cpl"]
         self.dt_ifs = experiment_dict["dt_ifs"]
@@ -19,11 +20,7 @@ class SchwarzCoupling:
         self.experiment = experiment_dict
         self.iter = 1
         self.run_directory = context.output_dir / self.exp_id
-        self.aoscm = AOSCM(
-            context.runscript_dir,
-            context.ecconf_executable,
-            context.platform,
-        )
+        self.aoscm = AOSCM(context)
         self.convergence_checker = ConvergenceChecker()
         self.reduce_output = reduce_output_after_iteration
         self.converged = False
@@ -37,7 +34,7 @@ class SchwarzCoupling:
             raise ValueError("Current iteration must be >=1")
         self.iter = current_iter
         render_config_xml(
-            context.runscript_dir, context.config_run_template, self.experiment
+            self.context.runscript_dir, self.context.config_run_template, self.experiment
         )
         while self.iter <= max_iters:
             print(f"Iteration {self.iter}")

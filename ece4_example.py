@@ -1,10 +1,20 @@
 import pandas as pd
 
-import user_context as context
+from context import Context
 from schwarz_coupling import SchwarzCoupling
 from setup_experiment import set_experiment_date_properties, set_experiment_input_files
 from utils.helpers import AOSCM, reduce_output
 from utils.templates import render_config_xml
+
+context = Context(
+    platform="cosmos",
+    model_version=4,
+    model_dir="/home/vschuller/aoscm",
+    output_dir="/home/vschuller/rundir",
+    template_dir="/home/vschuller/ece-scm-coupling/templates",
+    plotting_dir="/home/vschuller/rundir/plots",
+    data_dir="/home/schuller/initial_data/control_experiment",
+)
 
 cpl_scheme = 0
 dt_cpl = 3600

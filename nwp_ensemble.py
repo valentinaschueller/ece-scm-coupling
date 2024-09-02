@@ -3,11 +3,21 @@ from pathlib import Path
 
 import pandas as pd
 
-import user_context as context
+from context import Context
 from schwarz_coupling import SchwarzCoupling
 from setup_experiment import set_experiment_date_properties, set_experiment_input_files
 from utils.helpers import AOSCM, reduce_output, serialize_experiment_setup
 from utils.templates import render_config_xml
+
+context = Context(
+    platform="pc-gcc-openmpi",
+    model_version=3,
+    model_dir="/home/valentina/dev/aoscm/ece3-scm",
+    output_dir="/home/valentina/dev/aoscm/scm_rundir",
+    template_dir="/home/valentina/dev/aoscm/scm_rundir/templates",
+    plotting_dir="/home/valentina/dev/aoscm/scm_rundir/plots",
+    data_dir="/home/valentina/dev/aoscm/initial_data/nwp",
+)
 
 start_dates = pd.date_range(
     pd.Timestamp("2014-07-03 00:00:00"), pd.Timestamp("2014-07-28 18:00:00"), freq="6H"

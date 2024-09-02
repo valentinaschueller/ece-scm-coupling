@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 import xarray as xr
 
-import user_context as context
+from context import Context
 import utils.helpers as hlp
 import utils.input_file_names as ifn
 from utils.files import OIFSPreprocessor
@@ -14,13 +14,21 @@ from utils.update_oifs_input_file import update_oifs_input_file_from_progvar
 # ------------------------------------------------
 # User input starts here:
 # ------------------------------------------------
-
+context = Context(
+    platform="pc-gcc-openmpi",
+    model_version=3,
+    model_dir="/home/valentina/dev/aoscm/ece3-scm",
+    output_dir="/home/valentina/dev/aoscm/scm_rundir",
+    template_dir="/home/valentina/dev/aoscm/scm_rundir/templates",
+    plotting_dir="/home/valentina/dev/aoscm/scm_rundir/plots",
+    data_dir="/home/valentina/dev/aoscm/initial_data/nwp",
+)
 
 input_file_start_date = pd.Timestamp("2014-07-01")
 final_start_date = pd.Timestamp("2014-07-26 18:00")
 input_file_freq = pd.Timedelta(6, "h")
 
-original_input_file = ifn.get_oifs_input_file(context.ifs_input_files_dir, "era")
+original_input_file = ifn.get_oifs_input_file(context.data_dir / "oifs", "era")
 
 # Experiment settings
 exp_id = "PERT"
@@ -70,7 +78,7 @@ def create_input_file_copies(original_input_file: Path) -> list[Path]:
         copied_input_file = shutil.copy(
             original_input_file,
             ifn.get_oifs_input_file(
-                context.ifs_input_files_dir, coupling_scheme_string, False
+                context.data_dir / "oifs", coupling_scheme_string, False
             ),
         )
         copied_input_files.append(copied_input_file)
