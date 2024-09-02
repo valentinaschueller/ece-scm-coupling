@@ -40,6 +40,7 @@ def check_paths_exist():
         data_dir,
         ifs_input_files_dir,
         nemo_input_files_dir,
+        lim_input_files_dir,
         rstas_dir,
         rstos_dir,
         config_run_template,
