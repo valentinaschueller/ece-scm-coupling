@@ -3,12 +3,22 @@ import pandas as pd
 import proplot as pplt
 import xarray as xr
 
-import user_context as context
 import utils.plotting as uplt
+from context import Context
 from setup_experiment import set_experiment_date_properties, set_experiment_input_files
 from utils.files import NEMOPreprocessor, OIFSPreprocessor
 from utils.helpers import AOSCM, reduce_output
 from utils.templates import render_config_xml
+
+context = Context(
+    platform="pc-gcc-openmpi",
+    model_version=3,
+    model_dir="/home/valentina/dev/aoscm/ece3-scm",
+    output_dir="/home/valentina/dev/aoscm/scm_rundir",
+    template_dir="/home/valentina/dev/aoscm/scm_rundir/templates",
+    plotting_dir="/home/valentina/dev/aoscm/scm_rundir/plots",
+    data_dir="/home/valentina/dev/aoscm/initial_data/control_experiment",
+)
 
 
 def load_datasets(exp_ids: list):
@@ -85,11 +95,7 @@ set_experiment_date_properties(
 )
 set_experiment_input_files(experiment, start_date, "era")
 
-model = AOSCM(
-    context.runscript_dir,
-    context.ecconf_executable,
-    context.platform,
-)
+model = AOSCM(context)
 
 legwwms_values = ["T", "F"]
 exp_ids = []
@@ -101,7 +107,7 @@ for legwwms in legwwms_values:
     exp_ids.append(exp_id)
     experiment["exp_id"] = exp_id
 
-    render_config_xml(context.runscript_dir, context.config_run_template, experiment)
+    render_config_xml(context, experiment)
 
     print(f"Config: {experiment['exp_id']}")
     model.run_coupled_model(print_time=False, schwarz_correction=False)

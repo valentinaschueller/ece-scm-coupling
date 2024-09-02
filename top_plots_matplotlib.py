@@ -1,10 +1,12 @@
 # %% Setup
 from pathlib import Path
-import numpy as np
+
 import matplotlib.pyplot as plt
+import numpy as np
 import xarray as xr
+
 import top_case as experiment_runner
-from utils.files import OIFSPreprocessor, NEMOPreprocessor
+from utils.files import NEMOPreprocessor, OIFSPreprocessor
 from utils.plotting import load_from_multiple_experiments
 
 plt.style.use("stylesheet.mpl")

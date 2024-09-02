@@ -43,6 +43,7 @@ class RemapCouplerOutput:
         dt_cpl: int,
         dt_atm: int,
         dt_oce: int,
+        model_version: int,
     ) -> None:
         self.read_directory = read_directory
         self.write_directory = write_directory
@@ -50,16 +51,21 @@ class RemapCouplerOutput:
         self.dt_cpl = dt_cpl
         self.dt_atm = dt_atm
         self.dt_oce = dt_oce
+        if model_version == 4:
+            self.oifs_separator = "_OpenIFS_"
+        else:
+            self.oifs_separator = "_ATMIFS_"
+        self.nemo_separator = "_oceanx_"
 
     def remap(self) -> None:
         for path in self.read_directory.glob("*.nc"):
-            if "_ATMIFS_" in path.stem:
+            if self.oifs_separator in path.stem:
                 self._remap_atm_to_oce(path)
-            if "_oceanx_" in path.stem:
+            if self.nemo_separator in path.stem:
                 self._remap_oce_to_atm(path)
 
     def _remap_oce_to_atm(self, oce_file_path: Path) -> None:
-        oce_var_name = oce_file_path.stem.split("_oceanx_")[0]
+        oce_var_name = oce_file_path.stem.split(self.nemo_separator)[0]
         atm_var_name = oce_to_atm.get(oce_var_name, None)
         if atm_var_name is None:
             return
@@ -78,7 +84,7 @@ class RemapCouplerOutput:
         atm_da.to_netcdf(atm_file_path)
 
     def _remap_atm_to_oce(self, atm_file_path: Path) -> None:
-        atm_var_name = atm_file_path.stem.split("_ATMIFS_")[0]
+        atm_var_name = atm_file_path.stem.split(self.oifs_separator)[0]
         oce_var_name = atm_to_oce.get(atm_var_name, None)
         if oce_var_name is None:
             return

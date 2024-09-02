@@ -11,8 +11,8 @@
 
     <Translation name="RUN_ATM+OCE_SWZ">
         <Description>Run script file (coupled run, Schwarz correction: atm+oce)</Description>
-        <Template>ece4-scm_oifs+nemo_2.sh.tmpl</Template>
-        <Target>ece4-scm_oifs+nemo_2.sh</Target>
+        <Template>ece4-scm_oifs+nemo_schwarz_corr.sh.tmpl</Template>
+        <Target>ece4-scm_oifs+nemo_schwarz_corr.sh</Target>
         <Properties>executable</Properties>
     </Translation>
 
@@ -49,13 +49,13 @@
         <Parameter name="ECEARTH_SRC_DIR">
             <Description>Base directory for EC-Earth sources</Description>
             <Type>PATH</Type>
-            <Value>/proj/nsc/users/struthers/EC-Earth/r2740-coupled-SCM/sources</Value>
+            <Value>{{context.model_dir}}/sources</Value>
         </Parameter>
 
         <Parameter name="RUN_DIR_BASE">
             <Description>EC-Earth run directory</Description>
             <Type>PATH</Type>
-            <Value>/proj/nsc/users/${USER}/ecearth3/r2740-coupled-SCM</Value>
+            <Value>{{context.output_dir}}</Value>
         </Parameter>
 
         <Parameter name="PROC_PER_NODE">
@@ -84,12 +84,12 @@
 
     </Platform>
 
-    <Platform name="ubuntu-gcc-openmpi">
+    <Platform name="cosmos">
         <Description></Description>
 
-        <Translation name="PC-GCC-OPENMPI_CFG">
-            <Description>Platform dependent configuration (pc-gcc-openmpi)</Description>
-            <Template>platform/ubuntu-gcc-openmpi.cfg.tmpl</Template>
+        <Translation name="COSMOS_CFG">
+            <Description>Platform dependent configuration (COSMOS)</Description>
+            <Template>platform/cosmos-scm.cfg.tmpl</Template>
             <Target>ecconf.cfg</Target>
             <Properties></Properties>
         </Translation>
@@ -103,19 +103,19 @@
         <Parameter name="ECEARTH_SRC_DIR">
             <Description>Base directory for EC-Earth sources</Description>
             <Type>PATH</Type>
-            <Value>/home/struthers/NSC/Projects/EC-Earth4-SCM/r8215-ECE4-AOSCM/sources</Value>
+            <Value>{{context.model_dir}}/sources</Value>
         </Parameter>
 
         <Parameter name="RUN_DIR_BASE">
             <Description>EC-Earth run directory</Description>
             <Type>PATH</Type>
-            <Value>/home/struthers/NSC/Projects/EC-Earth4-SCM/run/r8215-ECE4-AOSCM</Value>
+            <Value>{{context.output_dir}}</Value>
         </Parameter>
 
         <Parameter name="PROC_PER_NODE">
             <Description>Number of processors per node</Description>
             <Type>INTEGER</Type>
-            <Value></Value>
+            <Value>48</Value>
         </Parameter>
 
         <Parameter name="ADD_TO_LD_LIBRARY_PATH">
@@ -135,15 +135,14 @@
             <Type>STRING</Type>
             <Value></Value>
         </Parameter>
-
     </Platform>
 
-    <Platform name="valentinair">
+    <Platform name="ubuntu-gcc-openmpi">
         <Description></Description>
 
-        <Translation name="VALENTINAIR_CFG">
-            <Description>Platform dependent configuration (valentinair)</Description>
-            <Template>platform/valentinair-scm.cfg.tmpl</Template>
+        <Translation name="PC-GCC-OPENMPI_CFG">
+            <Description>Platform dependent configuration (pc-gcc-openmpi)</Description>
+            <Template>platform/ubuntu-gcc-openmpi.cfg.tmpl</Template>
             <Target>ecconf.cfg</Target>
             <Properties></Properties>
         </Translation>
@@ -157,13 +156,13 @@
         <Parameter name="ECEARTH_SRC_DIR">
             <Description>Base directory for EC-Earth sources</Description>
             <Type>PATH</Type>
-            <Value>/Users/valentina/dev/aoscm4/sources</Value>
+            <Value>{{context.model_dir}}/sources</Value>
         </Parameter>
 
         <Parameter name="RUN_DIR_BASE">
             <Description>EC-Earth run directory</Description>
             <Type>PATH</Type>
-            <Value>/Users/valentina/dev/aoscm_rundir</Value>
+            <Value>{{context.output_dir}}</Value>
         </Parameter>
 
         <Parameter name="PROC_PER_NODE">
@@ -204,13 +203,13 @@
         <Parameter name="RUN_START_DATE">
             <Description>Start date of the simulation. Use any reasonable syntax.</Description>
             <Type>DATE</Type>
-            <Value>{{setup_dict.get("run_start_date")}}</Value>
+            <Value>{{setup_dict["run_start_date"]}}</Value>
         </Parameter>
 
         <Parameter name="RUN_END_DATE">
             <Description>End date of the simulation. Use any reasonable syntax.</Description>
             <Type>STRING</Type>
-            <Value>{{setup_dict.get("run_end_date")}}</Value>
+            <Value>{{setup_dict["run_end_date"]}}</Value>
         </Parameter>
 
     </Model>
@@ -221,13 +220,13 @@
         <Parameter name="IFS_LEVELS">
             <Description>Vertical resolution of IFS-SCM</Description>
             <Type>STRING</Type>
-            <Value>60</Value>
+            <Value>{{setup_dict.get("ifs_levels", 60)}}</Value>
         </Parameter>
 
         <Parameter name="IFS_TIME_STEP_SEC">
             <Description>IFS-SCM time step in seconds</Description>
             <Type>INTEGER</Type>
-            <Value>900</Value>
+            <Value>{{setup_dict["dt_ifs"]}}</Value>
         </Parameter>
 
         <Parameter name="CMIP5">
@@ -307,15 +306,27 @@
         </Parameter>
 
         <Parameter name="NEM_INPUT_FILE">
-            <Description>Path to NEMO init file, relative to NEMO init data directory (will be copied as init_C1D.nc)</Description>
+            <Description>Path to NEMO init file, relative to NEMO init data directory</Description>
             <Type>PATH</Type>
             <Value>{{setup_dict["nem_input_file"]}}</Value>
         </Parameter>
 
-        <Parameter name="LIM_TIME_STEP_SEC">
-            <Description>LIM time step in seconds</Description>
+        <Parameter name="WITH_SI3">
+            <Description>Run with (T) or without (F) sea ice</Description>
+            <Type>BOOLEAN</Type>
+            <Value>{{setup_dict["with_si3"]}}</Value>
+        </Parameter>
+
+        <Parameter name="SI3_TIME_STEP_SEC">
+            <Description>SI3 time step in seconds</Description>
             <Type>INTEGER</Type>
             <Value>{{setup_dict["dt_nemo"]}}</Value>
+        </Parameter>
+
+        <Parameter name="SI3_INPUT_FILE">
+            <Description>Path to SI3 init file, relative to SI3 init data directory</Description>
+            <Type>PATH</Type>
+            <Value>{{setup_dict.get("si3_input_file")}}</Value>
         </Parameter>
 
     </Model>
@@ -330,7 +341,8 @@
         </Parameter>
 
         <Parameter name="CPL_SCHEME">
-            <Description>Coupling scheme used by OASIS. Parallel (0), sequential atmosphere-first (1), or sequential ocean-first (2) possible.</Description>
+            <Description>Coupling scheme used by OASIS. Parallel (0), sequential atmosphere-first
+                (1), or sequential ocean-first (2) possible.</Description>
             <Type>INTEGER</Type>
             <Value>{{setup_dict["cpl_scheme"]}}</Value>
         </Parameter>

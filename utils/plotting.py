@@ -1,4 +1,8 @@
+from pathlib import Path
+
+import matplotlib.pyplot as plt
 import xarray as xr
+from matplotlib import font_manager
 
 
 def load_from_multiple_experiments(
@@ -88,3 +92,10 @@ def create_atm_ssws_plot(
         title="",
         xlabel="Time",
     )
+
+
+def set_style():
+    font_dir = Path("/home/x_valsc/tex-gyre/opentype")
+    for path in font_dir.glob("*.otf"):
+        font_manager.fontManager.addfont(path)
+    plt.style.use("stylesheet.mpl")

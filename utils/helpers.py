@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 from ruamel.yaml import YAML
 
-import user_context as context
+from context import Context
 from utils.files import ChangeDirectory
 
 
@@ -15,27 +15,16 @@ class AOSCM:
     We assume that the experiment is already configured correctly with `config-run.xml` inside the `runscript_dir`.
     """
 
-    def __init__(self, runscript_dir: Path, ecconf_exe: Path, platform: str):
-        """Constructor.
-
-        :param runscript_dir: directory where the run scripts lie (something like runtime/scm-classic/PAPA)
-        :type runscript_dir: Path
-        :param ecconf_exe: path to ecconf executable
-        :type ecconf_exe: Path
-        :param platform: platform to use for ecconf
-        :type platform: str
-        """
-        self.runscript_dir = runscript_dir
-        self.ecconf_executable = ecconf_exe
-        self.platform = platform
+    def __init__(self, context: Context):
+        self.context = context
 
     def _run_ecconf(self):
-        with ChangeDirectory(context.runscript_dir):
+        with ChangeDirectory(self.context.runscript_dir):
             subprocess.run(
                 [
-                    self.ecconf_executable,
+                    self.context.ecconf_executable,
                     "-p",
-                    self.platform,
+                    self.context.platform,
                     "config-run.xml",
                 ],
                 capture_output=True,
@@ -52,9 +41,9 @@ class AOSCM:
         :type schwarz_correction: bool, optional
         """
         self._run_ecconf()
-        aoscm_executable = context.aoscm_executable
+        aoscm_executable = self.context.aoscm_executable
         if schwarz_correction:
-            aoscm_executable = context.aoscm_schwarz_correction_executable
+            aoscm_executable = self.context.aoscm_schwarz_correction_executable
         self._run_model(aoscm_executable, print_time)
 
     def run_atmosphere_only(self, print_time: bool = False):
@@ -64,7 +53,7 @@ class AOSCM:
         :type print_time: bool, optional
         """
         self._run_ecconf()
-        ascm_executable = context.ascm_executable
+        ascm_executable = self.context.ascm_executable
         self._run_model(ascm_executable, print_time)
 
     def run_ocean_only(self, print_time: bool = False):
@@ -74,15 +63,15 @@ class AOSCM:
         :type print_time: bool, optional
         """
         self._run_ecconf()
-        oscm_executable = context.oscm_executable
+        oscm_executable = self.context.oscm_executable
         self._run_model(oscm_executable, print_time)
 
-    def _run_model(self, executable: str, print_time: bool = False) -> None:
+    def _run_model(self, executable: Path, print_time: bool = False) -> None:
         print("Running model...")
-        with ChangeDirectory(context.runscript_dir):
+        args = [str(executable)]
+        with ChangeDirectory(self.context.runscript_dir):
             completed_process = subprocess.run(
-                [],
-                executable=executable,
+                args,
                 capture_output=True,
                 text=print_time,  # if print_time, we want stdout and stderr to be string instead of bytes.
             )
@@ -130,6 +119,7 @@ def reduce_output(run_directory: Path, keep_debug_output: bool = True) -> None:
 def serialize_experiment_setup(experiment: dict, run_directory: Path):
     yaml = YAML(typ="unsafe", pure=True)
     with open(run_directory / "setup_dict.yaml", "w") as output_file:
+        yaml = YAML(typ="unsafe", pure=True)
         yaml.dump(experiment, output_file)
 
 

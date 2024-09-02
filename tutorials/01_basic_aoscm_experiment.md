@@ -34,7 +34,7 @@ experiment = {
     # ...
     "cpl_scheme": 0,
 }
-render_config_xml(context.runscript_dir, context.config_run_template, experiment)
+render_config_xml(context, experiment)
 ```
 
 After this, the rendered version of the template file at `context.config_run_template` will be placed inside `context.runscript_dir`.
@@ -51,11 +51,7 @@ Assuming the experiment has already been configured as described above, one can 
 ```python
 from utils.helpers import AOSCM
 
-aoscm = AOSCM(
-    context.runscript_dir,
-    context.ecconf_executable,
-    context.platform,
-)
+aoscm = AOSCM(context)
 aoscm.run_coupled_model() # or, e.g., aoscm.run_atmosphere_only()
 ```
 

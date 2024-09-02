@@ -12,3 +12,4 @@ xtick.minor.visible : True
 ytick.minor.visible : True
 figure.titlesize : large
 axes.titlesize : large
+axes.formatter.use_mathtext : True

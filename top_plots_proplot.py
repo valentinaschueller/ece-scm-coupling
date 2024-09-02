@@ -1,12 +1,13 @@
 # %%
-import top_case as experiment_runner
 from pathlib import Path
+
 import numpy as np
 import proplot as pplt
 import xarray as xr
 
+import top_case as experiment_runner
+from utils.files import NEMOPreprocessor, OIFSPreprocessor
 from utils.plotting import load_from_multiple_experiments
-from utils.files import OIFSPreprocessor, NEMOPreprocessor
 
 # %%
 

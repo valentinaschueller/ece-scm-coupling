@@ -4,12 +4,22 @@ import pandas as pd
 import proplot as pplt
 import xarray as xr
 
-import user_context as context
 import utils.plotting as uplt
+from context import Context
 from setup_experiment import set_experiment_date_properties, set_experiment_input_files
 from utils.files import NEMOPreprocessor, OIFSPreprocessor
 from utils.helpers import AOSCM, reduce_output
 from utils.templates import render_config_xml
+
+context = Context(
+    platform="pc-gcc-openmpi",
+    model_version=3,
+    model_dir="/home/valentina/dev/aoscm/ece3-scm",
+    output_dir="/home/valentina/dev/aoscm/scm_rundir",
+    template_dir="/home/valentina/dev/aoscm/scm_rundir/templates",
+    plotting_dir="/home/valentina/dev/aoscm/scm_rundir/plots",
+    data_dir="/home/valentina/dev/aoscm/initial_data/control_experiment",
+)
 
 dt_cpl_A = [
     800,
@@ -132,11 +142,7 @@ def create_and_save_plots(exp_ids):
     )
 
 
-aoscm = AOSCM(
-    context.runscript_dir,
-    context.ecconf_executable,
-    context.platform,
-)
+aoscm = AOSCM(context)
 
 if __name__ == "__main__":
 
@@ -147,9 +153,7 @@ if __name__ == "__main__":
         for j in cpl_schemes:
             exp_id = exp_setups[i][j]["exp_id"]
             exp_ids.append(exp_id)
-            render_config_xml(
-                context.runscript_dir, context.config_run_template, exp_setups[i][j]
-            )
+            render_config_xml(context, exp_setups[i][j])
             print(f"Config: {exp_id}")
             aoscm.run_coupled_model()
             reduce_output(context.output_dir / exp_id)

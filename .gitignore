@@ -1,6 +1,7 @@
 # Exclude run data and plots
 plots/
 PAPA/
+output/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -132,6 +133,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# SLURM output
+*.out
 # Custom additions
 .vscode/
 *.png

@@ -1,10 +1,20 @@
 import pandas as pd
 
-import user_context as context
+from context import Context
 from schwarz_coupling import SchwarzCoupling
 from setup_experiment import set_experiment_date_properties, set_experiment_input_files
 from utils.helpers import AOSCM, reduce_output
 from utils.templates import render_config_xml
+
+context = Context(
+    platform="pc-gcc-openmpi",
+    model_version=3,
+    model_dir="/home/valentina/dev/aoscm/ece3-scm",
+    output_dir="/home/valentina/dev/aoscm/scm_rundir",
+    template_dir="/home/valentina/dev/aoscm/scm_rundir/templates",
+    plotting_dir="/home/valentina/dev/aoscm/scm_rundir/plots",
+    data_dir="/home/valentina/dev/aoscm/initial_data/control_experiment",
+)
 
 dt_cpl = 3600
 dt_ifs = 720
@@ -37,11 +47,7 @@ set_experiment_date_properties(
 )
 set_experiment_input_files(experiment, start_date, "era")
 
-aoscm = AOSCM(
-    context.runscript_dir,
-    context.ecconf_executable,
-    context.platform,
-)
+aoscm = AOSCM(context)
 
 
 def run_naive_experiments():
@@ -52,9 +58,7 @@ def run_naive_experiments():
             experiment["exp_id"] = f"{exp_prefix}{freq_id}{cpl_scheme}"
 
             print(f"Config: {experiment['exp_id']}")
-            render_config_xml(
-                context.runscript_dir, context.config_run_template, experiment
-            )
+            render_config_xml(context, experiment)
             aoscm.run_coupled_model()
             reduce_output(context.output_dir / experiment["exp_id"])
 
@@ -65,7 +69,7 @@ def run_schwarz_experiments():
     for freq_id, freq in nradfr_dict.items():
         experiment["ifs_nradfr"] = freq
         experiment["exp_id"] = f"{exp_prefix}{freq_id}{cpl_scheme}"
-        schwarz_exp = SchwarzCoupling(experiment_dict=experiment)
+        schwarz_exp = SchwarzCoupling(experiment, context)
         schwarz_exp.run(max_iters)
 
 

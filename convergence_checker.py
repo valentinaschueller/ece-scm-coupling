@@ -36,10 +36,10 @@ class ConvergenceChecker:
             for coupling_var in self.coupling_vars
         ]
         self.reference = xr.open_mfdataset(
-            coupling_files_iterate, preprocess=self.preprocessor.preprocess
+            coupling_files_reference, preprocess=self.preprocessor.preprocess
         )
         self.iterate = xr.open_mfdataset(
-            coupling_files_reference, preprocess=self.preprocessor.preprocess
+            coupling_files_iterate, preprocess=self.preprocessor.preprocess
         )
         local_convergence = self._check_local_convergence()
         amplitude_convergence = self._check_amplitude_convergence()

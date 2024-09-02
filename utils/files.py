@@ -102,6 +102,7 @@ class NEMOPreprocessor:
         """
         ds = ds.isel(y=0, x=0)
         ds = ds.rename(time_counter="time")
+        ds = ds.convert_calendar("gregorian")
         if self.fix_start_date:
             time_as_timedelta = ds.time.data - np.datetime64(self.origin.date())
             ds = ds.assign_coords(

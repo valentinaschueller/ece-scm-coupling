@@ -3,11 +3,21 @@ from pathlib import Path
 
 import pandas as pd
 
-import user_context as context
+from context import Context
 from schwarz_coupling import SchwarzCoupling
 from setup_experiment import set_experiment_date_properties, set_experiment_input_files
 from utils.helpers import AOSCM, reduce_output, serialize_experiment_setup
 from utils.templates import render_config_xml
+
+context = Context(
+    platform="pc-gcc-openmpi",
+    model_version=3,
+    model_dir="/home/valentina/dev/aoscm/ece3-scm",
+    output_dir="/home/valentina/dev/aoscm/scm_rundir",
+    template_dir="/home/valentina/dev/aoscm/scm_rundir/templates",
+    plotting_dir="/home/valentina/dev/aoscm/scm_rundir/plots",
+    data_dir="/home/valentina/dev/aoscm/initial_data/nwp",
+)
 
 start_dates = pd.date_range(
     pd.Timestamp("2014-07-03 00:00:00"), pd.Timestamp("2014-07-28 18:00:00"), freq="6H"
@@ -44,7 +54,7 @@ if __name__ == "__main__":
 
     ensemble_directory.mkdir(exist_ok=True)
 
-    aoscm = AOSCM(context.runscript_dir, context.ecconf_executable, context.platform)
+    aoscm = AOSCM(context)
 
     experiment = {
         "dt_cpl": dt_cpl,
@@ -76,9 +86,7 @@ if __name__ == "__main__":
 
             for coupling_scheme, cpl_scheme_name in coupling_scheme_to_name.items():
                 experiment["cpl_scheme"] = coupling_scheme
-                render_config_xml(
-                    context.runscript_dir, context.config_run_template, experiment
-                )
+                render_config_xml(context, experiment)
                 aoscm.run_coupled_model()
                 reduce_output(run_directory, keep_debug_output=False)
                 serialize_experiment_setup(experiment, run_directory)
