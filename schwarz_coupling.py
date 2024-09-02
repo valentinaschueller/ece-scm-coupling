@@ -58,6 +58,7 @@ class SchwarzCoupling:
             self.dt_cpl,
             self.dt_ifs,
             self.dt_nemo,
+            self.context.model_version,
         )
         remapper.remap()
 
