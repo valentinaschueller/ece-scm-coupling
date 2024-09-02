@@ -142,11 +142,7 @@ def create_and_save_plots(exp_ids):
     )
 
 
-aoscm = AOSCM(
-    context.runscript_dir,
-    context.ecconf_executable,
-    context.platform,
-)
+aoscm = AOSCM(context)
 
 if __name__ == "__main__":
 
@@ -157,9 +153,7 @@ if __name__ == "__main__":
         for j in cpl_schemes:
             exp_id = exp_setups[i][j]["exp_id"]
             exp_ids.append(exp_id)
-            render_config_xml(
-                context.runscript_dir, context.config_run_template, exp_setups[i][j]
-            )
+            render_config_xml(context, exp_setups[i][j])
             print(f"Config: {exp_id}")
             aoscm.run_coupled_model()
             reduce_output(context.output_dir / exp_id)

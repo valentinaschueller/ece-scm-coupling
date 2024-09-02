@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     ensemble_directory.mkdir(exist_ok=True)
 
-    aoscm = AOSCM(context.runscript_dir, context.ecconf_executable, context.platform)
+    aoscm = AOSCM(context)
 
     experiment = {
         "dt_cpl": dt_cpl,
@@ -86,9 +86,7 @@ if __name__ == "__main__":
 
             for coupling_scheme, cpl_scheme_name in coupling_scheme_to_name.items():
                 experiment["cpl_scheme"] = coupling_scheme
-                render_config_xml(
-                    context.runscript_dir, context.config_run_template, experiment
-                )
+                render_config_xml(context, experiment)
                 aoscm.run_coupled_model()
                 reduce_output(run_directory, keep_debug_output=False)
                 serialize_experiment_setup(experiment, run_directory)

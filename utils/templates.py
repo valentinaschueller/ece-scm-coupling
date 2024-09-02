@@ -1,3 +1,4 @@
+from context import Context
 from pathlib import Path
 
 import jinja2
@@ -11,12 +12,13 @@ def get_template(template_path: Path) -> jinja2.Template:
 
 
 def render_config_xml(
-    destination: Path, config_run_template: Path, experiment: dict
+    context: Context, experiment: dict
 ) -> None:
-    jinja_template = get_template(config_run_template)
-    with open(destination / "config-run.xml", "w") as config_run_xml:
+    jinja_template = get_template(context.config_run_template)
+    with open(context.runscript_dir / "config-run.xml", "w") as config_run_xml:
         config_run_xml.write(
             jinja_template.render(
+                context=context,
                 setup_dict=experiment,
             )
         )

@@ -58,9 +58,7 @@ def run_naive_experiments():
             experiment["exp_id"] = f"{exp_prefix}{freq_id}{cpl_scheme}"
 
             print(f"Config: {experiment['exp_id']}")
-            render_config_xml(
-                context.runscript_dir, context.config_run_template, experiment
-            )
+            render_config_xml(context, experiment)
             aoscm.run_coupled_model()
             reduce_output(context.output_dir / experiment["exp_id"])
 

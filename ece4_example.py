@@ -53,11 +53,7 @@ experiment["ifs_input_file"] = oifs_input_file
 experiment["oasis_rstas"] = oasis_rstas
 experiment["oasis_rstos"] = oasis_rstos
 
-aoscm = AOSCM(
-    context.runscript_dir,
-    context.ecconf_executable,
-    context.platform,
-)
+aoscm = AOSCM(context)
 
 
 ifs_input_start_date = pd.Timestamp("2010-06-15")
@@ -72,9 +68,7 @@ if __name__ == "__main__":
         experiment["exp_id"] = exp_id
         experiment["cpl_scheme"] = cpl_scheme
         print(f"Config: {experiment['exp_id']}")
-        render_config_xml(
-            context.runscript_dir, context.config_run_template, experiment
-        )
+        render_config_xml(context, experiment)
         aoscm.run_coupled_model()
         # reduce_output(run_directory=context.output_dir / exp_id)
 

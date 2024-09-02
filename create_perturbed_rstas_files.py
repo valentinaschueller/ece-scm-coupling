@@ -128,15 +128,9 @@ def create_rstas_files() -> None:
                 input_file_freq,
             )
 
-            render_config_xml(
-                context.runscript_dir, context.config_run_template, experiment
-            )
+            render_config_xml(context, experiment)
 
-            aoscm = AOSCM(
-                context.runscript_dir,
-                context.ecconf_executable,
-                context.platform,
-            )
+            aoscm = AOSCM(context)
             aoscm.run_atmosphere_only()
 
             out_file = context.rstas_dir / ifn.get_rstas_name(

@@ -56,13 +56,13 @@
         <Parameter name="ECEARTH_SRC_DIR">
             <Description>Base directory for EC-Earth sources</Description>
             <Type>PATH</Type>
-            <Value>/proj/nsc/users/struthers/EC-Earth/r2740-coupled-SCM/sources</Value>
+            <Value>{{context.model_dir}}/sources</Value>
         </Parameter>
 
         <Parameter name="RUN_DIR_BASE">
             <Description>EC-Earth run directory</Description>
             <Type>PATH</Type>
-            <Value>/proj/nsc/users/${USER}/ecearth3/r2740-coupled-SCM</Value>
+            <Value>{{context.output_dir.parent}}</Value>
         </Parameter>
 
         <Parameter name="PROC_PER_NODE">
@@ -110,13 +110,13 @@
         <Parameter name="ECEARTH_SRC_DIR">
             <Description>Base directory for EC-Earth sources</Description>
             <Type>PATH</Type>
-            <Value>/home/valentina/dev/ece-scm/sources</Value>
+            <Value>{{context.model_dir}}/sources</Value>
         </Parameter>
 
         <Parameter name="RUN_DIR_BASE">
             <Description>EC-Earth run directory</Description>
             <Type>PATH</Type>
-            <Value>/home/valentina/dev/scm_rundir</Value>
+            <Value>{{context.output_dir.parent}}</Value>
         </Parameter>
 
         <Parameter name="PROC_PER_NODE">
@@ -164,13 +164,13 @@
         <Parameter name="ECEARTH_SRC_DIR">
             <Description>Base directory for EC-Earth sources</Description>
             <Type>PATH</Type>
-            <Value>/Users/valentina/dev/aoscm/sources</Value>
+            <Value>{{context.model_dir}}/sources</Value>
         </Parameter>
 
         <Parameter name="RUN_DIR_BASE">
             <Description>EC-Earth run directory</Description>
             <Type>PATH</Type>
-            <Value>/Users/valentina/dev/aoscm_rundir</Value>
+            <Value>{{context.output_dir.parent}}</Value>
         </Parameter>
 
         <Parameter name="PROC_PER_NODE">

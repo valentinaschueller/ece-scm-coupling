@@ -18,7 +18,7 @@ context = Context(
     platform="pc-gcc-openmpi",
     model_version=3,
     model_dir="/home/valentina/dev/aoscm/ece3-scm",
-    output_dir="/home/valentina/dev/aoscm/scm_rundir",
+    output_dir="/home/valentina/dev/aoscm/scm_rundir/PAPA",
     template_dir="/home/valentina/dev/aoscm/scm_rundir/templates",
     plotting_dir="/home/valentina/dev/aoscm/scm_rundir/plots",
     data_dir="/home/valentina/dev/aoscm/initial_data/control_experiment",
@@ -62,9 +62,7 @@ def run_naive_experiments():
         experiment["exp_id"] = f"{exp_prefix_naive}{cpl_scheme}"
         experiment["cpl_scheme"] = cpl_scheme
         print(f"Config: {experiment['exp_id']}")
-        render_config_xml(
-            context.runscript_dir, context.config_run_template, experiment
-        )
+        render_config_xml(context, experiment)
         aoscm.run_coupled_model()
         reduce_output(
             context.output_dir / experiment["exp_id"], keep_debug_output=False

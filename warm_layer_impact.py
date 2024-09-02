@@ -96,11 +96,7 @@ set_experiment_input_files(experiment, start_date, "era")
 
 exp_prefix = "OWA"
 
-model = AOSCM(
-    context.runscript_dir,
-    context.ecconf_executable,
-    context.platform,
-)
+model = AOSCM(context)
 
 leocwa_values = ["T", "F"]
 exp_ids = []
@@ -112,7 +108,7 @@ for leocwa in leocwa_values:
     exp_ids.append(exp_id)
     experiment["exp_id"] = exp_id
 
-    render_config_xml(context.runscript_dir, context.config_run_template, experiment)
+    render_config_xml(context, experiment)
 
     print(f"Config: {experiment['exp_id']}")
     model.run_coupled_model(print_time=False, schwarz_correction=False)

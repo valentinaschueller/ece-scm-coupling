@@ -139,9 +139,7 @@ def create_perturbed_input_files() -> None:
             experiment["cpl_scheme"] = coupling_scheme
 
             # render template and run model
-            render_config_xml(
-                context.runscript_dir, context.config_run_template, experiment
-            )
+            render_config_xml(context, experiment)
             hlp.run_model()
 
             progvar = xr.open_mfdataset(

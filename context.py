@@ -30,16 +30,18 @@ class Context:
 
         if self.model_version == 3:
             self.config_run_template = self.template_dir / "config-run.xml.j2"
+            prefix = "ece"
         else:
             self.config_run_template = self.template_dir / "config-run_ece4.xml.j2"
+            prefix = "ece4"
 
         self.ecconf_executable = self.model_dir / "sources/util/ec-conf/ec-conf"
         self.runscript_dir = self.model_dir / "runtime/scm-classic/PAPA"
-        self.ascm_executable = self.runscript_dir / "ece4-scm_oifs.sh"
-        self.oscm_executable = self.runscript_dir / "ece4-scm_nemo.sh"
-        self.aoscm_executable = self.runscript_dir / "ece4-scm_oifs+nemo.sh"
+        self.ascm_executable = self.runscript_dir / f"{prefix}-scm_oifs.sh"
+        self.oscm_executable = self.runscript_dir / f"{prefix}-scm_nemo.sh"
+        self.aoscm_executable = self.runscript_dir / f"{prefix}-scm_oifs+nemo.sh"
         self.aoscm_schwarz_correction_executable = (
-            self.runscript_dir / "ece4-scm_oifs+nemo_schwarz_corr.sh"
+            self.runscript_dir / f"{prefix}-scm_oifs+nemo_schwarz_corr.sh"
         )
 
         paths_to_check = [

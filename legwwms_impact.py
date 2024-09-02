@@ -107,7 +107,7 @@ for legwwms in legwwms_values:
     exp_ids.append(exp_id)
     experiment["exp_id"] = exp_id
 
-    render_config_xml(context.runscript_dir, context.config_run_template, experiment)
+    render_config_xml(context, experiment)
 
     print(f"Config: {experiment['exp_id']}")
     model.run_coupled_model(print_time=False, schwarz_correction=False)

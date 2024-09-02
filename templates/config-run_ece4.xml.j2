@@ -49,13 +49,13 @@
         <Parameter name="ECEARTH_SRC_DIR">
             <Description>Base directory for EC-Earth sources</Description>
             <Type>PATH</Type>
-            <Value>{{setup_dict.get("model_dir")}}/sources</Value>
+            <Value>{{context.model_dir}}/sources</Value>
         </Parameter>
 
         <Parameter name="RUN_DIR_BASE">
             <Description>EC-Earth run directory</Description>
             <Type>PATH</Type>
-            <Value>{{setup_dict.get("run_dir")}}</Value>
+            <Value>{{context.output_dir}}</Value>
         </Parameter>
 
         <Parameter name="PROC_PER_NODE">
@@ -103,13 +103,13 @@
         <Parameter name="ECEARTH_SRC_DIR">
             <Description>Base directory for EC-Earth sources</Description>
             <Type>PATH</Type>
-            <Value>/home/vschuller/aoscm/sources</Value>
+            <Value>{{context.model_dir}}/sources</Value>
         </Parameter>
 
         <Parameter name="RUN_DIR_BASE">
             <Description>EC-Earth run directory</Description>
             <Type>PATH</Type>
-            <Value>/home/vschuller/rundir</Value>
+            <Value>{{context.output_dir}}</Value>
         </Parameter>
 
         <Parameter name="PROC_PER_NODE">
@@ -156,13 +156,13 @@
         <Parameter name="ECEARTH_SRC_DIR">
             <Description>Base directory for EC-Earth sources</Description>
             <Type>PATH</Type>
-            <Value>{{setup_dict.get("model_dir")}}/sources</Value>
+            <Value>{{context.model_dir}}/sources</Value>
         </Parameter>
 
         <Parameter name="RUN_DIR_BASE">
             <Description>EC-Earth run directory</Description>
             <Type>PATH</Type>
-            <Value>{{setup_dict.get("run_dir")}}</Value>
+            <Value>{{context.output_dir}}</Value>
         </Parameter>
 
         <Parameter name="PROC_PER_NODE">
