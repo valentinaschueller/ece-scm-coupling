@@ -32,8 +32,6 @@ experiment = {
     "dt_nemo": dt_nemo,
     "dt_ifs": dt_ifs,
     "ifs_leocwa": "F",
-    "model_dir": context.model_dir,
-    "run_dir": context.output_dir,
 }
 set_experiment_date_properties(
     experiment, start_date, simulation_duration, ifs_input_start_date, ifs_input_freq
