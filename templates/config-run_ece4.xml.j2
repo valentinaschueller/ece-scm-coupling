@@ -262,19 +262,19 @@
         <Parameter name="IFS_LEGWWMS">
             <Description>Use non-orographic gravity wave scheme (T or F)</Description>
             <Type>STRING</Type>
-            <Value>{{experiment.ifs_legwwms}}</Value>
+            <Value>{{str(experiment.ifs_legwwms)[0]}}</Value>
         </Parameter>
 
         <Parameter name="IFS_LECUMF">
             <Description>Use mass-flux cumulus convection scheme (T or F)</Description>
             <Type>STRING</Type>
-            <Value>{{experiment.ifs_lecumf}}</Value>
+            <Value>{{str(experiment.ifs_lecumf)[0]}}</Value>
         </Parameter>
 
         <Parameter name="IFS_LEOCWA">
             <Description>Use ocean warm layer parameterization (T or F)</Description>
             <Type>STRING</Type>
-            <Value>{{experiment.ifs_leocwa}}</Value>
+            <Value>{{str(experiment.ifs_leocwa)[0]}}</Value>
         </Parameter>
 
         <Parameter name="IFS_NSTRTINI">
@@ -313,8 +313,8 @@
 
         <Parameter name="WITH_SI3">
             <Description>Run with (T) or without (F) sea ice</Description>
-            <Type>BOOLEAN</Type>
-            <Value>{{experiment.with_ice}}</Value>
+            <Type>STRING</Type>
+            <Value>{{str(experiment.with_ice)[0]}}</Value>
         </Parameter>
 
         <Parameter name="SI3_TIME_STEP_SEC">
