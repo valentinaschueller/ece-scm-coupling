@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-import utils.helpers as helpers
+import AOSCMcoupling.helpers as helpers
 
 
 def test_compute_nstrtini():

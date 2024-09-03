@@ -18,8 +18,8 @@
 
     <Translation name="RUN_ATM+OCE_SWZ">
         <Description>Run script file (coupled run, Schwarz correction: atm+oce)</Description>
-        <Template>ece-scm_oifs+nemo_2.sh.tmpl</Template>
-        <Target>ece-scm_oifs+nemo_2.sh</Target>
+        <Template>ece-scm_oifs+nemo_schwarz_corr.sh.tmpl</Template>
+        <Target>ece-scm_oifs+nemo_schwarz_corr.sh</Target>
         <Properties>executable</Properties>
     </Translation>
 
@@ -206,19 +206,19 @@
         <Parameter name="EXP_NAME">
             <Description>Experiment name (4 letters)</Description>
             <Type>STRING</Type>
-            <Value>{{setup_dict["exp_id"]}}</Value>
+            <Value>{{experiment.exp_id}}</Value>
         </Parameter>
 
         <Parameter name="RUN_START_DATE">
             <Description>Start date of the simulation. Use any reasonable syntax.</Description>
             <Type>DATE</Type>
-            <Value>{{setup_dict.get("run_start_date", "Jul 01 00:00:00 UTC 2014")}}</Value>
+            <Value>{{experiment.run_start_date}}</Value>
         </Parameter>
 
         <Parameter name="RUN_END_DATE">
             <Description>End date of the simulation. Use any reasonable syntax.</Description>
             <Type>STRING</Type>
-            <Value>{{setup_dict.get("run_end_date", "Jul 05 00:00:00 UTC 2014")}}</Value>
+            <Value>{{experiment.run_end_date}}</Value>
         </Parameter>
 
     </Model>
@@ -229,13 +229,13 @@
         <Parameter name="IFS_LEVELS">
             <Description>Vertical resolution of IFS-SCM</Description>
             <Type>STRING</Type>
-            <Value>{{setup_dict.get("ifs_levels", 60)}}</Value>
+            <Value>{{experiment.ifs_levels}}</Value>
         </Parameter>
 
         <Parameter name="IFS_TIME_STEP_SEC">
             <Description>IFS-SCM time step in seconds</Description>
             <Type>INTEGER</Type>
-            <Value>{{setup_dict["dt_ifs"]}}</Value>
+            <Value>{{experiment.dt_ifs}}</Value>
         </Parameter>
 
         <Parameter name="CMIP5">
@@ -259,7 +259,7 @@
         <Parameter name="IFS_INPUT_FILE">
             <Description>Path to OIFS init and forcing file (will be copied as scm_in.nc)</Description>
             <Type>PATH</Type>
-            <Value>{{setup_dict["ifs_input_file"]}}</Value>
+            <Value>{{experiment.ifs_input_file}}</Value>
         </Parameter>
 
         <Parameter name="VOLCANOES">
@@ -271,31 +271,31 @@
         <Parameter name="IFS_LEGWWMS">
             <Description>Use non-orographic gravity wave scheme (T or F)</Description>
             <Type>STRING</Type>
-            <Value>{{setup_dict.get("ifs_legwwms", "T")}}</Value>
+            <Value>{{str(experiment.ifs_legwwms)[0]}}</Value>
         </Parameter>
 
         <Parameter name="IFS_LECUMF">
             <Description>Use mass-flux cumulus convection scheme (T or F)</Description>
             <Type>STRING</Type>
-            <Value>{{setup_dict.get("ifs_lecumf", "T")}}</Value>
+            <Value>{{str(experiment.ifs_lecumf)[0]}}</Value>
         </Parameter>
 
         <Parameter name="IFS_LEOCWA">
             <Description>Use ocean warm layer parameterization (T or F)</Description>
             <Type>STRING</Type>
-            <Value>{{setup_dict.get("ifs_leocwa", "F")}}</Value>
+            <Value>{{str(experiment.ifs_leocwa)[0]}}</Value>
         </Parameter>
 
         <Parameter name="IFS_NSTRTINI">
             <Description>initial forcing time step, if uneqal 1 need correct "seconds" in scm_in.nc</Description>
             <Type>INTEGER</Type>
-            <Value>{{setup_dict.get("ifs_nstrtini", 1)}}</Value>
+            <Value>{{experiment.ifs_nstrtini}}</Value>
         </Parameter>
 
         <Parameter name="IFS_NRADFR">
             <Description>Frequency of full radiation, negative in hours, positive in time-steps</Description>
             <Type>INTEGER</Type>
-            <Value>{{setup_dict.get("ifs_nradfr", 1)}}</Value>
+            <Value>{{experiment.ifs_nradfr}}</Value>
         </Parameter>
 
         <Parameter name="IFS_OUTPUT_FORMAT">
@@ -311,31 +311,31 @@
         <Parameter name="NEM_TIME_STEP_SEC">
             <Description>NEMO time step in seconds</Description>
             <Type>INTEGER</Type>
-            <Value>{{setup_dict["dt_nemo"]}}</Value>
+            <Value>{{experiment.dt_nemo}}</Value>
         </Parameter>
 
         <Parameter name="NEM_INPUT_FILE">
             <Description>Path to NEMO init file, relative to NEMO init data directory (will be copied as init_C1D.nc)</Description>
             <Type>PATH</Type>
-            <Value>{{setup_dict["nem_input_file"]}}</Value>
+            <Value>{{experiment.nem_input_file}}</Value>
         </Parameter>
 
-        <Parameter name="LIM_DIAG_INIT">
-            <Description>Toogle LIM3 diagnostic initialization (TRUE or FALSE)</Description>
+        <Parameter name="WITH_LIM">
+            <Description>Toogle sea ice model (TRUE or FALSE)</Description>
             <Type>BOOLEAN</Type>
-            <Value>{{setup_dict.get("lim_diag_init", "T")}}</Value>
+            <Value>{{str(experiment.with_ice)[0]}}</Value>
         </Parameter>
 
         <Parameter name="LIM_TIME_STEP_SEC">
             <Description>LIM time step in seconds</Description>
             <Type>INTEGER</Type>
-            <Value>{{setup_dict["dt_nemo"]}}</Value>
+            <Value>{{experiment.dt_nemo}}</Value>
         </Parameter>
 
         <Parameter name="LIM_INPUT_FILE">
             <Description>Path to LIM init file</Description>
             <Type>PATH</Type>
-            <Value>{{setup_dict.get("lim_input_file")}}</Value>
+            <Value>{{experiment.ice_input_file}}</Value>
         </Parameter>
 
     </Model>
@@ -346,25 +346,25 @@
         <Parameter name="CPL_FREQ_ATM_OCE_SEC">
             <Description>Coupling frequency between IFS and NEMO in seconds</Description>
             <Type>INTEGER</Type>
-            <Value>{{setup_dict["dt_cpl"]}}</Value>
+            <Value>{{experiment.dt_cpl}}</Value>
         </Parameter>
 
         <Parameter name="CPL_SCHEME">
             <Description>Coupling scheme used by OASIS. Parallel (0), sequential atmosphere-first (1), or sequential ocean-first (2) possible.</Description>
             <Type>INTEGER</Type>
-            <Value>{{setup_dict["cpl_scheme"]}}</Value>
+            <Value>{{experiment.cpl_scheme}}</Value>
         </Parameter>
 
         <Parameter name="RSTAS_FILE">
             <Description>Path to atmosphere restart file (will be copied as rstas.nc)</Description>
             <Type>PATH</Type>
-            <Value>{{setup_dict["oasis_rstas"]}}</Value>
+            <Value>{{experiment.oasis_rstas}}</Value>
         </Parameter>
 
         <Parameter name="RSTOS_FILE">
             <Description>Path to ocean restart file (will be copied as rstos.nc)</Description>
             <Type>PATH</Type>
-            <Value>{{setup_dict["oasis_rstos"]}}</Value>
+            <Value>{{experiment.oasis_rstos}}</Value>
         </Parameter>
 
     </Model>

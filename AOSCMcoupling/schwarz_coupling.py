@@ -1,26 +1,27 @@
 import shutil
 
-from context import Context
-from convergence_checker import ConvergenceChecker
-from remapping import RemapCouplerOutput
-from helpers import AOSCM, reduce_output, serialize_experiment_setup
-from templates import render_config_xml
+from AOSCMcoupling.context import Context
+from AOSCMcoupling.convergence_checker import ConvergenceChecker
+from AOSCMcoupling.experiment import Experiment
+from AOSCMcoupling.helpers import AOSCM, reduce_output, serialize_experiment_setup
+from AOSCMcoupling.remapping import RemapCouplerOutput
+from AOSCMcoupling.templates import render_config_xml
 
 
 class SchwarzCoupling:
     def __init__(
         self,
-        experiment_dict: dict,
+        experiment: Experiment,
         context: Context,
         reduce_output_after_iteration: bool = True,
     ):
         self.context = context
-        self.exp_id = experiment_dict["exp_id"]
-        self.dt_cpl = experiment_dict["dt_cpl"]
-        self.dt_ifs = experiment_dict["dt_ifs"]
-        self.dt_nemo = experiment_dict["dt_nemo"]
-        self.cpl_scheme = experiment_dict["cpl_scheme"]
-        self.experiment = experiment_dict
+        self.exp_id = experiment.exp_id
+        self.dt_cpl = experiment.dt_cpl
+        self.dt_ifs = experiment.dt_ifs
+        self.dt_nemo = experiment.dt_nemo
+        self.cpl_scheme = experiment.cpl_scheme
+        self.experiment = experiment
         self.iter = 1
         self.run_directory = context.output_dir / self.exp_id
         self.aoscm = AOSCM(context)
@@ -67,7 +68,7 @@ class SchwarzCoupling:
             local_conv, ampl_conv = self.convergence_checker.check_convergence(
                 renamed_directory, self.run_directory
             )
-            self.experiment["previous_iter_converged"] = {
+            self.experiment.previous_iter_converged = {
                 "local": local_conv,
                 "amplitude": ampl_conv,
             }
@@ -75,7 +76,7 @@ class SchwarzCoupling:
                 self.converged = True
                 print(f"Iteration {self.iter - 1} converged!")
 
-        self.experiment["iteration"] = self.iter
+        self.experiment.iteration = self.iter
 
         if self.reduce_output:
             if not next_iteration_exists:
