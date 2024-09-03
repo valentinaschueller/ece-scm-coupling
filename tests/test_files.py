@@ -1,6 +1,6 @@
 import os
 
-import utils.files as files
+import AOSCMcoupling.files as files
 
 
 def test_change_directory(tmpdir):

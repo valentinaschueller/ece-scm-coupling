@@ -3,7 +3,7 @@ from pathlib import Path
 import numpy as np
 import xarray as xr
 
-from utils.files import OASISPreprocessor
+from AOSCMcoupling.files import OASISPreprocessor
 
 
 class ConvergenceChecker:

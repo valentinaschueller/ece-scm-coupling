@@ -4,8 +4,8 @@ from pathlib import Path
 import pandas as pd
 from ruamel.yaml import YAML
 
-from context import Context
-from utils.files import ChangeDirectory
+from AOSCMcoupling.context import Context
+from AOSCMcoupling.files import ChangeDirectory
 
 
 class AOSCM:
