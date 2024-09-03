@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=59.7", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["aoscm-coupling"]
+
+[project]
+name = "AOSCMcoupling"
+version = "0.1"
+authors = [
+    { name = "Valentina Schueller", email = "valentina.schuller@math.lu.se" },
+]
+description = "Wrapper to run the EC-Earth AOSCM with varying coupling schemes"
+readme = "README.md"
+license = {file = "LICENSE"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "xarray",
+    "netCDF4",
+    "dask",
+    "ruamel.yaml",
+    "numpy",
+    "pandas",
+    "jinja2",
+]
+[project.optional-dependencies]
+test = ["pytest"]
+dev = ["black", "isort", "flake8"]
+all = ["coupled-hydrology[dev,test]"]
+
+
+[project.urls]
+"Homepage" = "https://github.com/valentinaschueller/ece-scm-coupling/"
+"Bug Tracker" = "https://github.com/valentinaschueller/ece-scm-coupling//issues"
+
+[tool.pytest.ini_options]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.isort]
+profile = "black"
