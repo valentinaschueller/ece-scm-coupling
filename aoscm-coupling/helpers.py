@@ -5,7 +5,7 @@ import pandas as pd
 from ruamel.yaml import YAML
 
 from context import Context
-from utils.files import ChangeDirectory
+from files import ChangeDirectory
 
 
 class AOSCM:

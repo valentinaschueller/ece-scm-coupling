@@ -3,8 +3,8 @@ import shutil
 from context import Context
 from convergence_checker import ConvergenceChecker
 from remapping import RemapCouplerOutput
-from utils.helpers import AOSCM, reduce_output, serialize_experiment_setup
-from utils.templates import render_config_xml
+from helpers import AOSCM, reduce_output, serialize_experiment_setup
+from templates import render_config_xml
 
 
 class SchwarzCoupling:
