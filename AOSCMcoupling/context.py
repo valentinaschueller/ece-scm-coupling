@@ -10,7 +10,6 @@ class Context:
     output_dir: str | Path
     template_dir: str | Path
     data_dir: str | Path
-    plotting_dir: str | Path = None
     ecconf_executable: Path = field(init=False)
     runscript_dir: Path = field(init=False)
     config_run_template: Path = field(init=False)
@@ -58,6 +57,3 @@ class Context:
 
         self.output_dir = Path(self.output_dir)
         self.output_dir.mkdir(exist_ok=True)
-        if self.plotting_dir is not None:
-            self.plotting_dir = Path(self.plotting_dir)
-            self.plotting_dir.mkdir(exist_ok=True)
