@@ -27,6 +27,14 @@ oce_to_atm = {
     "OSnwTck": "A_Snow_thickness",
 }
 
+def _finalize_mpi_if_active():
+    try:
+        from mpi4py import MPI
+    except ModuleNotFoundError:
+        return
+    if not MPI.Is_finalized():
+        MPI.Finalize()
+
 
 class RemapCouplerOutput:
     """
@@ -63,9 +71,7 @@ class RemapCouplerOutput:
                 self._remap_atm_to_oce(path)
             if self.nemo_separator in path.stem:
                 self._remap_oce_to_atm(path)
-        from mpi4py import MPI
-        if not MPI.Is_finalized():
-            MPI.Finalize()
+        _finalize_mpi_if_active()
 
     def _remap_oce_to_atm(self, oce_file_path: Path) -> None:
         oce_var_name = oce_file_path.stem.split(self.nemo_separator)[0]
