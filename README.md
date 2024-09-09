@@ -19,8 +19,12 @@ Particularly:
 
 ## Usage
 
+Before using the package, make sure to:
+
+1. Have an installed version of the AOSCM on your system, along with initial/forcing files for your experiment(s).
+2. Install the package in your environment, as described above.
+
 Tutorials:
 
 1. Configure and run a single experiment
-2. Change the coupling algorithm (parallel/atmosphere-first/ocean-first)
-3. Run a Schwarz Waveform Relaxation simulation
+2. Run a Schwarz Waveform Relaxation simulation
