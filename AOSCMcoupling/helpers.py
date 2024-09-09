@@ -11,8 +11,8 @@ from AOSCMcoupling.files import ChangeDirectory
 class AOSCM:
     """Python wrapper to run an EC-Earth AOSCM experiment.
 
-    The class takes care of running `ec-conf` as well as calling the correct run script inside `runscript_dir`.
-    We assume that the experiment is already configured correctly with `config-run.xml` inside the `runscript_dir`.
+    The class takes care of running `ec-conf` + calling the correct run script inside `runscript_dir`.
+    We assume that the experiment is configured correctly with `config-run.xml` inside `runscript_dir`.
     """
 
     def __init__(self, context: Context):
@@ -28,6 +28,7 @@ class AOSCM:
                     "config-run.xml",
                 ],
                 capture_output=True,
+                check=True,
             )
 
     def run_coupled_model(
@@ -35,9 +36,9 @@ class AOSCM:
     ):
         """run the EC-Earth AOSCM in coupled mode.
 
-        :param print_time: print wall clock time at the end of the run, defaults to False
+        :param print_time: print wall clock time at the end of the run, default: False
         :type print_time: bool, optional
-        :param schwarz_correction: whether to use the Schwarz correction run script, defaults to False
+        :param schwarz_correction: whether to use the Schwarz correction runscript, default: False
         :type schwarz_correction: bool, optional
         """
         self._run_ecconf()
@@ -74,6 +75,7 @@ class AOSCM:
                 args,
                 capture_output=True,
                 text=print_time,  # if print_time, we want stdout and stderr to be string instead of bytes.
+                check=False,
             )
         print("Model run complete.")
         if not print_time:

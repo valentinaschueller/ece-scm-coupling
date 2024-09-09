@@ -34,7 +34,8 @@ class ChangeDirectory:
 class OIFSPreprocessor:
     """Preprocessor for Output Data from the OpenIFS SCM.
 
-    - converts the `time` coordinate to valid datetime objects, computed relative to the simulation start date, `origin`
+    - converts the `time` coordinate to valid datetime objects,
+    computed relative to the simulation start date, `origin`
     - optional: applies a time shift for local time zones using `time_shift`
     """
 
@@ -45,7 +46,7 @@ class OIFSPreprocessor:
 
         :param origin: start date (+ time) of the simulation
         :type origin: pd.Timestamp
-        :param time_shift: time shift to apply for local time, defaults to pd.Timedelta(0)
+        :param time_shift: time shift to apply for local time, default: 0
         :type time_shift: pd.Timedelta, optional
         """
         self.origin = origin
@@ -83,7 +84,7 @@ class NEMOPreprocessor:
 
         :param origin: start date (+ time) of the simulation
         :type origin: pd.Timestamp
-        :param time_shift: time shift to apply for local time, defaults to pd.Timedelta(0)
+        :param time_shift: time shift to apply for local time, default: 0
         :type time_shift: pd.Timedelta, optional
         """
         self.origin = origin
@@ -127,7 +128,7 @@ class OIFSEnsemblePreprocessor:
     def __init__(self, time_shift: pd.Timedelta = pd.Timedelta(0)):
         """Constructor.
 
-        :param time_shift: time shift to apply for local time, defaults to pd.Timedelta(0)
+        :param time_shift: time shift to apply for local time, default: 0
         :type time_shift: pd.Timedelta, optional
         """
         self.time_shift = time_shift

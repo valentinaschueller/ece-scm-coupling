@@ -4,6 +4,16 @@ from pathlib import Path
 
 @dataclass
 class Context:
+    """Model context for AOSCM experiments on a specific system.
+
+    Dataclass collecting paths relevant for running (multiple) experiments.
+    Data in here is expected to be the same for all your experiments.
+
+    :raises ValueError: if model version is not supported
+    :raises FileNotFoundError: if a provided path does not exist
+    (except for output_dir, which will be created if it does not exist.)
+    """
+
     model_version: int
     platform: str
     model_dir: str | Path

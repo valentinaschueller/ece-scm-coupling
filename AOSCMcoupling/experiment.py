@@ -6,6 +6,12 @@ import pandas as pd
 
 @dataclass
 class Experiment:
+    """Wrapper for data necessary to set up an AOSCM experiment
+
+    :raises FileNotFoundError: if any of the initial data files is not found
+    :raises ValueError: if cpl_scheme or ifs_levels not supported
+    """
+
     dt_cpl: int
     dt_nemo: int
     dt_ifs: int
@@ -51,4 +57,4 @@ class Experiment:
             raise ValueError(f"Coupling scheme {self.cpl_scheme} not available.")
 
         if self.ifs_levels not in (60, 137):
-            raise ValueError(f"This number of levels is not supported.")
+            raise ValueError("This number of levels is not supported.")

@@ -9,6 +9,8 @@ from AOSCMcoupling.templates import render_config_xml
 
 
 class SchwarzCoupling:
+    """Wrapper class to run AOSCM experiments with Schwarz WR."""
+
     def __init__(
         self,
         experiment: Experiment,
@@ -17,10 +19,6 @@ class SchwarzCoupling:
     ):
         self.context = context
         self.exp_id = experiment.exp_id
-        self.dt_cpl = experiment.dt_cpl
-        self.dt_ifs = experiment.dt_ifs
-        self.dt_nemo = experiment.dt_nemo
-        self.cpl_scheme = experiment.cpl_scheme
         self.experiment = experiment
         self.iter = 1
         self.run_directory = context.output_dir / self.exp_id
@@ -41,7 +39,7 @@ class SchwarzCoupling:
         while self.iter <= max_iters:
             print(f"Iteration {self.iter}")
             self.aoscm.run_coupled_model(schwarz_correction=bool(self.iter - 1))
-            self._postprocess_iteration(next_iteration_exists=(self.iter < max_iters))
+            self._postprocess_iteration(next_iteration_exists=self.iter < max_iters)
             self.iter += 1
             if stop_at_convergence and self.converged:
                 break
@@ -56,10 +54,10 @@ class SchwarzCoupling:
         remapper = RemapCouplerOutput(
             renamed_directory,
             self.run_directory,
-            self.cpl_scheme,
-            self.dt_cpl,
-            self.dt_ifs,
-            self.dt_nemo,
+            self.experiment.cpl_scheme,
+            self.experiment.dt_cpl,
+            self.experiment.dt_ifs,
+            self.experiment.dt_nemo,
             self.context.model_version,
         )
         remapper.remap()

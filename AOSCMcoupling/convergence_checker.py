@@ -7,6 +7,8 @@ from AOSCMcoupling.files import OASISPreprocessor
 
 
 class ConvergenceChecker:
+    """Wrapper to compute termination criteria for Schwarz iterations."""
+
     def __init__(self, tolerance: float = 1e-3):
         self.preprocessor = OASISPreprocessor()
         self.coupling_vars = [
