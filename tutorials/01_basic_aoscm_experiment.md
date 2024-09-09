@@ -44,7 +44,7 @@ experiment = Experiment(
     dt_cpl=3600,
     dt_ifs=900,
     dt_nemo=900,
-    exp_id="",
+    exp_id="TEST",
     ifs_leocwa=False,
     with_ice=False,
     nem_input_file=context.data_dir / "nemo_papa_2014-07-01.nc",
@@ -54,6 +54,7 @@ experiment = Experiment(
     run_start_date=pd.Timestamp("2014-07-01"),
     run_end_date=pd.Timestamp("2014-07-05"),
     ifs_nstrtini=1,
+    cpl_scheme=0,
 )
 ```
 
