@@ -37,7 +37,7 @@ Additionally, the `Experiment` can be used to turn common OpenIFS parameterizati
 Here is an example for setting up an experiment:
 
 ```python
-from AOSCMtools.experiment import Experiment
+from AOSCMcoupling.experiment import Experiment
 import pandas as pd
 
 experiment = Experiment(
