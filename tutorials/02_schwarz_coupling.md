@@ -10,7 +10,7 @@ The first two bullet points can be checked by running a basic AOSCM experiment, 
 A minimal Python script for an SWR simulation looks as follows:
 
 ```python
-from AOSCMcoupling.schwarz_coupling import SchwarzCoupling
+from AOSCMcoupling import SchwarzCoupling
 
 schwarz = SchwarzCoupling(experiment, context)
 max_iters = 20

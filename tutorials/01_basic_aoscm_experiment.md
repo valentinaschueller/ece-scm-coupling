@@ -8,7 +8,7 @@ To begin with, you need to set up the user context on your system, which contain
 Here is an example for how this might look like on your system:
 
 ```python 
-from AOSCMcoupling.context import Context
+from AOSCMcoupling import Context
 context = Context(
     platform="pc-gcc-openmpi",
     model_version=3,
@@ -37,7 +37,7 @@ Additionally, the `Experiment` can be used to turn common OpenIFS parameterizati
 Here is an example for setting up an experiment:
 
 ```python
-from AOSCMcoupling.experiment import Experiment
+from AOSCMcoupling import Experiment
 import pandas as pd
 
 experiment = Experiment(
@@ -62,7 +62,7 @@ The context and experiment are handed to a templated version of `config-run.xml`
 Using [Jinja](https://jinja.palletsprojects.com/) and the template file, a valid XML file can be generated as follows:
 
 ```python
-from AOSCMcoupling.templates import render_config_xml
+from AOSCMcoupling import render_config_xml
 
 render_config_xml(context, experiment)
 ```
@@ -79,7 +79,7 @@ Both tasks are abstracted away into the `AOSCM` class inside `helpers.py`.
 Assuming the experiment has already been configured as described above, one can do a coupled run of the AOSCM as follows:
 
 ```python
-from AOSCMcoupling.helpers import AOSCM
+from AOSCMcoupling AOSCM
 aoscm = AOSCM(context)
 aoscm.run_coupled_model() # or, e.g., aoscm.run_atmosphere_only()
 ```
@@ -87,7 +87,7 @@ aoscm.run_coupled_model() # or, e.g., aoscm.run_atmosphere_only()
 It is also possible to reduce the amount of output after a simulation:
 
 ```python
-from AOSCMcoupling.helpers import reduce_output
+from AOSCMcoupling import reduce_output
 
 reduce_output(
     context.output_dir / experiment.exp_id, keep_debug_output=False
