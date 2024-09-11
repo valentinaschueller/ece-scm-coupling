@@ -210,16 +210,32 @@ class NEMOEnsemblePreprocessor:
 class OASISPreprocessor:
     """Preprocessor for OASIS Output Files from EC-Earth SCM runs.
 
+    Converts the `time` coordinate to valid datetime objects,
+    computed relative to the simulation start date, `origin`
     Drops the horizontal dimension which is added for NEMO but meaningless.
     """
+    def __init__(
+        self, origin: pd.Timestamp, time_shift: pd.Timedelta = pd.Timedelta(0)
+    ):
+        """Constructor.
 
-    def preprocess(self, ds: xr.Dataset) -> xr.Dataset:
+        :param origin: start date (+ time) of the simulation
+        :type origin: pd.Timestamp
+        :param time_shift: time shift to apply for local time, default: 0
+        :type time_shift: pd.Timedelta, optional
+        """
+        self.origin = origin
+        self.time_shift = time_shift
+
+    def preprocess(self, ds: xr.Dataset) -> xr.DataArray:
         """Preprocess function for use with `xr.open_mfdataset()`.
 
         :param ds: dataset as loaded from disk
         :type ds: xr.Dataset
-        :return: preprocessed dataset
-        :rtype: xr.Dataset
+        :return: preprocessed DataArray (only one variable!)
+        :rtype: xr.DataArray
         """
         ds = ds.isel(ny=0, nx=0)
-        return ds
+        time_data = np.array(ds.time.data, dtype="timedelta64[s]")
+        ds = ds.assign_coords(time=self.origin + time_data + self.time_shift)
+        return ds.to_dataarray()
