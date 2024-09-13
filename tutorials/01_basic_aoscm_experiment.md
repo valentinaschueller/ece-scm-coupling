@@ -79,7 +79,7 @@ Both tasks are abstracted away into the `AOSCM` class inside `helpers.py`.
 Assuming the experiment has already been configured as described above, one can do a coupled run of the AOSCM as follows:
 
 ```python
-from AOSCMcoupling AOSCM
+from AOSCMcoupling import AOSCM
 aoscm = AOSCM(context)
 aoscm.run_coupled_model() # or, e.g., aoscm.run_atmosphere_only()
 ```
