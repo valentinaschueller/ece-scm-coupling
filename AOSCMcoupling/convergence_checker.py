@@ -51,12 +51,12 @@ class ConvergenceChecker:
         converged_wrt_data_value = (
             np.abs(self.reference - self.iterate) <= 1e-3 * np.abs(self.reference)
         ).all()
-        converged_successful = converged_wrt_data_value.to_array().all().load().data[()]
+        converged_successful = converged_wrt_data_value.all().load().data[()]
         return bool(converged_successful)
 
     def _check_amplitude_convergence(self) -> bool:
         amplitudes = np.max(self.reference) - np.min(self.reference)
         max_abs_diff = np.max(np.abs(self.reference - self.iterate))
         converged_wrt_amplitude = (max_abs_diff <= 1e-3 * amplitudes).load()
-        converged_successful = converged_wrt_amplitude.to_array().all().load().data[()]
+        converged_successful = converged_wrt_amplitude.all().load().data[()]
         return bool(converged_successful)
