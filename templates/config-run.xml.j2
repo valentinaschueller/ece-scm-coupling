@@ -226,6 +226,12 @@
     <Model name="IFS">
         <Description></Description>
 
+        <Parameter name="IFS_VERSION">
+            <Description>Which IFS version to use. Can be 40r1v1.1.ref or 43r3v1.ref</Description>
+            <Type>STRING</Type>
+            <Value>{{context.ifs_version}}</Value>
+        </Parameter>
+
         <Parameter name="IFS_LEVELS">
             <Description>Vertical resolution of IFS-SCM</Description>
             <Type>STRING</Type>

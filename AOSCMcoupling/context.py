@@ -20,6 +20,9 @@ class Context:
     output_dir: str | Path
     template_dir: str | Path
     data_dir: str | Path
+
+    ifs_version: str = "43r3v1.ref"
+    
     ecconf_executable: Path = field(init=False)
     runscript_dir: Path = field(init=False)
     config_run_template: Path = field(init=False)
@@ -43,6 +46,9 @@ class Context:
         else:
             self.config_run_template = self.template_dir / "config-run_ece4.xml.j2"
             prefix = "ece4"
+        
+        if self.ifs_version not in ("43r3v1.ref", "40r1v1.1.ref"):
+            raise ValueError("Unsupported IFS version")
 
         self.ecconf_executable = self.model_dir / "sources/util/ec-conf/ec-conf"
         self.runscript_dir = self.model_dir / "runtime/scm-classic/PAPA"
