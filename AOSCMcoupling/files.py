@@ -214,6 +214,7 @@ class OASISPreprocessor:
     If `origin` is provided: converts `time` coordinate to valid datetime objects,
     computed relative to the simulation start date, with optional time shift
     """
+
     def __init__(
         self, origin: pd.Timestamp = None, time_shift: pd.Timedelta = pd.Timedelta(0)
     ):
@@ -239,4 +240,7 @@ class OASISPreprocessor:
         if self.origin is not None:
             time_data = np.array(ds.time.data, dtype="timedelta64[s]")
             ds = ds.assign_coords(time=self.origin + time_data + self.time_shift)
-        return ds.to_dataarray()
+        try:  # method name changed between xarray versions
+            return ds.to_dataarray()
+        except AttributeError:
+            return ds.to_array()
