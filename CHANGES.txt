@@ -1,6 +1,10 @@
 Next Release
 ============
 
+Features
+--------
+- expose SI3 tuning parameters for EC-Earth 4 AOSCM
+
 AOSCMcoupling 0.2.0 (5e045ee)
 =============================
 

@@ -31,6 +31,15 @@ class Experiment:
     ifs_legwwms: bool = True
     ifs_lecumf: bool = True
     ifs_nradfr: int = 1
+    ice_alb_sdry: float = 0.85
+    ice_alb_smlt: float = 0.75
+    ice_alb_idry: float = 0.60
+    ice_alb_imlt: float = 0.50
+    ice_alb_dpnd: float = 0.27
+    ice_cnd_s: float = 0.31
+    ice_hinew: float = 0.1
+    ice_nlay_i: int = 2
+    ice_jpl: int = 5
     iteration: int = None
     previous_iter_converged: dict[str, bool] = None
 
