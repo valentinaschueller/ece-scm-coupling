@@ -28,7 +28,11 @@ class SchwarzCoupling:
         self.converged = False
 
     def run(
-        self, max_iters: int, current_iter: int = 1, stop_at_convergence: bool = False
+        self,
+        max_iters: int,
+        current_iter: int = 1,
+        stop_at_convergence: bool = False,
+        rel_tol: float = 1e-3,
     ) -> int:
         if max_iters < 1:
             raise ValueError("Maximum amount of iterations must be >= 1")
@@ -39,15 +43,16 @@ class SchwarzCoupling:
         while self.iter <= max_iters:
             print(f"Iteration {self.iter}")
             self.aoscm.run_coupled_model(schwarz_correction=bool(self.iter - 1))
-            self._postprocess_iteration(next_iteration_exists=self.iter < max_iters)
+            self._postprocess_iteration(self.iter < max_iters, rel_tol)
             self.iter += 1
             if stop_at_convergence and self.converged:
                 break
 
-    def _postprocess_iteration(self, next_iteration_exists: bool):
+    def _postprocess_iteration(self, next_iteration_exists: bool, rel_tol: float):
         print(f"Postprocessing iteration {self.iter}")
 
-        current_iterate_dir = self.run_directory.parent / f"{self.exp_id}_{self.iter}"
+        parent = self.run_directory.parent
+        current_iterate_dir = parent / f"{self.exp_id}_{self.iter}"
         self.run_directory.rename(current_iterate_dir)
 
         self.run_directory.mkdir()
@@ -62,17 +67,12 @@ class SchwarzCoupling:
         )
         remapper.remap()
 
-        if self.convergence_checker.reference is None:
-            self.convergence_checker.load_reference_data(
-                self.run_directory.parent / f"{self.exp_id}_1"
-            )
-
         if self.iter > 1:
-            previous_iterate_dir = (
-                self.run_directory.parent / f"{self.exp_id}_{self.iter - 1}"
-            )
+            previous_iterate_dir = parent / f"{self.exp_id}_{self.iter - 1}"
+            reference_dir = parent / f"{self.exp_id}_1"
+
             conv_2_norm, conv_inf_norm = self.convergence_checker.check_convergence(
-                current_iterate_dir, previous_iterate_dir
+                current_iterate_dir, previous_iterate_dir, reference_dir, rel_tol
             )
             self.experiment.iterate_converged = {
                 "2-norm": conv_2_norm,
