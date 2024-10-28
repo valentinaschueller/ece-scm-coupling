@@ -93,19 +93,19 @@ def reduce_output(run_directory: Path, keep_debug_output: bool = True) -> None:
     output_files = list(run_directory.glob("*"))
     output_files_to_remove = []
     for output_file in output_files:
-        if "diagvar" in output_file.name:
-            continue
-        if "progvar" in output_file.name:
-            continue
-        if "_grid_" in output_file.name:
-            continue
-        if "_icemod" in output_file.name:
-            continue
-        if "namelist_" in output_file.name:
-            continue
-        if output_file.name == "namcouple":
-            continue
-        if output_file.name == "fort.4":
+        whitelisted = [
+            "diagvar",
+            "progvar",
+            "_grid_",
+            "_icemod",
+            "_OpenIFS_",
+            "_ATMIFS_",
+            "_oceanx_",
+            "namelist_",
+            "namcouple",
+            "fort.4",
+        ]
+        if any(wl in output_file.name for wl in whitelisted):
             continue
         if keep_debug_output:
             if "debug" in output_file.name:

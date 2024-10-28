@@ -47,12 +47,12 @@ class SchwarzCoupling:
     def _postprocess_iteration(self, next_iteration_exists: bool):
         print(f"Postprocessing iteration {self.iter}")
 
-        renamed_directory = self.run_directory.parent / f"{self.exp_id}_{self.iter}"
-        self.run_directory.rename(renamed_directory)
+        current_iterate_dir = self.run_directory.parent / f"{self.exp_id}_{self.iter}"
+        self.run_directory.rename(current_iterate_dir)
 
         self.run_directory.mkdir()
         remapper = RemapCouplerOutput(
-            renamed_directory,
+            current_iterate_dir,
             self.run_directory,
             self.experiment.cpl_scheme,
             self.experiment.dt_cpl,
@@ -62,22 +62,30 @@ class SchwarzCoupling:
         )
         remapper.remap()
 
-        if self.iter > 1:
-            local_conv, ampl_conv = self.convergence_checker.check_convergence(
-                renamed_directory, self.run_directory
+        if self.convergence_checker.reference is None:
+            self.convergence_checker.load_reference_data(
+                self.run_directory.parent / f"{self.exp_id}_1"
             )
-            self.experiment.previous_iter_converged = {
-                "local": local_conv,
-                "amplitude": ampl_conv,
+
+        if self.iter > 1:
+            previous_iterate_dir = (
+                self.run_directory.parent / f"{self.exp_id}_{self.iter - 1}"
+            )
+            conv_2_norm, conv_inf_norm = self.convergence_checker.check_convergence(
+                current_iterate_dir, previous_iterate_dir
+            )
+            self.experiment.iterate_converged = {
+                "2-norm": conv_2_norm,
+                "inf-norm": conv_inf_norm,
             }
-            if local_conv and ampl_conv:
+            if conv_2_norm and conv_inf_norm:
                 self.converged = True
-                print(f"Iteration {self.iter - 1} converged!")
+                print(f"Iteration {self.iter} converged!")
 
         self.experiment.iteration = self.iter
 
         if self.reduce_output:
             if not next_iteration_exists:
                 shutil.rmtree(self.run_directory)
-            reduce_output(renamed_directory, keep_debug_output=False)
-        serialize_experiment_setup(self.experiment, renamed_directory)
+            reduce_output(current_iterate_dir, keep_debug_output=False)
+        serialize_experiment_setup(self.experiment, current_iterate_dir)
