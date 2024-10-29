@@ -3,7 +3,8 @@ Next Release
 
 Features
 --------
-- expose SI3 tuning parameters for EC-Earth 4 AOSCM
+- expose SI3 tuning parameters for EC-Earth 4 AOSCM (#15)
+- new SWR convergence criteria (#17)
 
 AOSCMcoupling 0.2.0 (5e045ee)
 =============================
