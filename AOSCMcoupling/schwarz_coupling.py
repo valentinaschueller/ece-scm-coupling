@@ -1,4 +1,5 @@
 import shutil
+import warnings
 
 from AOSCMcoupling.context import Context
 from AOSCMcoupling.convergence_checker import ConvergenceChecker
@@ -56,6 +57,9 @@ class SchwarzCoupling:
         print(f"Postprocessing iteration {self.iter}")
 
         current_iterate_dir = self.output_dir / f"{self.exp_id}_{self.iter}"
+        if current_iterate_dir.exists():
+            warnings.warn("Iteration already exists. Replacing contents!")
+            shutil.rmtree(current_iterate_dir)
         self.run_directory.rename(current_iterate_dir)
 
         self.run_directory.mkdir()
