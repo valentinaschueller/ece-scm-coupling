@@ -52,6 +52,7 @@ class SchwarzCoupling:
             self.iter += 1
             if stop_at_convergence and self.converged:
                 break
+        self.iter -= 1
 
     def _postprocess_iteration(self, next_iteration_exists: bool, rel_tol: float):
         print(f"Postprocessing iteration {self.iter}")
