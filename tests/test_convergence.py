@@ -1,6 +1,7 @@
 import numpy as np
 import xarray as xr
-from AOSCMcoupling.convergence_checker import vector_norm, relative_criterion
+
+from AOSCMcoupling.convergence_checker import relative_criterion, vector_norm
 
 
 def test_vector_norm():
