@@ -41,7 +41,7 @@ class Experiment:
     ice_nlay_i: int = 2
     ice_jpl: int = 5
     iteration: int = None
-    previous_iter_converged: dict[str, bool] = None
+    iterate_converged: dict[str, bool] = None
 
     def __post_init__(self):
         self.nem_input_file = Path(self.nem_input_file)

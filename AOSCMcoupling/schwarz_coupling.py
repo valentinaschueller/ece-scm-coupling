@@ -28,7 +28,11 @@ class SchwarzCoupling:
         self.converged = False
 
     def run(
-        self, max_iters: int, current_iter: int = 1, stop_at_convergence: bool = False
+        self,
+        max_iters: int,
+        current_iter: int = 1,
+        stop_at_convergence: bool = False,
+        rel_tol: float = 1e-3,
     ) -> int:
         if max_iters < 1:
             raise ValueError("Maximum amount of iterations must be >= 1")
@@ -39,20 +43,21 @@ class SchwarzCoupling:
         while self.iter <= max_iters:
             print(f"Iteration {self.iter}")
             self.aoscm.run_coupled_model(schwarz_correction=bool(self.iter - 1))
-            self._postprocess_iteration(next_iteration_exists=self.iter < max_iters)
+            self._postprocess_iteration(self.iter < max_iters, rel_tol)
             self.iter += 1
             if stop_at_convergence and self.converged:
                 break
 
-    def _postprocess_iteration(self, next_iteration_exists: bool):
+    def _postprocess_iteration(self, next_iteration_exists: bool, rel_tol: float):
         print(f"Postprocessing iteration {self.iter}")
 
-        renamed_directory = self.run_directory.parent / f"{self.exp_id}_{self.iter}"
-        self.run_directory.rename(renamed_directory)
+        parent = self.run_directory.parent
+        current_iterate_dir = parent / f"{self.exp_id}_{self.iter}"
+        self.run_directory.rename(current_iterate_dir)
 
         self.run_directory.mkdir()
         remapper = RemapCouplerOutput(
-            renamed_directory,
+            current_iterate_dir,
             self.run_directory,
             self.experiment.cpl_scheme,
             self.experiment.dt_cpl,
@@ -63,21 +68,24 @@ class SchwarzCoupling:
         remapper.remap()
 
         if self.iter > 1:
-            local_conv, ampl_conv = self.convergence_checker.check_convergence(
-                renamed_directory, self.run_directory
+            previous_iterate_dir = parent / f"{self.exp_id}_{self.iter - 1}"
+            reference_dir = parent / f"{self.exp_id}_1"
+
+            conv_2_norm, conv_inf_norm = self.convergence_checker.check_convergence(
+                current_iterate_dir, previous_iterate_dir, reference_dir, rel_tol
             )
-            self.experiment.previous_iter_converged = {
-                "local": local_conv,
-                "amplitude": ampl_conv,
+            self.experiment.iterate_converged = {
+                "2-norm": conv_2_norm,
+                "inf-norm": conv_inf_norm,
             }
-            if local_conv and ampl_conv:
+            if conv_2_norm and conv_inf_norm:
                 self.converged = True
-                print(f"Iteration {self.iter - 1} converged!")
+                print(f"Iteration {self.iter} converged!")
 
         self.experiment.iteration = self.iter
 
         if self.reduce_output:
             if not next_iteration_exists:
                 shutil.rmtree(self.run_directory)
-            reduce_output(renamed_directory, keep_debug_output=False)
-        serialize_experiment_setup(self.experiment, renamed_directory)
+            reduce_output(current_iterate_dir, keep_debug_output=False)
+        serialize_experiment_setup(self.experiment, current_iterate_dir)
