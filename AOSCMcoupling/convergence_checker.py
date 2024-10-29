@@ -44,7 +44,7 @@ def relative_criterion(
     rel_tol: float,
     ord=np.inf,
 ) -> bool:
-    """Determines whether ||iterate_1 - iterate_2||_ord < rel_tol * ||reference||_ord.
+    """Determines whether ||iterate_1 - iterate_2||_ord <= rel_tol * ||reference||_ord.
 
     :param iterate_1: Dataset with 'time' coordinate.
     :type iterate_1: xr.Dataset
@@ -61,7 +61,7 @@ def relative_criterion(
     """
     normed_delta = vector_norm(iterate_1 - iterate_2, "time", ord=ord)
     normed_reference = vector_norm(reference, "time", ord=ord)
-    converged_wrt_data_value = normed_delta < rel_tol * normed_reference
+    converged_wrt_data_value = normed_delta <= rel_tol * normed_reference
     converged = converged_wrt_data_value.to_numpy().all()
     return bool(converged)
 
