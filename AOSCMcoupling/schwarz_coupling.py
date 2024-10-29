@@ -21,6 +21,7 @@ class SchwarzCoupling:
         self.exp_id = experiment.exp_id
         self.experiment = experiment
         self.iter = 1
+        self.output_dir = context.output_dir
         self.run_directory = context.output_dir / self.exp_id
         self.aoscm = AOSCM(context)
         self.convergence_checker = ConvergenceChecker()
@@ -39,6 +40,9 @@ class SchwarzCoupling:
         if current_iter < 1:
             raise ValueError("Current iteration must be >=1")
         self.iter = current_iter
+        if self.iter > 1:
+            self._prepare_restart()
+
         render_config_xml(self.context, self.experiment)
         while self.iter <= max_iters:
             print(f"Iteration {self.iter}")
@@ -51,8 +55,7 @@ class SchwarzCoupling:
     def _postprocess_iteration(self, next_iteration_exists: bool, rel_tol: float):
         print(f"Postprocessing iteration {self.iter}")
 
-        parent = self.run_directory.parent
-        current_iterate_dir = parent / f"{self.exp_id}_{self.iter}"
+        current_iterate_dir = self.output_dir / f"{self.exp_id}_{self.iter}"
         self.run_directory.rename(current_iterate_dir)
 
         self.run_directory.mkdir()
@@ -68,8 +71,8 @@ class SchwarzCoupling:
         remapper.remap()
 
         if self.iter > 1:
-            previous_iterate_dir = parent / f"{self.exp_id}_{self.iter - 1}"
-            reference_dir = parent / f"{self.exp_id}_1"
+            previous_iterate_dir = self.output_dir / f"{self.exp_id}_{self.iter - 1}"
+            reference_dir = self.output_dir / f"{self.exp_id}_1"
 
             conv_2_norm, conv_inf_norm = self.convergence_checker.check_convergence(
                 current_iterate_dir, previous_iterate_dir, reference_dir, rel_tol
@@ -89,3 +92,22 @@ class SchwarzCoupling:
                 shutil.rmtree(self.run_directory)
             reduce_output(current_iterate_dir, keep_debug_output=False)
         serialize_experiment_setup(self.experiment, current_iterate_dir)
+
+    def _prepare_restart(self):
+        previous_iterate_dir = self.output_dir / f"{self.exp_id}_{self.iter - 1}"
+        if not previous_iterate_dir.exists():
+            raise FileNotFoundError(
+                f"Output data from iteration {self.iter - 1} not found!"
+            )
+
+        self.run_directory.mkdir(exist_ok=True)
+        remapper = RemapCouplerOutput(
+            previous_iterate_dir,
+            self.run_directory,
+            self.experiment.cpl_scheme,
+            self.experiment.dt_cpl,
+            self.experiment.dt_ifs,
+            self.experiment.dt_nemo,
+            self.context.model_version,
+        )
+        remapper.remap()
