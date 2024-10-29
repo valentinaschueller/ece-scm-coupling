@@ -1,6 +1,9 @@
 Next Release
 ============
 
+AOSCMcoupling 0.3.0
+===================
+
 Features
 --------
 - support restarting SWR run from an iteration > 1 (#18)
