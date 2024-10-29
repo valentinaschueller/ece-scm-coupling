@@ -3,6 +3,8 @@ Next Release
 
 Features
 --------
+- support restarting SWR run from an iteration > 1 (#18)
+- allow to redo iterations even if output already exists (#18)
 - expose SI3 tuning parameters for EC-Earth 4 AOSCM (#15)
 - new SWR convergence criteria (#17)
 
