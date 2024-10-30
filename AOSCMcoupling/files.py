@@ -237,6 +237,7 @@ class OASISPreprocessor:
         :rtype: xr.DataArray
         """
         ds = ds.isel(ny=0, nx=0)
+        ds = ds.assign_coords(time=ds.time - ds.time[0])
         if self.origin is not None:
             time_data = np.array(ds.time.data, dtype="timedelta64[s]")
             ds = ds.assign_coords(time=self.origin + time_data + self.time_shift)
