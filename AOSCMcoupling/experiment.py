@@ -22,15 +22,16 @@ class Experiment:
     oasis_rstas: Path | str
     oasis_rstos: Path | str
     exp_id: str
-    with_ice: bool = False
     ifs_nstrtini: int = 1
     ifs_leocwa: bool = False
-    ice_input_file: Path | str = None
     cpl_scheme: int = 0
     ifs_levels: int = 60
     ifs_legwwms: bool = True
     ifs_lecumf: bool = True
     ifs_nradfr: int = 1
+    with_ice: bool = False
+    dt_ice: int = None
+    ice_input_file: Path | str = None
     ice_alb_sdry: float = 0.85
     ice_alb_smlt: float = 0.75
     ice_alb_idry: float = 0.60
@@ -57,6 +58,8 @@ class Experiment:
         if self.with_ice:
             self.ice_input_file = Path(self.ice_input_file)
             paths.append(self.ice_input_file)
+        if self.dt_ice is None:
+            self.dt_ice = self.dt_nemo
 
         for path in paths:
             if not path.exists():
