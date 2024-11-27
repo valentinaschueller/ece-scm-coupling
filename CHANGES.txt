@@ -3,7 +3,7 @@ Next Release
 
 Features
 --------
-- support setting ice time step differently from ocean time step
+- support setting ice time step differently from ocean time step (#21)
 
 AOSCMcoupling 0.3.0
 ===================
