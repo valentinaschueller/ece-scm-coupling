@@ -146,15 +146,15 @@ class OIFSEnsemblePreprocessor:
         if coupling_scheme == "schwarz":
             coupling_scheme = "converged SWR"
 
-        start_date = pd.Timestamp(
-            source_file.parent.parent.parent.name.replace("_", ", ")
-        )
-        initial_condition = source_file.parent.parent.name
+        start_date = pd.Timestamp(source_file.parent.parent.name.replace("_", ", "))
         ds = ds.expand_dims(
             coupling_scheme=[coupling_scheme],
             start_date=[start_date + self.time_shift],
-            initial_condition=[initial_condition],
         )
+        try:
+            ds = ds.drop_vars("ncextr")
+        except ValueError:
+            pass
         return ds
 
 
@@ -192,17 +192,14 @@ class NEMOEnsemblePreprocessor:
         if coupling_scheme == "schwarz":
             coupling_scheme = "converged SWR"
 
-        start_date = pd.Timestamp(
-            source_file.parent.parent.parent.name.replace("_", ", ")
-        )
-        initial_condition = source_file.parent.parent.name
+        start_date = pd.Timestamp(source_file.parent.parent.name.replace("_", ", "))
         ds = ds.isel(y=0, x=0)
         ds = ds.rename(time_counter="time")
+        ds = ds.convert_calendar("gregorian")
         ds = ds.assign_coords(time=ds.time.data - np.datetime64(start_date.date()))
         ds = ds.expand_dims(
             coupling_scheme=[coupling_scheme],
             start_date=[start_date + self.time_shift],
-            initial_condition=[initial_condition],
         )
         return ds
 

@@ -5,6 +5,10 @@ Features
 --------
 - support setting ice time step differently from ocean time step (#21)
 
+Fixes
+-----
+- fix preprocessing to support output from newer model versions
+
 AOSCMcoupling 0.3.0
 ===================
 
