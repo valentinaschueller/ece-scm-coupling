@@ -7,7 +7,7 @@ packages = ["AOSCMcoupling"]
 
 [project]
 name = "AOSCMcoupling"
-version = "0.3"
+version = "0.4"
 authors = [
     { name = "Valentina Schueller", email = "valentina.schuller@math.lu.se" },
 ]
