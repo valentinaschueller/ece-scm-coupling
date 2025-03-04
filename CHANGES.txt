@@ -3,6 +3,7 @@ Next Release
 
 Features
 --------
+- provide helper function for computing information about the forcing file (#23) 
 - support setting ice time step differently from ocean time step (#21)
 
 Fixes
