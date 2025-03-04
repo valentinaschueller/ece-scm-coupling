@@ -3,7 +3,6 @@ from pathlib import Path
 
 import pandas as pd
 import xarray as xr
-from ruamel.yaml import YAML
 
 from AOSCMcoupling.context import Context
 from AOSCMcoupling.files import ChangeDirectory
@@ -117,13 +116,6 @@ def reduce_output(run_directory: Path, keep_debug_output: bool = True) -> None:
 
     for file in output_files_to_remove:
         file.unlink()
-
-
-def serialize_experiment_setup(experiment: dict, run_directory: Path):
-    yaml = YAML(typ="unsafe", pure=True)
-    with open(run_directory / "setup_dict.yaml", "w") as output_file:
-        yaml = YAML(typ="unsafe", pure=True)
-        yaml.dump(experiment, output_file)
 
 
 def compute_nstrtini(

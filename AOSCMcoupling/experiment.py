@@ -1,7 +1,8 @@
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 import pandas as pd
+from ruamel.yaml import YAML
 
 
 @dataclass
@@ -70,3 +71,8 @@ class Experiment:
 
         if self.ifs_levels not in (60, 137):
             raise ValueError("This number of levels is not supported.")
+
+    def to_yaml(self, file: Path):
+        with open(file, "w") as file:
+            yaml = YAML(typ="unsafe", pure=True)
+            yaml.dump(asdict(self), file)

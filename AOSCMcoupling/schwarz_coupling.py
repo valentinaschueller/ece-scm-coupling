@@ -4,7 +4,7 @@ import warnings
 from AOSCMcoupling.context import Context
 from AOSCMcoupling.convergence_checker import ConvergenceChecker
 from AOSCMcoupling.experiment import Experiment
-from AOSCMcoupling.helpers import AOSCM, reduce_output, serialize_experiment_setup
+from AOSCMcoupling.helpers import AOSCM, reduce_output
 from AOSCMcoupling.remapping import RemapCouplerOutput
 from AOSCMcoupling.templates import render_config_xml
 
@@ -96,7 +96,7 @@ class SchwarzCoupling:
             if not next_iteration_exists:
                 shutil.rmtree(self.run_directory)
             reduce_output(current_iterate_dir, keep_debug_output=False)
-        serialize_experiment_setup(self.experiment, current_iterate_dir)
+        self.experiment.to_yaml(current_iterate_dir / "setup_dict.yaml")
 
     def _prepare_restart(self):
         previous_iterate_dir = self.output_dir / f"{self.exp_id}_{self.iter - 1}"
