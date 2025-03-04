@@ -1,3 +1,11 @@
+AOSCMcoupling 0.4.1
+===================
+
+Fixes
+-----
+
+- expose `get_ifs_forcing_info` (can now be imported as `from AOSCMcoupling import get_ifs_forcing_info`)
+
 AOSCMcoupling 0.4.0
 ===================
 
