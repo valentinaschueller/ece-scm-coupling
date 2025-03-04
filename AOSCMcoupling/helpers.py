@@ -2,6 +2,7 @@ import subprocess
 from pathlib import Path
 
 import pandas as pd
+import xarray as xr
 from ruamel.yaml import YAML
 
 from AOSCMcoupling.context import Context
@@ -137,3 +138,18 @@ def compute_nstrtini(
     if abs(int(nstrtini) - nstrtini) > 1e-10:
         raise ValueError("Start date is not available in forcing file!")
     return int(nstrtini)
+
+
+def get_ifs_forcing_info(
+    ifs_forcing_file: Path,
+) -> tuple[pd.Timestamp, pd.Timedelta, int]:
+    oifs_forcing = xr.open_dataset(ifs_forcing_file)
+    nlev = len(oifs_forcing.nlev)
+    start_second = oifs_forcing.second[0].to_numpy()
+    if start_second > 0:
+        raise ValueError("OIFS forcing file needs to start at 00:00h.")
+    start_date = pd.Timestamp(str(oifs_forcing.date[0].to_numpy()))
+    frequency = pd.Timedelta(
+        oifs_forcing.time.data[1] - oifs_forcing.time.data[0], unit="seconds"
+    )
+    return start_date, frequency, nlev
