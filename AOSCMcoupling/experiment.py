@@ -1,4 +1,4 @@
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from pathlib import Path
 
 import pandas as pd
@@ -75,4 +75,4 @@ class Experiment:
     def to_yaml(self, file: Path):
         with open(file, "w") as file:
             yaml = YAML(typ="unsafe", pure=True)
-            yaml.dump(asdict(self), file)
+            yaml.dump(self, file)
