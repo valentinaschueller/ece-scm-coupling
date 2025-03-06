@@ -33,6 +33,7 @@ def relative_error(
     :rtype: xr.Dataset
     """
     normed_delta = vector_norm(iterate_1 - iterate_2, "time", ord=ord)
+    normed_delta = xr.where((normed_delta < 1e-16), 0.0, normed_delta)
     normed_reference = vector_norm(reference, "time", ord=ord)
     return normed_delta / normed_reference
 
@@ -60,6 +61,7 @@ def relative_criterion(
     :rtype: bool
     """
     normed_delta = vector_norm(iterate_1 - iterate_2, "time", ord=ord)
+    normed_delta = xr.where((normed_delta < 1e-16), 0.0, normed_delta)
     normed_reference = vector_norm(reference, "time", ord=ord)
     converged_wrt_data_value = normed_delta <= rel_tol * normed_reference
     converged = converged_wrt_data_value.to_numpy().all()

@@ -5,6 +5,7 @@ Fixes
 --------
 
 - replace serialize_experiment_setup with Experiment.to_yaml, leftover from the old experiment dictionary setup (#25)
+- catch cases in the ConvergenceChecker where the difference between iterations is numerically zero, but the reference is also numerically zero (happened for ice albedo in case of no sea ice...)
 
 
 AOSCMcoupling 0.4.1
